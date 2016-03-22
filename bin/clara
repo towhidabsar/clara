@@ -1,0 +1,204 @@
+#!/usr/bin/env python
+
+'''
+clara CLI interface
+'''
+
+# Python imports
+import pprint
+import sys
+
+from ast import literal_eval
+
+# clara imports
+from clara.common import parseargs, debug
+from clara.feedback2 import TxtFeed
+from clara.interpreter import getlanginter
+from clara.matching import Matching
+from clara.parser import getlangparser
+from clara.repair import Repair
+
+
+class Clara(object):
+
+    USAGE = '''
+%s COMMAND [OPTIONS*] SOURCE_FILE_1 SOURCE_FILE_2 ...
+
+Commands are:
+  help       print this usage message
+  match      run the matching procedure on two source files
+  repair     run the repair algorithm on two source files
+
+Options are:
+  --verbose [0|1]    controls the amound of output information printed
+                     (default is 0)
+  --lang LANG        language of the source files
+                     (default is to guess from the first source file extension)
+  --args ARGS        arguments for matching or repair
+  --ins INS          inputs for matching or repair
+  --entryfnc FNC     entry function for matching or repair
+                     (default is 'main')
+  --ignoreio [0|1]   whether to ignore IO in matching or repair
+  --ignoreret [0|1]  whether to ignore return value in matching or repair
+  --timeout INT      timeout in seconds (for the repair)
+                     (default is 60)
+'''
+
+    def __init__(self):
+        pass
+
+    def usage(self):
+        '''
+        Prints usage information (to stderr).
+        '''
+
+        print >> sys.stderr, self.USAGE % (sys.argv[0],)
+
+    def debug(self, msg, *args):
+        '''
+        Prints debug message if verbose mode on.
+        '''
+        
+        if self.verbose:
+            debug(msg, *args)
+
+    def error(self, msg, *args):
+        '''
+        Prints error message and exits
+        '''
+        
+        if args:
+            msg %= args
+        print >> sys.stderr, 'Error: %s\n' % (msg,)
+        sys.exit(1)
+
+    def main(self):
+
+        self.args, self.opts = parseargs(sys.argv[1:])
+
+        if len(self.args) < 1:
+            self.usage()
+            self.error('Command not specified!')
+
+        self.cmd = self.args[0]
+        self.sources = self.args[1:]
+
+        if self.cmd == 'help':
+            self.usage()
+            return
+
+        self.verbose = int(self.opts.pop('verbose', 0))
+        self.lang = self.opts.pop('lang', None)
+        self.timeout = int(self.opts.pop('timeout', 60))
+        self.ignoreio = int(self.opts.pop('ignoreio', 0))
+        self.ignoreret = int(self.opts.pop('ignoreret', 0))
+        self.entryfnc = self.opts.pop('entryfnc', 'main')
+
+        self.ins = self.opts.pop('ins', None)
+        self.args = self.opts.pop('args', None)
+        if self.ins is not None:
+            self.ins = literal_eval(self.ins)
+        if self.args is not None:
+            self.args = literal_eval(self.args)
+
+        if self.lang is None:
+            self.guess_lang()
+
+        self.parser = getlangparser(self.lang)
+        self.inter = getlanginter(self.lang)
+
+        self.process_sources()
+
+        if self.cmd == 'match':
+            self.match()
+
+        elif self.cmd == 'repair':
+            self.repair()
+
+        else:
+            self.usage()
+            self.error("Unknown command: '%s'", self.cmd)
+
+    def match(self):
+
+        if len(self.models) < 2:
+            self.error('Match requires two programs!')
+
+        elif len(self.models) > 2:
+            self.debug('Match requires two programs, ignoring the rest!')
+
+        M = Matching(ignoreio=self.ignoreio, ignoreret=self.ignoreret,
+                     verbose=self.verbose)
+
+        m = M.match_programs(self.models[0], self.models[1], self.inter,
+                             ins=self.ins, args=self.args,
+                             entryfnc=self.entryfnc)
+        if m:
+            self.debug('Match: %s', pprint.pformat(m[1]))
+            print 'Match!'
+        else:
+            print 'No match!'
+
+    def repair(self):
+
+        if len(self.models) < 2:
+            self.error('Repair requires two programs!')
+
+        elif len(self.models) > 2:
+            self.debug('Repair requires two programs, ignoring the rest!')
+
+        R = Repair(timeout=self.timeout, verbose=self.verbose)
+
+        r = R.repair(self.models[0], self.models[1], self.inter,
+                     ins=self.ins, args=self.args, ignoreio=self.ignoreio,
+                     ignoreret=self.ignoreret, entryfnc=self.entryfnc)
+        if r:
+            txt = TxtFeed(self.models[0], self.models[1], r)
+            txt.genfeedback()
+            print 'Repairs:'
+            print '\n'.join(map(lambda x: '  * %s' % (x,), txt.feedback))
+        else:
+            print 'No repair!'
+
+    def guess_lang(self):
+        '''
+        Sets lang options from the first source file extension.
+        '''
+
+        if not len(self.sources):
+            self.error('Cannot guess the language - no source files!')
+            return
+
+        file_parts = self.sources[0].rsplit('.', 1)
+
+        if len(file_parts) < 2:
+            self.error('Cannot guess the language - no file extension!')
+
+        self.lang = file_parts[1]
+        self.debug('Guessed language: %s', self.lang)
+
+    def process_sources(self):
+        '''
+        Reads and parses source files (sets models field).
+        '''
+
+        self.models = []
+
+        for src in self.sources:
+            self.debug("Reading and parsing source file '%s'", src)
+            
+            with open(src, 'r') as f:
+                code = f.read()
+                model = self.parser.parse_code(code)
+                model.name = src
+                self.models.append(model)
+                
+
+if __name__ == '__main__':
+    try:
+        clara = Clara()
+        clara.main()
+        sys.exit(0)
+    except Exception, err:
+        print >> sys.stderr, 'Error occured: %s' % (err,)
+        sys.exit(1)
