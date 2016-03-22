@@ -30,7 +30,7 @@ Commands are:
   repair     run the repair algorithm on two source files
 
 Options are:
-  --verbose [0|1]    controls the amound of output information printed
+  --verbose [0|1]    controls the amount of output information printed
                      (default is 0)
   --lang LANG        language of the source files
                      (default is to guess from the first source file extension)
