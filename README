@@ -10,10 +10,16 @@ programming assignments, described in the following paper:
 
 Requires
 ========
-- Cython (tested with v0.23.4)
 - C compiler (tested with gcc 4.9.2)
+- Cython (tested with v0.23.4)
+    $ sudo aptitude install cython
 - lpsolve 5.5 (development files and library)
+    $ sudo aptitude install liblpsolve55-dev
 - pip
+    $ sudo aptitude install python-pip
+- pip module pycparser zss
+    $ pip install --user pycparser zss
+
 
 
 Installation
