@@ -5,7 +5,7 @@ from distutils.core import setup
 from distutils.extension import Extension
 
 extensions = Extension('clara.pylpsolve', ['clara/pylpsolve.pyx'],
-                       libraries=['lpsolve55'])
+                       libraries=['lpsolve55'], library_dirs=['/usr/lib/lp_solve'])
 
 setup(name='clara',
       version='1.0',
