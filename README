@@ -12,11 +12,14 @@ Requires
 ========
 - C compiler (tested with gcc 4.9.2)
 - Cython (tested with v0.23.4)
-    $ sudo aptitude install cython
+    $ sudo aptitude install cython (Debian)
+    # dnf install Cython (Fedora)
 - lpsolve 5.5 (development files and library)
-    $ sudo aptitude install liblpsolve55-dev
+    $ sudo aptitude install lp-solve (Debian)
+    # dnf install lpsolve-devel (Fedora)
 - pip
-    $ sudo aptitude install python-pip
+    $ sudo aptitude install python-pip (Debian)
+    # dnf install python-pip (Fedora)
 - pip module pycparser zss
     $ pip install --user pycparser zss
 
@@ -39,6 +42,12 @@ Running
 =======
 - 'make' from above installs a binary file called 'clara'
 - Run 'clara help' or see examples below
+
+
+Debian note
+===========
+- On Debian system the following is required before running the tool:
+    'export LD_LIBRARY_PATH=/usr/lib/lp_solve/'
 
 
 Examples
