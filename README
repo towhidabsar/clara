@@ -15,7 +15,7 @@ Requires
     $ sudo aptitude install cython (Debian)
     # dnf install Cython (Fedora)
 - lpsolve 5.5 (development files and library)
-    $ sudo aptitude install lp-solve (Debian)
+    $ sudo aptitude install lp-solve liblpsolve55-dev (Debian)
     # dnf install lpsolve-devel (Fedora)
 - pip
     $ sudo aptitude install python-pip (Debian)
