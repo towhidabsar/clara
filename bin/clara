@@ -153,7 +153,7 @@ Options are:
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                      ignoreret=self.ignoreret, entryfnc=self.entryfnc)
         if r:
-            txt = TxtFeed(self.models[0], self.models[1], r)
+            txt = TxtFeed(self.models[1], self.models[0], r)
             txt.genfeedback()
             print 'Repairs:'
             print '\n'.join(map(lambda x: '  * %s' % (x,), txt.feedback))
