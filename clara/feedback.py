@@ -207,7 +207,7 @@ class FeedGen(object):
                 impl, spec, inter, timeout=self.timeout, verbose=self.verbose,
                 ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                 ignoreret=self.ignoreret, entryfnc=self.entryfnc,
-                allowsuboptimal=self.allowsuboptimal)
+                allowsuboptimal=self.allowsuboptimal, feedmod=self.feedmod)
             for spec in specs]
         
         # Process all tasks

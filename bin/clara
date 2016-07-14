@@ -15,6 +15,7 @@ from ast import literal_eval
 from clara.common import parseargs, debug
 from clara.feedback import Feedback, FeedGen
 from clara.feedback_repair import RepairFeedback
+from clara.feedback_simple import SimpleFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
 from clara.parser import getlangparser
@@ -49,6 +50,8 @@ Options are:
   --suboptimal [0|1] allow sub-optimal repairs (default is 1)
   --poolsize INT     number of (parallel) processes to use for feedback
                      (default is the number of CPUs)
+  --feedtype FEED    type of feedback to generate ('repair', 'simple')
+                     (default is 'repair')
 '''
 
     def __init__(self):
@@ -109,6 +112,14 @@ Options are:
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
             self.poolsize = int(self.poolsize)
+
+        self.feedtype = self.opts.pop('feedtype', 'repair')
+        if self.feedtype == 'repair':
+            self.feedtype = RepairFeedback
+        elif self.feedtype == 'simple':
+            self.feedtype = SimpleFeedback
+        else:
+            self.error("Unknown feedback type: '%s'", self.feedtype)
 
         self.ins = self.opts.pop('ins', None)
         self.args = self.opts.pop('args', None)
@@ -186,7 +197,8 @@ Options are:
             self.error('Feedback requires at least two programs!')
 
         F = FeedGen(verbose=self.verbose, timeout=self.timeout,
-                    poolsize=self.poolsize, allowsuboptimal=self.suboptimal)
+                    poolsize=self.poolsize, allowsuboptimal=self.suboptimal,
+                    feedmod=self.feedtype)
 
         impl = self.models[-1]
         specs = self.models[:-1]
