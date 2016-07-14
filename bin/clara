@@ -246,7 +246,7 @@ Options are:
             self.debug("Reading and parsing source file '%s'", src)
             
             with open(src, 'r') as f:
-                code = f.read()
+                code = f.read().decode('utf-8')
                 model = self.parser.parse_code(code)
                 model.name = src
                 self.models.append(model)
