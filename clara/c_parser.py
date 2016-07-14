@@ -117,7 +117,7 @@ class CParser(Parser):
         for v, t in params:
             self.addtype(v, t)
         
-        self.addloc(desc="beginning of function '%s'" % (name,))
+        self.addloc(desc="at the beginning of the function '%s'" % (name,))
         self.visit(node.body)
 
         self.endfnc()

@@ -283,7 +283,7 @@ class Parser(object):
 
         # Add condition (with new location)
         preloc = self.loc
-        condloc = self.addloc('condition of if-statement at line %d' % (
+        condloc = self.addloc('the condition of the if-statement at line %d' % (
             self.getline(cond)
         ))
         condexpr = self.visit_expr(cond, allowlist=True)
@@ -292,12 +292,12 @@ class Parser(object):
         self.addexpr(VAR_COND, condexpr)
         
         # Add true loc
-        trueloc = self.addloc('if-branch starting at line %d' % (
+        trueloc = self.addloc('inside the if-branch starting at line %d' % (
             self.getline(true)))
         self.visit(true)
         afterloc1 = self.loc
 
-        afterloc = self.addloc('after if-statement beginning at line %s' % (
+        afterloc = self.addloc('after the if-statement beginning at line %s' % (
             self.getline(node)
         ))
 
@@ -308,7 +308,7 @@ class Parser(object):
 
         # Add false loc
         if false:
-            falseloc = self.addloc('else-branch starting at line %d' % (
+            falseloc = self.addloc('inside the else-branch starting at line %d' % (
                 self.getline(false)))
             self.visit(false)
             afterloc2 = self.loc
@@ -401,18 +401,18 @@ class Parser(object):
                 
         if not condexpr:
             condexpr = Const('1')
-        condloc = self.addloc('condition of %s loop at line %s' % (
-            name, condexpr.line))
+        condloc = self.addloc("the condition of the '%s' loop at line %s" % (
+            name, condexpr.line or self.getline(node)))
         self.addexpr(VAR_COND, condexpr)
 
         # Add exit loc
-        exitloc = self.addloc('after %s loop starting at line %d' % (
+        exitloc = self.addloc("*after* the '%s' loop starting at line %d" % (
             name, self.getline(node)
         ))
 
         # Add body with (new location)
-        bodyloc = self.addloc('body of %s loop beginning at line %d' % (
-            name, self.getline(body)
+        bodyloc = self.addloc("inside the body of the '%s' loop beginning at line %d" % (
+            name, self.getline(body) or self.getline(node)
         ))
         self.addloop((condloc, exitloc))
         if prebody:
