@@ -1,9 +1,9 @@
 '''
-Generating textual feedback from repair
+Generating (simple, raw) textual feedback from repair
 '''
 
 
-class TxtFeed(object):
+class RepairFeedback(object):
 
     def __init__(self, impl, spec, result):
         self.impl = impl

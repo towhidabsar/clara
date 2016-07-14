@@ -12,7 +12,7 @@ from ast import literal_eval
 
 # clara imports
 from clara.common import parseargs, debug
-from clara.feedback2 import TxtFeed
+from clara.feedback_repair import RepairFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
 from clara.parser import getlangparser
@@ -153,7 +153,7 @@ Options are:
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                      ignoreret=self.ignoreret, entryfnc=self.entryfnc)
         if r:
-            txt = TxtFeed(self.models[1], self.models[0], r)
+            txt = RepairFeedback(self.models[1], self.models[0], r)
             txt.genfeedback()
             print 'Repairs:'
             print '\n'.join(map(lambda x: '  * %s' % (x,), txt.feedback))
