@@ -1,20 +1,22 @@
 '''
-Feedback generation from repair
+Feedback generation from repair on multiple specifications
 '''
 
 # Python imports
 import time
 import traceback
 
+from multiprocessing import Pool
+
 # clara imports
-from feedback2 import TxtFeed
+from feedback_repair import RepairFeedback
 from model import Var, isprimed, unprime, prime
 from repair import Repair, Timeout, StructMismatch
 
 
 class Feedback(object):
     '''
-    Feedback result
+    Feedback result on a single specification
     '''
 
     STATUS_REPAIRED = 10
@@ -25,7 +27,7 @@ class Feedback(object):
 
     def __init__(self, impl, spec, inter, timeout=None, verbose=False,
                  ins=None, args=None, ignoreio=False, ignoreret=False,
-                 entryfnc=None, allowsuboptimal=True):
+                 entryfnc=None, allowsuboptimal=True, feedmod=RepairFeedback):
         
         self.impl = impl
         self.spec = spec
@@ -38,7 +40,7 @@ class Feedback(object):
         self.ignoreret = ignoreret
         self.entryfnc = entryfnc
         self.allowsuboptimal = allowsuboptimal
-        self.start = time.time()
+        self.feedmod=feedmod
 
         self.feedback = []
         self.cost = -1
@@ -47,21 +49,26 @@ class Feedback(object):
         self.status = None
         self.error = None
 
+        self.start = time.time()
+
     def generate(self):
 
-        # Time spent waiting
+        # Time spent waiting in pool queue
         if self.timeout:
             self.timeout -= (time.time() - self.start)
 
+        # Create a repair object
         R = Repair(timeout=self.timeout, verbose=self.verbose,
                    allowsuboptimal=self.allowsuboptimal)
 
         try:
+            # Try generating a repair
             self.results = R.repair(
                 self.spec, self.impl, self.inter, ins=self.ins, args=self.args,
                 ignoreio=self.ignoreio, ignoreret=self.ignoreret,
                 entryfnc=self.entryfnc)
 
+            # Collect result
             self.cost = 0
             self.size = 0
             for _, repairs, _ in self.results.values():
@@ -72,19 +79,27 @@ class Feedback(object):
             
             self.status = self.STATUS_REPAIRED
 
-            txtfeed = TxtFeed(self.impl, self.spec, self.results)
+            # Generate feedback
+            txtfeed = self.feedmod(self.impl, self.spec, self.results)
             txtfeed.genfeedback()
             self.feedback = list(txtfeed.feedback)
 
         except StructMismatch:
+            # Structural mismatch
             self.status = self.STATUS_STRUCT
             self.error = 'no struct'
             
         except Timeout:
+            # Timeout occured
             self.status = self.STATUS_TIMEOUT
             self.error = 'timeout'
 
     def islarge(self):
+        '''
+        Decides if generated repair is large
+        (new variable, new statement, swapped statements)
+        '''
+        
         for fnc, (m, repairs, sm) in self.results.items():
             for (loc1, var1, var2, _, _) in repairs:
                 loc2 = sm[loc1]
@@ -121,6 +136,9 @@ class Feedback(object):
         return False
 
     def statusstr(self):
+        '''
+        String of status
+        '''
         if self.status == self.STATUS_REPAIRED:
             return 'repaired'
         elif self.status == self.STATUS_STRUCT:
@@ -139,6 +157,9 @@ class Feedback(object):
 
     
 def run_feedback(f):
+    '''
+    Helper function that runs a single process
+    '''
     try:
         f.generate()
     except Exception, ex:
@@ -149,18 +170,18 @@ def run_feedback(f):
 
 class FeedGen(object):
     '''
-    Feedback generator
+    Feedback generator from multiple specs
+    - manages multiple processes
+    - selectes one feedback among generated ones
     '''
 
-    def __init__(self, verbose=False, timeout=False, pool=None,
-                 allowsuboptimal=True):
+    def __init__(self, verbose=False, timeout=False, poolsize=None,
+                 allowsuboptimal=True, feedmod=RepairFeedback):
         self.verbose = verbose
         self.timeout = timeout
-        self.pool = pool
-        if self.pool is None:
-            from multiprocessing import Pool
-            self.pool = Pool()
+        self.poolsize = poolsize
         self.allowsuboptimal = allowsuboptimal
+        self.feedmod = feedmod
 
     def generate(self, impl, specs, inter, ins=None, args=None,
                  entryfnc='main', ignoreio=False, ignoreret=False):
@@ -177,6 +198,10 @@ class FeedGen(object):
         self.ignoreio = ignoreio
         self.ignoreret = ignoreret
 
+        # Create a pool
+        self.pool = Pool(processes=self.poolsize)
+
+        # Creates list of tasks, for each spec one
         tasks = [
             Feedback(
                 impl, spec, inter, timeout=self.timeout, verbose=self.verbose,
@@ -184,16 +209,19 @@ class FeedGen(object):
                 ignoreret=self.ignoreret, entryfnc=self.entryfnc,
                 allowsuboptimal=self.allowsuboptimal)
             for spec in specs]
+        
+        # Process all tasks
         results = self.pool.map(run_feedback, tasks)
 
+        # Go through results
         feedback = None
         feedbacks = []
         for res in results:
-            # Immediately return error or timeout
+            # Immediately return error
             if res.status == Feedback.STATUS_ERROR:
                 return res
 
-            # Return of remember timeout results
+            # Return or remember timeout results
             # (depending if suboptimal feedback is allowed or not)
             if res.status == Feedback.STATUS_TIMEOUT:
                 if self.allowsuboptimal:
@@ -210,6 +238,7 @@ class FeedGen(object):
                 feedbacks.append((res.cost, res))
 
             else:
+                # Should not happen :)
                 print 'unknown status: %s' % (res.statusstr(),)
                 assert False
 
@@ -218,5 +247,5 @@ class FeedGen(object):
             feedbacks.sort()
             return feedbacks[0][1]
 
-        # Otherwise return something
+        # Otherwise return something remembered
         return feedback

@@ -7,17 +7,20 @@ clara CLI interface
 # Python imports
 import pprint
 import sys
+import traceback
 
 from ast import literal_eval
 
 # clara imports
 from clara.common import parseargs, debug
+from clara.feedback import Feedback, FeedGen
 from clara.feedback_repair import RepairFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
 from clara.parser import getlangparser
 from clara.repair import Repair
 
+VERBOSE=0
 
 class Clara(object):
 
@@ -28,6 +31,7 @@ Commands are:
   help       print this usage message
   match      run the matching procedure on two source files
   repair     run the repair algorithm on two source files
+  feedback   generates feedback on multiple specifications
 
 Options are:
   --verbose [0|1]    controls the amount of output information printed
@@ -42,6 +46,9 @@ Options are:
   --ignoreret [0|1]  whether to ignore return value in matching or repair
   --timeout INT      timeout in seconds (for the repair)
                      (default is 60)
+  --suboptimal [0|1] allow sub-optimal repairs (default is 1)
+  --poolsize INT     number of (parallel) processes to use for feedback
+                     (default is the number of CPUs)
 '''
 
     def __init__(self):
@@ -74,6 +81,8 @@ Options are:
 
     def main(self):
 
+        global VERBOSE
+
         self.args, self.opts = parseargs(sys.argv[1:])
 
         if len(self.args) < 1:
@@ -88,11 +97,18 @@ Options are:
             return
 
         self.verbose = int(self.opts.pop('verbose', 0))
+        VERBOSE = self.verbose
+        
         self.lang = self.opts.pop('lang', None)
         self.timeout = int(self.opts.pop('timeout', 60))
         self.ignoreio = int(self.opts.pop('ignoreio', 0))
         self.ignoreret = int(self.opts.pop('ignoreret', 0))
         self.entryfnc = self.opts.pop('entryfnc', 'main')
+        self.suboptimal = int(self.opts.pop('suboptimal', 1))
+
+        self.poolsize = self.opts.pop('poolsize', None)
+        if self.poolsize is not None:
+            self.poolsize = int(self.poolsize)
 
         self.ins = self.opts.pop('ins', None)
         self.args = self.opts.pop('args', None)
@@ -114,6 +130,9 @@ Options are:
 
         elif self.cmd == 'repair':
             self.repair()
+
+        elif self.cmd == 'feedback':
+            self.feedback()
 
         else:
             self.usage()
@@ -147,7 +166,8 @@ Options are:
         elif len(self.models) > 2:
             self.debug('Repair requires two programs, ignoring the rest!')
 
-        R = Repair(timeout=self.timeout, verbose=self.verbose)
+        R = Repair(timeout=self.timeout, verbose=self.verbose,
+                   allowsuboptimal=self.suboptimal)
 
         r = R.repair(self.models[0], self.models[1], self.inter,
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
@@ -159,6 +179,32 @@ Options are:
             print '\n'.join(map(lambda x: '  * %s' % (x,), txt.feedback))
         else:
             print 'No repair!'
+
+    def feedback(self):
+
+        if len(self.models) < 2:
+            self.error('Feedback requires at least two programs!')
+
+        F = FeedGen(verbose=self.verbose, timeout=self.timeout,
+                    poolsize=self.poolsize, allowsuboptimal=self.suboptimal)
+
+        impl = self.models[-1]
+        specs = self.models[:-1]
+
+        feed = F.generate(
+            impl, specs, self.inter, ins=self.ins, args=self.args,
+            ignoreio=self.ignoreio, ignoreret=self.ignoreret,
+            entryfnc=self.entryfnc)
+
+        if feed.status == Feedback.STATUS_REPAIRED:
+            for f in feed.feedback:
+                print '*', f
+                
+        elif feed.status == Feedback.STATUS_ERROR:
+            self.error(feed.error)
+
+        else:
+            self.error(feed.statusstr())
 
     def guess_lang(self):
         '''
@@ -201,4 +247,6 @@ if __name__ == '__main__':
         sys.exit(0)
     except Exception, err:
         print >> sys.stderr, 'Error occured: %s' % (err,)
+        if VERBOSE:
+            traceback.print_exc()
         sys.exit(1)
