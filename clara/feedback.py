@@ -225,7 +225,7 @@ class FeedGen(object):
             # (depending if suboptimal feedback is allowed or not)
             if res.status == Feedback.STATUS_TIMEOUT:
                 if self.allowsuboptimal:
-                    feedback = res
+                    feedbacks.append((res.cost, res))
                 else:
                     return res
             
@@ -239,8 +239,7 @@ class FeedGen(object):
 
             else:
                 # Should not happen :)
-                print 'unknown status: %s' % (res.statusstr(),)
-                assert False
+                assert False, 'unknown status: %s' % (res.statusstr(),)
 
         # Return best repaired if there are any
         if len(feedbacks) > 0:
