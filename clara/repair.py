@@ -395,6 +395,11 @@ impossible order',
                     cost = 0
                 else:
                     cost = self.distance(tree2, tree1, dict(m))
+                    
+                # Account for *declaring* a new variable
+                if var2 == '*' and loc1 == 1:
+                    cost += 1
+                
                 ms = list(m)
                 ms.sort()
                 if (tuple(ms), tuple(order)) in sofar:
