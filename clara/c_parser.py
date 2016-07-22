@@ -186,7 +186,7 @@ class CParser(Parser):
         if node.op == '=':
             pass
         elif len(node.op) == 2 and node.op[1] == '=':
-            rvalue = Op(node.op[0], lvalue.copy(), rvalue)
+            rvalue = Op(node.op[0], lvalue.copy(), rvalue, line=rvalue.line)
         else:
             raise NotSupported("Assignment operator: '%s'" % (node.op,),
                                line=node.coord.line)
