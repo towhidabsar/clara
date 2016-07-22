@@ -347,7 +347,7 @@ class SimpleFeedback(object):
         Check if an expression has a ITE node
         '''
         
-        if isinstance(expr1, Const) or isinstance(expr1, Var):
+        if isinstance(expr, Const) or isinstance(expr, Var):
             return False
 
         if isinstance(expr, Op):
