@@ -17,7 +17,7 @@ class SimpleFeedback(object):
         self.feedback = []
 
         self.compops = set(['<=', '<', '>', '>=', '==', '!='])
-        self.arithops = set(['+', '-', '*', '/'])
+        self.arithops = set(['+', '-', '*', '/', '%'])
         self.logicops = set(['&&', '||'])
 
         self.ops = self.compops | self.arithops | self.logicops
@@ -61,6 +61,9 @@ class SimpleFeedback(object):
             # var2 - variable from the impl.
             # cost - cost of the repair
             for (loc1, var1, var2, cost, _) in repairs:
+
+                # Remember current var
+                self.cvar = var2
 
                 # Get functions and loc2
                 fnc1 = self.spec.getfnc(fname)
@@ -167,10 +170,10 @@ class SimpleFeedback(object):
             numnew = len(added)
             if numnew > 0:
                 if numnew == 1:
-                    self.add("You will need to declare and use a new variable in the function '%s'",
+                    self.add("You will need to declare and use a new variable in the beginning of the function '%s'",
                              fname)
                 else:
-                    self.add("You will need to declare and use some new variables in the function '%s'",
+                    self.add("You will need to declare and use some new variables in the beginning of the function '%s'",
                              fname)
 
     def hint(self, expr1, expr2, out=False):
@@ -208,6 +211,15 @@ class SimpleFeedback(object):
                     if h:
                         return h
 
+        elif isinstance(expr1, Op) and expr1.name == 'ite':
+            h = self.ite_hint(expr1, expr2)
+            if h:
+                return h
+
+        h = self.gettemplate(expr1, outer=True)
+        if h:
+            return 'use template: %s' % (h,)
+
     def gethint(self, expr1, expr2, first=False):
         '''
         Tries to generate some useful hints
@@ -220,6 +232,9 @@ class SimpleFeedback(object):
                     return "use some other constant intead of '%s'" % (expr2.value,)
                 else:
                     return
+            elif isinstance(expr2, Var):
+                return "use a constant instead of a variable '%s'" % (expr2.name,)
+            
             else:
                 if first:
                     return 'use a just constant'
@@ -270,7 +285,7 @@ class SimpleFeedback(object):
                             if same1 and same2 and expr1.name != expr2.name:
                                 return "use a different %s operator instead of '%s'" % (
                                     opname, expr2.name,)
-
+                            
                             if same1 and expr1.name == expr2.name:
                                 h = self.gethint(expr1.args[1], expr2.args[1])
                                 if h:
@@ -282,7 +297,10 @@ class SimpleFeedback(object):
                                     return h
 
                             if first and expr1.name == expr2.name:
-                                return "change the operators of '%s'" % (expr1.name,)
+                                h1 = self.gethint(expr1.args[0], expr2.args[0])
+                                h2 = self.gethint(expr1.args[1], expr2.args[1])
+                                if h1 and h2:
+                                    return '%s and %s' % (h1, h2)
 
             if first and expr1.name == 'ite':
                 h = self.ite_hint(expr1, expr2)
@@ -308,7 +326,7 @@ class SimpleFeedback(object):
             sameF = self.issame(expr1.args[2], expr2.args[2])
             
             if sameT and sameF:
-                h = self.gethint(expr1.args[0], expr2.args[0])
+                h = self.gethint(expr1.args[0], expr2.args[0], first=True)
                 if h:
                     return h
 
@@ -323,7 +341,7 @@ class SimpleFeedback(object):
                     return h
         else:
             if not self.hasite(expr2):
-                return 'try using an if-then-else to make a conditional assignment'
+                return 'try using an if-then-else to make a conditional assignment/output'
 
     def ismod(self, var, expr):
         '''
@@ -366,8 +384,11 @@ class SimpleFeedback(object):
         '''
         
         if isinstance(expr1, Const):
-            if isinstance(expr2, Const) and expr1.value == expr2.value:
-                return True
+            if isinstance(expr2, Const):
+                if expr1.value == expr2.value:
+                    return True
+                elif expr1.value.replace(' ', '') == expr2.value.replace(' ', ''):
+                    return True
             else:
                 return False
 
@@ -402,13 +423,46 @@ class SimpleFeedback(object):
             # Operators
             for _, ops in self.opdefs:
                 if expr.name in ops:
-                    h = '%s %s %s' % (
-                        self.gettemplate(expr.args[0]),
-                        expr.name,
-                        self.gettemplate(expr.args[1]))
-                    if outer:
-                        return h
-                    else:
-                        return '(%s)' % (h,)
+                    t1 = self.gettemplate(expr.args[0])
+                    t2 = self.gettemplate(expr.args[1])
+                    if t1 and t2:
+                        h = '%s %s %s' % (t1, expr.name, t2)
+                        if outer:
+                            return h
+                        else:
+                            return '(%s)' % (h,)
+
+            # Printf
+            if expr.name == 'StrAppend':
+                expr2 = expr.args[1]
+                if isinstance(expr2, Op) and expr2.name == 'StrFormat':
+                    targs = map(lambda x: self.gettemplate(x, outer=True), expr2.args)
+
+                    if not all(targs):
+                        return
+
+                    return 'printf(%s);' % (', '.join(targs), )
+
+            # If-then-else
+            if expr.name == 'ite':
+                tcond = self.gettemplate(expr.args[0], outer=True)
+                tt = self.gettemplate(expr.args[1], outer=True)
+                tf = self.gettemplate(expr.args[2], outer=True)
+
+                if not tcond or not tt or not tf:
+                    return
+
+                if not tt.startswith('if') and self.cvar != VAR_OUT:
+                    tt = '%s = %s;' % (self.cvar, tt)
+
+                ismod2 = self.ismod(self.cvar, expr.args[2])
+                
+                if not tf.startswith('if') and self.cvar != VAR_OUT:
+                    tf = '%s = %s;' % (self.cvar, tf)
+
+                if ismod2:
+                    return 'if (%s) { %s } else { %s }' % (tcond, tt, tf)
+                else:
+                    return 'if (%s) { %s }' % (tcond, tt)
 
         
