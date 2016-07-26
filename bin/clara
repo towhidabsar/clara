@@ -30,6 +30,7 @@ class Clara(object):
 
 Commands are:
   help       print this usage message
+  model      prints a model of a program
   match      run the matching procedure on two source files
   repair     run the repair algorithm on two source files
   feedback   generates feedback on multiple specifications
@@ -45,6 +46,9 @@ Options are:
                      (default is 'main')
   --ignoreio [0|1]   whether to ignore IO in matching or repair
   --ignoreret [0|1]  whether to ignore return value in matching or repair
+  --cleanstrings [0|1]
+                     whether to clean (trim) strings when checking correctness
+                     in the repair algorithm (default is 0)
   --timeout INT      timeout in seconds (for the repair)
                      (default is 60)
   --suboptimal [0|1] allow sub-optimal repairs (default is 1)
@@ -106,6 +110,7 @@ Options are:
         self.timeout = int(self.opts.pop('timeout', 60))
         self.ignoreio = int(self.opts.pop('ignoreio', 0))
         self.ignoreret = int(self.opts.pop('ignoreret', 0))
+        self.cleanstrings = int(self.opts.pop('cleanstrings', 0))
         self.entryfnc = self.opts.pop('entryfnc', 'main')
         self.suboptimal = int(self.opts.pop('suboptimal', 1))
 
@@ -139,6 +144,9 @@ Options are:
         if self.cmd == 'match':
             self.match()
 
+        elif self.cmd == 'model':
+            self.model()
+
         elif self.cmd == 'repair':
             self.repair()
 
@@ -148,6 +156,13 @@ Options are:
         else:
             self.usage()
             self.error("Unknown command: '%s'", self.cmd)
+
+    def model(self):
+
+        if len(self.models) != 1:
+            self.error('Model requres one program!')
+
+        print self.models[0]
 
     def match(self):
 
@@ -178,7 +193,8 @@ Options are:
             self.debug('Repair requires two programs, ignoring the rest!')
 
         R = Repair(timeout=self.timeout, verbose=self.verbose,
-                   allowsuboptimal=self.suboptimal)
+                   allowsuboptimal=self.suboptimal,
+                   cleanstrings=self.cleanstrings)
 
         r = R.repair(self.models[0], self.models[1], self.inter,
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
@@ -206,6 +222,7 @@ Options are:
         feed = F.generate(
             impl, specs, self.inter, ins=self.ins, args=self.args,
             ignoreio=self.ignoreio, ignoreret=self.ignoreret,
+            cleanstrings=self.cleanstrings,
             entryfnc=self.entryfnc)
 
         if feed.status == Feedback.STATUS_REPAIRED:
