@@ -35,7 +35,32 @@ class SimpleFeedback(object):
             msg %= args
         self.feedback.append(msg)
 
+    def filter_swap(self):
+
+        # Find non-swapping msg
+        have = False
+        for msg in self.feedback:
+            if 'changing the order' not in msg:
+                have = True
+                break
+
+        # If non-exist it's OK
+        if not have:
+            return
+
+        # If some exist, then remove swap msgs
+        for msg in self.feedback:
+            if 'changing the order' in msg:
+                try:
+                    self.feedback.remove(msg)
+                except ValueError:
+                    pass
+
     def genfeedback(self):
+        self.genfeedback_internal()
+        self.filter_swap()
+
+    def genfeedback_internal(self):
 
         #self.add(self.spec.name)
         
@@ -56,9 +81,6 @@ class SimpleFeedback(object):
             # Remember all vars in impl.
             vars2 = set(mapping.values())
 
-            # Remember assigns
-            self.assigns = {var2: set() for var2 in vars2}
-            
             # Copy mapping with converting '*' into a 'new_' variable
             nmapping = {k: '$new_%s' % (k,)
                         if v == '*' else v for (k, v) in mapping.items()}
@@ -105,9 +127,6 @@ class SimpleFeedback(object):
 
                 mod1 = self.ismod(var1, expr1org)
                 mod2 = self.ismod(var2, expr2)
-
-                if mod2 and var2 in self.assigns:
-                    self.assigns[var2].add(loc2)
 
                 # Ignore return statements
                 if var1 == VAR_RET:
@@ -270,17 +289,11 @@ class SimpleFeedback(object):
         vars1 = expr1.vars()
         vars2 = expr2.vars()
         for var1 in vars1:
-            # Check if variable is assigned at all
-            assigned = self.cloc in self.assigns.get(var1, [])
             if isprimed(var1):
                 if unprime(var1) in vars2:
-                    if not assigned:
-                        raise RemoveMsg()
                     return "try changing the order of statements by moving it after the assignment to '%s', or vice-versa" % (unprime(var1),)
             else:
                 if prime(var1) in vars2:
-                    if not assigned:
-                        raise RemoveMsg()
                     return "try changing the order of statements by moving it before the assignment to '%s', or vice-versa" % (var1,)
 
         # Different variable name
