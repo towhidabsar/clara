@@ -8,6 +8,8 @@ from model import isprimed, unprime, prime
 # TODO: Maybe add importance to feedback, so only
 # a limited number of feedback messages would be shown
 
+class RemoveMsg(Exception): pass
+
 class SimpleFeedback(object):
 
     def __init__(self, impl, spec, result):
@@ -34,6 +36,9 @@ class SimpleFeedback(object):
         self.feedback.append(msg)
 
     def genfeedback(self):
+
+        #self.add(self.spec.name)
+        
         # Iterate all functions
         # fname - function name
         # mapping - one-to-one mapping of variables
@@ -50,6 +55,9 @@ class SimpleFeedback(object):
 
             # Remember all vars in impl.
             vars2 = set(mapping.values())
+
+            # Remember assigns
+            self.assigns = {var2: set() for var2 in vars2}
             
             # Copy mapping with converting '*' into a 'new_' variable
             nmapping = {k: '$new_%s' % (k,)
@@ -62,13 +70,14 @@ class SimpleFeedback(object):
             # cost - cost of the repair
             for (loc1, var1, var2, cost, _) in repairs:
 
-                # Remember current var
-                self.cvar = var2
-
                 # Get functions and loc2
                 fnc1 = self.spec.getfnc(fname)
                 fnc2 = self.impl.getfnc(fname)
                 loc2 = sm[loc1]
+
+                # Remember current var and loc
+                self.cvar = var2
+                self.cloc = loc2
 
                 # Get exprs (spec. and impl.)
                 expr1 = fnc1.getexpr(loc1, var1)
@@ -96,6 +105,9 @@ class SimpleFeedback(object):
 
                 mod1 = self.ismod(var1, expr1org)
                 mod2 = self.ismod(var2, expr2)
+
+                if mod2 and var2 in self.assigns:
+                    self.assigns[var2].add(loc2)
 
                 # Ignore return statements
                 if var1 == VAR_RET:
@@ -126,9 +138,12 @@ class SimpleFeedback(object):
                             "Add a 'printf' (output) statement " + locdesc)
                         
                     elif mod1 and mod2: # Modification
-                        self.add(
-                            "Change the 'printf' (output) statement %s%s", locdesc,
-                            self.hint(expr1, expr2, out=True))
+                        try:
+                            self.add(
+                                "Change the 'printf' (output) statement %s%s", locdesc,
+                                self.hint(expr1, expr2, out=True))
+                        except RemoveMsg:
+                            continue
 
                     elif not mod1 and mod2: # Removal
                         self.add(
@@ -156,10 +171,16 @@ class SimpleFeedback(object):
                 
                 if mod1 and not mod2: # Add
                     self.add("Assign a value to the variable '%s' %s", var2, locdesc)
+                    
                 elif mod1 and mod2: # Mod
                     #self.add("%% %s=%s (%s) %s=%s (%s)", var1, expr1org, mod1, var2, expr2, mod2)
-                    self.add("Change the assigned value(s) to the variable '%s' %s%s",
-                             var2, locdesc, self.hint(expr1, expr2))
+                    try:
+                        self.add(
+                            "Change the assigned value(s) to the variable '%s' %s%s",
+                            var2, locdesc, self.hint(expr1, expr2))
+                    except RemoveMsg:
+                        continue
+                    
                 elif not mod1 and mod2: # Rem
                     self.add("Remove the assignment(s) to the variable '%s'%s",
                              var2, locdesc)
@@ -183,7 +204,7 @@ class SimpleFeedback(object):
             h = self.gethint(expr1, expr2, True)
             
         if h:
-            h = ' (hint: %s)' % (h,)
+            h = ': %s' % (h,)
         else:
             h = ''
 
@@ -201,7 +222,7 @@ class SimpleFeedback(object):
                 isinstance(expr2, Op) and expr2.name == 'StrFormat'):
 
                 if (expr1.args[0].value != expr2.args[0].value):
-                    return 'check the format string'
+                    return 'check the format string ' + expr2.args[0].value
 
                 if len(expr1.args) != len(expr2.args):
                     return 'check the number of arguments'
@@ -225,6 +246,10 @@ class SimpleFeedback(object):
         Tries to generate some useful hints
         '''
 
+        #  Output
+        if self.isout(expr1):
+            return self.getouthint(expr1, expr2)
+
         # Constant
         if isinstance(expr1, Const):
             if isinstance(expr2, Const):    
@@ -245,11 +270,17 @@ class SimpleFeedback(object):
         vars1 = expr1.vars()
         vars2 = expr2.vars()
         for var1 in vars1:
+            # Check if variable is assigned at all
+            assigned = self.cloc in self.assigns.get(var1, [])
             if isprimed(var1):
                 if unprime(var1) in vars2:
+                    if not assigned:
+                        raise RemoveMsg()
                     return "try changing the order of statements by moving it after the assignment to '%s', or vice-versa" % (unprime(var1),)
             else:
                 if prime(var1) in vars2:
+                    if not assigned:
+                        raise RemoveMsg()
                     return "try changing the order of statements by moving it before the assignment to '%s', or vice-versa" % (var1,)
 
         # Different variable name
@@ -325,17 +356,17 @@ class SimpleFeedback(object):
             sameT = self.issame(expr1.args[1], expr2.args[1])
             sameF = self.issame(expr1.args[2], expr2.args[2])
             
-            if sameT and sameF:
+            if sameT and sameF and not samecond:
                 h = self.gethint(expr1.args[0], expr2.args[0], first=True)
                 if h:
                     return h
 
-            if samecond and sameF:
+            if samecond and sameF and not sameT:
                 h = self.gethint(expr1.args[1], expr2.args[1])
                 if h:
                     return h
 
-            if samecond and sameT:
+            if samecond and sameT and not sameF:
                 h = self.gethint(expr1.args[2], expr2.args[2])
                 if h:
                     return h
@@ -359,6 +390,14 @@ class SimpleFeedback(object):
         return (isinstance(expr, Op) and 
             (expr.name == 'ListHead' or (expr.name == 'ArrayAssign'
                                          and self.isin(expr.args[2]))))
+
+    def isout(self, expr):
+        '''
+        Check if expr is an output
+        '''
+
+        return isinstance(expr, Op) and expr.name == 'StrAppend'
+            
 
     def hasite(self, expr):
         '''
@@ -387,8 +426,8 @@ class SimpleFeedback(object):
             if isinstance(expr2, Const):
                 if expr1.value == expr2.value:
                     return True
-                elif expr1.value.replace(' ', '') == expr2.value.replace(' ', ''):
-                    return True
+                #elif expr1.value.replace(' ', '') == expr2.value.replace(' ', ''):
+                #    return True
             else:
                 return False
 
