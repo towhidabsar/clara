@@ -422,7 +422,7 @@ class SimpleFeedback(object):
 
             # Operators
             for _, ops in self.opdefs:
-                if expr.name in ops:
+                if expr.name in ops and len(expr.args) == 2:
                     t1 = self.gettemplate(expr.args[0])
                     t2 = self.gettemplate(expr.args[1])
                     if t1 and t2:
@@ -431,6 +431,8 @@ class SimpleFeedback(object):
                             return h
                         else:
                             return '(%s)' % (h,)
+
+            # TODO: Unary operators (!?)
 
             # Printf
             if expr.name == 'StrAppend':
