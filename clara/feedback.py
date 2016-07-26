@@ -27,6 +27,7 @@ class Feedback(object):
 
     def __init__(self, impl, spec, inter, timeout=None, verbose=False,
                  ins=None, args=None, ignoreio=False, ignoreret=False,
+                 cleanstrings=False,
                  entryfnc=None, allowsuboptimal=True, feedmod=RepairFeedback):
         
         self.impl = impl
@@ -38,6 +39,7 @@ class Feedback(object):
         self.args = args
         self.ignoreio = ignoreio
         self.ignoreret = ignoreret
+        self.cleanstrings = cleanstrings
         self.entryfnc = entryfnc
         self.allowsuboptimal = allowsuboptimal
         self.feedmod=feedmod
@@ -59,7 +61,8 @@ class Feedback(object):
 
         # Create a repair object
         R = Repair(timeout=self.timeout, verbose=self.verbose,
-                   allowsuboptimal=self.allowsuboptimal)
+                   allowsuboptimal=self.allowsuboptimal,
+                   cleanstrings=self.cleanstrings)
 
         try:
             # Try generating a repair
@@ -184,7 +187,8 @@ class FeedGen(object):
         self.feedmod = feedmod
 
     def generate(self, impl, specs, inter, ins=None, args=None,
-                 entryfnc='main', ignoreio=False, ignoreret=False):
+                 entryfnc='main', ignoreio=False, ignoreret=False,
+                 cleanstrings=False):
 
         self.impl = impl
         self.specs = specs
@@ -197,6 +201,7 @@ class FeedGen(object):
         self.entryfnc = entryfnc
         self.ignoreio = ignoreio
         self.ignoreret = ignoreret
+        self.cleanstrings = cleanstrings
 
         # Create a pool
         self.pool = Pool(processes=self.poolsize)
@@ -207,6 +212,7 @@ class FeedGen(object):
                 impl, spec, inter, timeout=self.timeout, verbose=self.verbose,
                 ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                 ignoreret=self.ignoreret, entryfnc=self.entryfnc,
+                cleanstrings=self.cleanstrings,
                 allowsuboptimal=self.allowsuboptimal, feedmod=self.feedmod)
             for spec in specs]
         

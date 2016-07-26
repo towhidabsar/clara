@@ -57,10 +57,11 @@ def label_dist(m):
 class Repair(object):
 
     def __init__(self, timeout=60, verbose=False, solver=None,
-                 allowsuboptimal=True):
+                 allowsuboptimal=True, cleanstrings=False):
         self.starttime = None
         self.timeout = timeout
         self.verbose = verbose
+        self.cleanstrings = cleanstrings
 
         if solver is None:
             from ilp import Solver
@@ -360,13 +361,22 @@ class Repair(object):
                     ok = True
                     for mem1 in self.trace.get(f1.name, {}).get(loc1, []):
                         val1 = mem1.get(varp1)
+                        
                         if isundef(val1):
                             continue
+                        
+                        if isinstance(val1, str) and self.cleanstrings:
+                            val1 = val1.strip()
+                            
                         mem2 = {v2: mem1.get(v1) for (v1, v2) in m}
                         mem2.update({prime(v2): mem1.get(prime(v1))
                                      for (v1, v2) in m})
                         try:
-                            if self.inter.execute(expr2, mem2) != val1:
+                            val2 = self.inter.execute(expr2, mem2)
+                            if isinstance(val2, str) and self.cleanstrings:
+                                val2 = val2.strip()
+
+                            if  val2 != val1:
                                 ok = False
                                 break
                         except RuntimeErr:
