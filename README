@@ -53,6 +53,6 @@ Debian note
 Examples
 ========
 - Matching example:
-  'clara match examples/ex1.py examples/ex2.py --entryfnc computeDeriv --args "[[[4.5]], [[[1.0,3.0,5.5]]]]" --verbose 1'
+  'clara match examples/ex1.py examples/ex2.py --entryfnc computeDeriv --args "[[[4.5]], [[1.0,3.0,5.5]]]" --verbose 1'
 - Repair example:
-  'clara repair examples/ex1.py examples/ex3.py --entryfnc computeDeriv --args "[[[4.5]], [[[1.0,3.0,5.5]]]]" --verbose 1'
+  'clara repair examples/ex1.py examples/ex3.py --entryfnc computeDeriv --args "[[[4.5]], [[1.0,3.0,5.5]]]" --verbose 1'
