@@ -21,6 +21,8 @@ class SimpleFeedback(object):
         self.compops = set(['<=', '<', '>', '>=', '==', '!='])
         self.arithops = set(['+', '-', '*', '/', '%'])
         self.logicops = set(['&&', '||'])
+        self.unops = set(['+', '-', '!'])
+        self.funcs = set(['floor', 'ceil', 'pow', 'abs', 'sqrt', 'log2', 'log10', 'log', 'exp'])
 
         self.ops = self.compops | self.arithops | self.logicops
 
@@ -59,6 +61,11 @@ class SimpleFeedback(object):
     def genfeedback(self):
         self.genfeedback_internal()
         self.filter_swap()
+        cost = 0
+        for _, (_, repairs, _) in self.result.items():
+            for (_, _, _, c, _) in repairs:
+                cost += c
+        self.add('Cost: %d', cost)
 
     def genfeedback_internal(self):
 
@@ -256,7 +263,7 @@ class SimpleFeedback(object):
             if h:
                 return h
 
-        h = self.gettemplate(expr1, outer=True)
+        h = self.gettemplate(expr1, expr2, outer=True)
         if h:
             return 'use template: %s' % (h,)
 
@@ -353,7 +360,7 @@ class SimpleFeedback(object):
 
         # Nothing else to do, except to generate a template
         if first:
-            t = self.gettemplate(expr1, outer=True)
+            t = self.gettemplate(expr1, expr2, outer=True)
             if t:
                 return 'use the template "%s"' % (t,)
 
@@ -370,7 +377,7 @@ class SimpleFeedback(object):
             sameF = self.issame(expr1.args[2], expr2.args[2])
             
             if sameT and sameF and not samecond:
-                h = self.gethint(expr1.args[0], expr2.args[0], first=True)
+                h = self.gethint(expr1.args[0], expr2.args[0])
                 if h:
                     return h
 
@@ -462,61 +469,159 @@ class SimpleFeedback(object):
 
             return True
 
-    def gettemplate(self, expr, outer=False):
+    def gettemplate(self, expr1, expr2, outer=False, oks=set([])):
         '''
         Generates a template out of a (correct) expression
         '''
 
-        if isinstance(expr, Const) or isinstance(expr, Var):
-            return '_'
+        if isinstance(expr1, Const):
+            if ((isinstance(expr2, Const) and expr1.value == expr2.value)
+                or expr1.value in oks):
+                return expr1.value
+            else:
+                if isinstance(expr2, Const):
+                    return '_'
+                else:
+                    return 'CONST'
+            
+        if isinstance(expr1, Var):
+            if ((isinstance(expr2, Var) and expr1.name == expr2.name)
+                or expr1.name in oks):
+                return expr1.name
+            else:
+                if isinstance(expr2, Var):
+                    return '_'
+                else:
+                    return 'VAR'
 
-        if isinstance(expr, Op):
+        if isinstance(expr2, Const):
+            return self.gettemplate(expr1, Op('xxx'),
+                                    outer=outer, oks=[expr2.value])
 
-            # Operators
-            for _, ops in self.opdefs:
-                if expr.name in ops and len(expr.args) == 2:
-                    t1 = self.gettemplate(expr.args[0])
-                    t2 = self.gettemplate(expr.args[1])
+        if isinstance(expr2, Var):
+            return self.gettemplate(expr1, Op('xxx'),
+                                    outer=outer, oks=[expr2.name])
+
+        # Operators
+        for _, ops in self.opdefs:
+            if expr1.name in ops and len(expr1.args) == 2:
+
+                if (expr1.name == expr2.name
+                    and len(expr1.args) == len(expr2.args)):
+                    
+                    t1 = self.gettemplate(expr1.args[0], expr2.args[0],
+                                          oks=oks)
+                    t2 = self.gettemplate(expr1.args[1], expr2.args[1],
+                                          oks=oks)
+                
                     if t1 and t2:
-                        h = '%s %s %s' % (t1, expr.name, t2)
+                        h = '%s %s %s' % (t1, expr1.name, t2)
                         if outer:
                             return h
                         else:
                             return '(%s)' % (h,)
-
-            # TODO: Unary operators (!?)
-
-            # Printf
-            if expr.name == 'StrAppend':
-                expr2 = expr.args[1]
-                if isinstance(expr2, Op) and expr2.name == 'StrFormat':
-                    targs = map(lambda x: self.gettemplate(x, outer=True), expr2.args)
-
-                    if not all(targs):
+                    else:
                         return
 
+                else:
+                    if outer:
+                        return '_ %s _' % (expr1.name,)
+                    else:
+                        return '(_ %s _)' % (expr1.name,)
+
+        # Unary operators
+        if expr1.name in self.unops and len(expr1.args) == 1:
+            if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
+                t = self.gettemplate(expr.args[0], expr.args[1], oks=oks)
+                if t:
+                    return '%s%s' % (expr1.name, t,)
+                else:
+                    return t
+            else:
+                return '%s_' % (expr1.name,)
+
+        # Function calls
+        if expr1.name in self.funcs:
+            if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
+                targs = map(
+                    lambda a: self.gettemplate(a[0], a[1],
+                                               outer=True, oks=oks),
+                    zip(expr1.args, expr2.args))
+                if all(targs):
+                    return '%s(%s)' % (expr1.name, ', '.join(targs))
+                else:
+                    return
+            else:
+                return '%s(%s)' % (expr1.name,
+                                   ', '.join(['_' for _ in expr1.args]))
+
+        # Cast
+        if expr1.name == 'cast' and len(expr1.args) == 2:
+            if expr2.name == 'cast' and len(expr2.args) == 2:
+                t = self.gettemplate(expr1.args[1], expr2.args[1], oks=oks)
+            else:
+                t = self.gettemplate(expr1.args[1], Op('xxx'), oks=oks)
+            if t:
+                return '(%s)%s' % (expr1.args[0], t)
+            else:
+                return
+                
+        # Printf
+        if expr1.name == 'StrAppend':
+            if isinstance(expr1.args[1], Op) and expr1.args[1].name == 'StrFormat':
+
+                args1 = expr1.args[1].args[:]
+
+                if (expr2.name == 'StrAppend' and isinstance(expr2.args[1], Op)
+                    and expr2.args[1].name == 'StrFormat'):
+
+                    args2 = expr2.args[1].args[:]
+                    
+                    len1 = len(args1)
+                    len2 = len(args2)
+
+                    while len(args2) < len1:
+                        args2.append(Op('xxx'))
+                    
+                    targs = map(lambda x: self.gettemplate(x[0], x[1], outer=True),
+                                zip(expr1.args[1].args, expr2.args[1].args))
+
+                else:
+                    targs = ['_' for _ in args1]
+                
+                if all(targs):
                     return 'printf(%s);' % (', '.join(targs), )
-
-            # If-then-else
-            if expr.name == 'ite':
-                tcond = self.gettemplate(expr.args[0], outer=True)
-                tt = self.gettemplate(expr.args[1], outer=True)
-                tf = self.gettemplate(expr.args[2], outer=True)
-
-                if not tcond or not tt or not tf:
+                else:
                     return
 
-                if not tt.startswith('if') and self.cvar != VAR_OUT:
-                    tt = '%s = %s;' % (self.cvar, tt)
+        # If-then-else
+        if expr1.name == 'ite':
 
-                ismod2 = self.ismod(self.cvar, expr.args[2])
+            if expr2.name == 'ite':
+                cond2 = expr2.args[0]
+                tt2 = expr2.args[1]
+                ff2 = expr2.args[2]
+            else:
+                cond2 = Op('xxx')
+                tt2 = Op('xxx')
+                ff2 = Op('xxx')
+
+            tcond = self.gettemplate(expr1.args[0], cond2, outer=True, oks=oks)
+            tt = self.gettemplate(expr1.args[1], tt2, outer=True, oks=oks)
+            tf = self.gettemplate(expr1.args[2], ff2, outer=True, oks=oks)
+
+            if not tcond or not tt or not tf:
+                return
+
+            if not tt.startswith('if') and self.cvar != VAR_OUT:
+                tt = '%s = %s;' % (self.cvar, tt)
+
+            ismod2 = self.ismod(self.cvar, expr1.args[2])
                 
-                if not tf.startswith('if') and self.cvar != VAR_OUT:
-                    tf = '%s = %s;' % (self.cvar, tf)
+            if not tf.startswith('if') and self.cvar != VAR_OUT:
+                tf = '%s = %s;' % (self.cvar, tf)
 
-                if ismod2:
-                    return 'if (%s) { %s } else { %s }' % (tcond, tt, tf)
-                else:
-                    return 'if (%s) { %s }' % (tcond, tt)
-
-        
+            if ismod2:
+                return 'if (%s) { %s } else { %s }' % (tcond, tt, tf)
+            else:
+                return 'if (%s) { %s }' % (tcond, tt)
