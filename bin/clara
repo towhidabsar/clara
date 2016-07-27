@@ -56,6 +56,9 @@ Options are:
                      (default is the number of CPUs)
   --feedtype FEED    type of feedback to generate ('repair', 'simple')
                      (default is 'repair')
+  --maxfeedcost N    maximum cost of a repair for feedback; if cost is larger
+                     than N, an error occurs
+                     (default is 0, which means that there is no limit)
 '''
 
     def __init__(self):
@@ -113,6 +116,7 @@ Options are:
         self.cleanstrings = int(self.opts.pop('cleanstrings', 0))
         self.entryfnc = self.opts.pop('entryfnc', 'main')
         self.suboptimal = int(self.opts.pop('suboptimal', 1))
+        self.maxfeedcost = int(self.opts.pop('maxfeedcost', 0))
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -226,6 +230,9 @@ Options are:
             entryfnc=self.entryfnc)
 
         if feed.status == Feedback.STATUS_REPAIRED:
+            if self.maxfeedcost > 0 and feed.cost > self.maxfeedcost:
+                self.error('max cost exceeded (%d > %d)',
+                           feed.cost, self.maxfeedcost)
             for f in feed.feedback:
                 print '*', f
                 
