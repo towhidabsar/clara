@@ -2,6 +2,8 @@
 Generating simple, but not raw textual feedback from repair
 '''
 
+import re
+
 from model import VAR_OUT, VAR_IN, VAR_COND, VAR_RET, Var, Op, Const
 from model import isprimed, unprime, prime
 
@@ -12,11 +14,12 @@ class RemoveMsg(Exception): pass
 
 class SimpleFeedback(object):
 
-    def __init__(self, impl, spec, result):
+    def __init__(self, impl, spec, result, cleanstrings=False):
         self.impl = impl
         self.spec = spec
         self.result = result
         self.feedback = []
+        self.cleanstrings = cleanstrings
 
         self.compops = set(['<=', '<', '>', '>=', '==', '!='])
         self.arithops = set(['+', '-', '*', '/', '%'])
@@ -32,16 +35,21 @@ class SimpleFeedback(object):
             ('logical', self.logicops),
         ]
 
-    def add(self, msg, *args):
+        self.line = None
+
+    def add(self, msg, *args, **kwargs):
         if args:
             msg %= args
-        self.feedback.append(msg)
+        line = self.line or 99
+        order = kwargs.get('order', 99) * 100 + line
+        #msg = '%s (order=%s)' % (msg, order)
+        self.feedback.append((order, msg))
 
     def filter_swap(self):
 
         # Find non-swapping msg
         have = False
-        for msg in self.feedback:
+        for _, msg in self.feedback:
             if 'changing the order' not in msg:
                 have = True
                 break
@@ -51,21 +59,27 @@ class SimpleFeedback(object):
             return
 
         # If some exist, then remove swap msgs
-        for msg in self.feedback:
+        for order, msg in self.feedback:
             if 'changing the order' in msg:
                 try:
-                    self.feedback.remove(msg)
+                    self.feedback.remove((order, msg))
                 except ValueError:
                     pass
+
+    def filter_n(self, num):
+        self.feedback.sort()
+        self.feedback = self.feedback[:num]
+        self.feedback = map(lambda x: x[1], self.feedback)
 
     def genfeedback(self):
         self.genfeedback_internal()
         self.filter_swap()
-        cost = 0
-        for _, (_, repairs, _) in self.result.items():
-            for (_, _, _, c, _) in repairs:
-                cost += c
-        self.add('Cost: %d', cost)
+        self.filter_n(3)
+        # cost = 0
+        # for _, (_, repairs, _) in self.result.items():
+        #     for (_, _, _, c, _) in repairs:
+        #         cost += c
+        # self.add('Cost: %d', cost)
 
     def genfeedback_internal(self):
 
@@ -116,9 +130,15 @@ class SimpleFeedback(object):
                 if expr2.line:
                     # Either line
                     locdesc = 'at line %s' % (expr2.line,)
+                    self.line = expr2.line
                 else:
                     # Or location description
                     locdesc = fnc2.getlocdesc(loc2)
+                    tmpline = re.findall('line (\d+)', locdesc)
+                    if tmpline:
+                        self.line = int(tmpline[0])
+                    else:
+                        self.line = None
 
                 # Delete feedback
                 if var1 == '-':
@@ -147,13 +167,14 @@ class SimpleFeedback(object):
                 # Input
                 if var1 == VAR_IN:
                     if (not infeed) and mod1 and not mod2: # Read input
-                        self.add("Read some input with 'scanf' %s", locdesc)
+                        self.add("Read some input with 'scanf' %s", locdesc, order=15)
                         infeed = True
                     continue
 
                 # Condition
                 if var1 == VAR_COND:
-                    self.add("Change %s%s", fnc2.getlocdesc(loc2), self.hint(expr1, expr2))
+                    self.add("Change %s%s", fnc2.getlocdesc(loc2),
+                             self.hint(expr1, expr2), order=30)
                     continue
 
                 # Output
@@ -161,19 +182,19 @@ class SimpleFeedback(object):
                     # Distinguish between adding, modification, or removal
                     if mod1 and not mod2: # Add
                         self.add(
-                            "Add a 'printf' (output) statement " + locdesc)
+                            "Add a 'printf' (output) statement %s", locdesc, order=40)
                         
                     elif mod1 and mod2: # Modification
                         try:
                             self.add(
                                 "Change the 'printf' (output) statement %s%s", locdesc,
-                                self.hint(expr1, expr2, out=True))
+                                self.hint(expr1, expr2, out=True), order=50)
                         except RemoveMsg:
                             continue
 
                     elif not mod1 and mod2: # Removal
                         self.add(
-                            "Remove the 'printf' (output) statement " + locdesc)
+                            "Remove the 'printf' (output) statement %s", locdesc, order=70)
 
                     else:
                         assert False, 'should not happen'
@@ -187,29 +208,30 @@ class SimpleFeedback(object):
                     if not self.isin(expr2):
                         self.add(
                             "Use 'scanf' to read an input to the variable '%s' %s",
-                            var2, locdesc)
+                            var2, locdesc, order=15)
                         infeed = True
-                        for i, feed in enumerate(self.feedback):
+                        for i, (_, feed) in enumerate(self.feedback):
                             if feed.startswith('Read some input'):
                                 self.feedback.pop(i)
                                 break
                     continue
                 
                 if mod1 and not mod2: # Add
-                    self.add("Assign a value to the variable '%s' %s", var2, locdesc)
+                    self.add("Assign a value to the variable '%s' %s",
+                             var2, locdesc, order=40)
                     
                 elif mod1 and mod2: # Mod
                     #self.add("%% %s=%s (%s) %s=%s (%s)", var1, expr1org, mod1, var2, expr2, mod2)
                     try:
                         self.add(
                             "Change the assigned value(s) to the variable '%s' %s%s",
-                            var2, locdesc, self.hint(expr1, expr2))
+                            var2, locdesc, self.hint(expr1, expr2), order=50)
                     except RemoveMsg:
                         continue
                     
                 elif not mod1 and mod2: # Rem
                     self.add("Remove the assignment(s) to the variable '%s'%s",
-                             var2, locdesc)
+                             var2, locdesc, order=80)
                 else:
                     assert False, 'should not happen'
                 
@@ -218,10 +240,10 @@ class SimpleFeedback(object):
             if numnew > 0:
                 if numnew == 1:
                     self.add("You will need to declare and use a new variable in the beginning of the function '%s'",
-                             fname)
+                             fname, order=10)
                 else:
                     self.add("You will need to declare and use some new variables in the beginning of the function '%s'",
-                             fname)
+                             fname, order=10)
 
     def hint(self, expr1, expr2, out=False):
         if out:
@@ -247,11 +269,15 @@ class SimpleFeedback(object):
             if (isinstance(expr1, Op) and expr1.name == 'StrFormat' and
                 isinstance(expr2, Op) and expr2.name == 'StrFormat'):
 
-                if (expr1.args[0].value != expr2.args[0].value):
-                    return 'check the format string ' + expr2.args[0].value
+                if (isinstance(expr2.args[0], Const)
+                    and expr2.args[0].value != '?'):
+                    if (expr1.args[0].value != expr2.args[0].value):
+                        return "change the format string %s" % (expr2.args[0].value,)
+                else:
+                    return 'add the format string; e.g., printf("...");'
 
                 if len(expr1.args) != len(expr2.args):
-                    return 'check the number of arguments'
+                    return "wrong number of arguments to 'printf'"
 
                 for arg1, arg2 in zip(expr1.args[1:], expr2.args[1:]):
                     h = self.gethint(arg1, arg2, first=True)
@@ -347,11 +373,11 @@ class SimpleFeedback(object):
                                 if h:
                                     return h
 
-                            if first and expr1.name == expr2.name:
-                                h1 = self.gethint(expr1.args[0], expr2.args[0])
-                                h2 = self.gethint(expr1.args[1], expr2.args[1])
-                                if h1 and h2:
-                                    return '%s and %s' % (h1, h2)
+                            # if first and expr1.name == expr2.name:
+                            #     h1 = self.gethint(expr1.args[0], expr2.args[0])
+                            #     h2 = self.gethint(expr1.args[1], expr2.args[1])
+                            #     if h1 and h2:
+                            #         return '%s and %s' % (h1, h2)
 
             if first and expr1.name == 'ite':
                 h = self.ite_hint(expr1, expr2)
@@ -377,17 +403,17 @@ class SimpleFeedback(object):
             sameF = self.issame(expr1.args[2], expr2.args[2])
             
             if sameT and sameF and not samecond:
-                h = self.gethint(expr1.args[0], expr2.args[0])
+                h = self.gethint(expr1.args[0], expr2.args[0], first=True)
                 if h:
-                    return h
+                    return '%s in the condition of the if-then-else' % (h,)
 
             if samecond and sameF and not sameT:
-                h = self.gethint(expr1.args[1], expr2.args[1])
+                h = self.gethint(expr1.args[1], expr2.args[1], first=True)
                 if h:
                     return h
 
             if samecond and sameT and not sameF:
-                h = self.gethint(expr1.args[2], expr2.args[2])
+                h = self.gethint(expr1.args[2], expr2.args[2], first=True)
                 if h:
                     return h
         else:
@@ -446,8 +472,12 @@ class SimpleFeedback(object):
             if isinstance(expr2, Const):
                 if expr1.value == expr2.value:
                     return True
-                #elif expr1.value.replace(' ', '') == expr2.value.replace(' ', ''):
-                #    return True
+                elif (self.cleanstrings
+                      and expr1.value.replace(' ', '')
+                      == expr2.value.replace(' ', '')):
+                    return True
+                else:
+                    return False
             else:
                 return False
 
@@ -469,7 +499,7 @@ class SimpleFeedback(object):
 
             return True
 
-    def gettemplate(self, expr1, expr2, outer=False, oks=set([])):
+    def gettemplate(self, expr1, expr2, outer=False, oks=set([]), num=10):
         '''
         Generates a template out of a (correct) expression
         '''
@@ -479,31 +509,30 @@ class SimpleFeedback(object):
                 or expr1.value in oks):
                 return expr1.value
             else:
-                if isinstance(expr2, Const):
-                    return '_'
-                else:
-                    return 'CONST'
+                return 'CONSTANT'
             
         if isinstance(expr1, Var):
             if ((isinstance(expr2, Var) and expr1.name == expr2.name)
                 or expr1.name in oks):
                 return expr1.name
             else:
-                if isinstance(expr2, Var):
-                    return '_'
-                else:
-                    return 'VAR'
+                return 'VARIABLE'
 
         if isinstance(expr2, Const):
             return self.gettemplate(expr1, Op('xxx'),
-                                    outer=outer, oks=[expr2.value])
+                                    outer=outer, oks=set([expr2.value]), num=1)
 
         if isinstance(expr2, Var):
             return self.gettemplate(expr1, Op('xxx'),
-                                    outer=outer, oks=[expr2.name])
+                                    outer=outer, oks=set([expr2.name]), num=1)
+
+        if expr2 is None:
+            return '_'
 
         # Operators
         for _, ops in self.opdefs:
+            oks = set(map(lambda x: unprime(x) if isprimed(x) else x,
+                      expr2.vars())) | oks
             if expr1.name in ops and len(expr1.args) == 2:
 
                 if (expr1.name == expr2.name
@@ -513,21 +542,20 @@ class SimpleFeedback(object):
                                           oks=oks)
                     t2 = self.gettemplate(expr1.args[1], expr2.args[1],
                                           oks=oks)
-                
-                    if t1 and t2:
-                        h = '%s %s %s' % (t1, expr1.name, t2)
-                        if outer:
-                            return h
-                        else:
-                            return '(%s)' % (h,)
-                    else:
-                        return
 
                 else:
+
+                    t1 = self.gettemplate(expr1.args[0], None, oks=oks)
+                    t2 = self.gettemplate(expr1.args[1], None, oks=oks)
+                
+                if t1 and t2:
+                    h = '%s %s %s' % (t1, expr1.name, t2)
                     if outer:
-                        return '_ %s _' % (expr1.name,)
+                        return h
                     else:
-                        return '(_ %s _)' % (expr1.name,)
+                        return '(%s)' % (h,)
+                else:
+                    return
 
         # Unary operators
         if expr1.name in self.unops and len(expr1.args) == 1:

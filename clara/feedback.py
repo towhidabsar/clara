@@ -83,7 +83,8 @@ class Feedback(object):
             self.status = self.STATUS_REPAIRED
 
             # Generate feedback
-            txtfeed = self.feedmod(self.impl, self.spec, self.results)
+            txtfeed = self.feedmod(self.impl, self.spec, self.results,
+                                   cleanstrings=self.cleanstrings)
             txtfeed.genfeedback()
             self.feedback = list(txtfeed.feedback)
 
