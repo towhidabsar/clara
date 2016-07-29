@@ -289,9 +289,9 @@ class SimpleFeedback(object):
             if h:
                 return h
 
-        h = self.gettemplate(expr1, expr2, outer=True)
-        if h:
-            return 'use template: %s' % (h,)
+        t = self.gettemplate(expr1, expr2, outer=True)
+        if t:
+            return self.templatetext(t)
 
     def gethint(self, expr1, expr2, first=False):
         '''
@@ -306,11 +306,12 @@ class SimpleFeedback(object):
         if isinstance(expr1, Const):
             if isinstance(expr2, Const):    
                 if expr1.value != expr2.value:
-                    return "use some other constant intead of '%s'" % (expr2.value,)
+                    return "use a constant '%s' intead of '%s'" % (
+                        expr1.value, expr2.value,)
                 else:
                     return
             elif isinstance(expr2, Var):
-                return "use a constant instead of a variable '%s'" % (expr2.name,)
+                return "use some constant instead of a variable '%s'" % (expr2.name,)
             
             else:
                 if first:
@@ -333,12 +334,13 @@ class SimpleFeedback(object):
         if isinstance(expr1, Var):
             if isinstance(expr2, Var):
                 if expr1.name != expr2.name:
-                    return "use another variable instead of '%s'" % (expr2.name,)
+                    return "use a variable '%s', instead of '%s'" % (
+                        expr1.name, expr2.name,)
                 else:
                     return
             else:
                 if isinstance(expr2, Const):
-                    return "replace the constant '%s' by a variable" % (expr2.value,)
+                    return "replace the constant '%s' by some variable" % (expr2.value,)
                 
                 if first:
                     return 'use just a variable'
@@ -363,16 +365,28 @@ class SimpleFeedback(object):
                                 return "use a different %s operator instead of '%s'" % (
                                     opname, expr2.name,)
                             
+                            # Different right side
                             if same1 and expr1.name == expr2.name:
                                 h = self.gethint(expr1.args[1], expr2.args[1])
                                 if h:
                                     return h
 
+                            # Different left side
                             if same2 and expr1.name == expr2.name:
                                 h = self.gethint(expr1.args[0], expr2.args[0])
                                 if h:
                                     return h
 
+                            # Same operators
+                            if expr1.name == expr2.name:
+                                V1 = self.unprimedvars(expr1)
+                                V2 = self.unprimedvars(expr2)
+
+                                D = V1 - V2
+                                if len(D):
+                                    return "use variable '%s'" % (
+                                        list(D)[0],)
+                                
                             # if first and expr1.name == expr2.name:
                             #     h1 = self.gethint(expr1.args[0], expr2.args[0])
                             #     h2 = self.gethint(expr1.args[1], expr2.args[1])
@@ -388,7 +402,7 @@ class SimpleFeedback(object):
         if first:
             t = self.gettemplate(expr1, expr2, outer=True)
             if t:
-                return 'use the template "%s"' % (t,)
+                return self.templatetext(t)
 
     def ite_hint(self, expr1, expr2):
         '''
@@ -418,7 +432,7 @@ class SimpleFeedback(object):
                     return h
         else:
             if not self.hasite(expr2):
-                return 'try using an if-then-else to make a conditional assignment/output'
+                return 'use an if-then-else to make a conditional assignment/output'
 
     def ismod(self, var, expr):
         '''
@@ -499,6 +513,15 @@ class SimpleFeedback(object):
 
             return True
 
+    def templatetext(self, t):
+        if t is None:
+            return
+
+        if 'CONSTANT' in t or 'VAR' in t or '_' in t:
+            return 'use template "%s"' % (t,)
+        else:
+            return 'use "%s"' % (t,)
+
     def gettemplate(self, expr1, expr2, outer=False, oks=set([]), num=10):
         '''
         Generates a template out of a (correct) expression
@@ -559,14 +582,16 @@ class SimpleFeedback(object):
 
         # Unary operators
         if expr1.name in self.unops and len(expr1.args) == 1:
+            
             if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
                 t = self.gettemplate(expr.args[0], expr.args[1], oks=oks)
-                if t:
-                    return '%s%s' % (expr1.name, t,)
-                else:
-                    return t
             else:
-                return '%s_' % (expr1.name,)
+                t = self.gettemplate(expr.args[0], None, oks=oks)
+                
+            if t:
+                return '%s%s' % (expr1.name, t,)
+            else:
+                return
 
         # Function calls
         if expr1.name in self.funcs:
@@ -575,20 +600,21 @@ class SimpleFeedback(object):
                     lambda a: self.gettemplate(a[0], a[1],
                                                outer=True, oks=oks),
                     zip(expr1.args, expr2.args))
-                if all(targs):
-                    return '%s(%s)' % (expr1.name, ', '.join(targs))
-                else:
-                    return
             else:
-                return '%s(%s)' % (expr1.name,
-                                   ', '.join(['_' for _ in expr1.args]))
-
+                targs = map(
+                    lambda a: self.gettemplate(a, None, outer=True, oks=oks),
+                    expr1.args)
+            if all(targs):
+                return '%s(%s)' % (expr1.name, ', '.join(targs))
+            else:
+                return
+            
         # Cast
         if expr1.name == 'cast' and len(expr1.args) == 2:
             if expr2.name == 'cast' and len(expr2.args) == 2:
                 t = self.gettemplate(expr1.args[1], expr2.args[1], oks=oks)
             else:
-                t = self.gettemplate(expr1.args[1], Op('xxx'), oks=oks)
+                t = self.gettemplate(expr1.args[1], None, oks=oks)
             if t:
                 return '(%s)%s' % (expr1.args[0], t)
             else:
@@ -615,7 +641,10 @@ class SimpleFeedback(object):
                                 zip(expr1.args[1].args, expr2.args[1].args))
 
                 else:
-                    targs = ['_' for _ in args1]
+                    targs = map(
+                        lambda x: self.gettemplate(x, None, outer=True, oks=oks),
+                        expr1.args[1].args
+                    )
                 
                 if all(targs):
                     return 'printf(%s);' % (', '.join(targs), )
@@ -653,3 +682,7 @@ class SimpleFeedback(object):
                 return 'if (%s) { %s } else { %s }' % (tcond, tt, tf)
             else:
                 return 'if (%s) { %s }' % (tcond, tt)
+
+    def unprimedvars(self, expr):
+        return set(map(lambda x: unprime(x) if isprimed(x) else x,
+                       expr.vars()))
