@@ -232,7 +232,7 @@ class FeedGen(object):
             # (depending if suboptimal feedback is allowed or not)
             if res.status == Feedback.STATUS_TIMEOUT:
                 if self.allowsuboptimal:
-                    feedbacks.append((res.cost, res))
+                    feedbacks.append(((res.cost, res.spec.name), res))
                 else:
                     return res
             
@@ -242,7 +242,7 @@ class FeedGen(object):
 
             # Remember repaired with cost
             elif res.status == Feedback.STATUS_REPAIRED:
-                feedbacks.append((res.cost, res))
+                feedbacks.append(((res.cost, res.spec.name), res))
 
             else:
                 # Should not happen :)
