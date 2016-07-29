@@ -59,12 +59,15 @@ class SimpleFeedback(object):
             return
 
         # If some exist, then remove swap msgs
+        toremove = []
         for order, msg in self.feedback:
             if 'changing the order' in msg:
-                try:
-                    self.feedback.remove((order, msg))
-                except ValueError:
-                    pass
+                toremove.append((order, msg))
+        for item in toremove:
+            try:
+                self.feedback.remove(item)
+            except ValueError:
+                pass
 
     def filter_n(self, num):
         self.feedback.sort()
