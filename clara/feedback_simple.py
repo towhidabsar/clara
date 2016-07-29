@@ -334,8 +334,12 @@ class SimpleFeedback(object):
         if isinstance(expr1, Var):
             if isinstance(expr2, Var):
                 if expr1.name != expr2.name:
-                    return "use a variable '%s', instead of '%s'" % (
-                        expr1.name, expr2.name,)
+                    if expr1.name.startswith('$new'):
+                        return "use a different variable instead of '%s'" % (
+                            expr2.name,)
+                    else:
+                        return "use a variable '%s', instead of '%s'" % (
+                            expr1.name, expr2.name,)
                 else:
                     return
             else:
@@ -376,16 +380,6 @@ class SimpleFeedback(object):
                                 h = self.gethint(expr1.args[0], expr2.args[0])
                                 if h:
                                     return h
-
-                            # Same operators
-                            if expr1.name == expr2.name:
-                                V1 = self.unprimedvars(expr1)
-                                V2 = self.unprimedvars(expr2)
-
-                                D = V1 - V2
-                                if len(D):
-                                    return "use variable '%s'" % (
-                                        list(D)[0],)
                                 
                             # if first and expr1.name == expr2.name:
                             #     h1 = self.gethint(expr1.args[0], expr2.args[0])
@@ -522,54 +516,46 @@ class SimpleFeedback(object):
         else:
             return 'use "%s"' % (t,)
 
-    def gettemplate(self, expr1, expr2, outer=False, oks=set([]), num=10):
+    def gettemplate(self, expr1, expr2, outer=False, num=10):
         '''
         Generates a template out of a (correct) expression
         '''
 
         if isinstance(expr1, Const):
-            if ((isinstance(expr2, Const) and expr1.value == expr2.value)
-                or expr1.value in oks):
+            if isinstance(expr2, Const):
                 return expr1.value
             else:
                 return 'CONSTANT'
             
         if isinstance(expr1, Var):
-            if ((isinstance(expr2, Var) and expr1.name == expr2.name)
-                or expr1.name in oks):
+            if isinstance(expr2, Var):
                 return expr1.name
             else:
                 return 'VARIABLE'
 
         if isinstance(expr2, Const):
-            return self.gettemplate(expr1, Op('xxx'),
-                                    outer=outer, oks=set([expr2.value]), num=1)
+            return self.gettemplate(expr1, Op('xxx'), outer=outer)
 
         if isinstance(expr2, Var):
-            return self.gettemplate(expr1, Op('xxx'),
-                                    outer=outer, oks=set([expr2.name]), num=1)
+            return self.gettemplate(expr1, Op('xxx'), outer=outer)
 
         if expr2 is None:
             return '_'
 
         # Operators
         for _, ops in self.opdefs:
-            oks = set(map(lambda x: unprime(x) if isprimed(x) else x,
-                      expr2.vars())) | oks
             if expr1.name in ops and len(expr1.args) == 2:
 
                 if (expr1.name == expr2.name
                     and len(expr1.args) == len(expr2.args)):
                     
-                    t1 = self.gettemplate(expr1.args[0], expr2.args[0],
-                                          oks=oks)
-                    t2 = self.gettemplate(expr1.args[1], expr2.args[1],
-                                          oks=oks)
+                    t1 = self.gettemplate(expr1.args[0], expr2.args[0])
+                    t2 = self.gettemplate(expr1.args[1], expr2.args[1])
 
                 else:
 
-                    t1 = self.gettemplate(expr1.args[0], None, oks=oks)
-                    t2 = self.gettemplate(expr1.args[1], None, oks=oks)
+                    t1 = self.gettemplate(expr1.args[0], None)
+                    t2 = self.gettemplate(expr1.args[1], None)
                 
                 if t1 and t2:
                     h = '%s %s %s' % (t1, expr1.name, t2)
@@ -584,9 +570,9 @@ class SimpleFeedback(object):
         if expr1.name in self.unops and len(expr1.args) == 1:
             
             if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
-                t = self.gettemplate(expr.args[0], expr.args[1], oks=oks)
+                t = self.gettemplate(expr.args[0], expr.args[1])
             else:
-                t = self.gettemplate(expr.args[0], None, oks=oks)
+                t = self.gettemplate(expr.args[0], None)
                 
             if t:
                 return '%s%s' % (expr1.name, t,)
@@ -597,12 +583,11 @@ class SimpleFeedback(object):
         if expr1.name in self.funcs:
             if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
                 targs = map(
-                    lambda a: self.gettemplate(a[0], a[1],
-                                               outer=True, oks=oks),
+                    lambda a: self.gettemplate(a[0], a[1], outer=True),
                     zip(expr1.args, expr2.args))
             else:
                 targs = map(
-                    lambda a: self.gettemplate(a, None, outer=True, oks=oks),
+                    lambda a: self.gettemplate(a, None, outer=True),
                     expr1.args)
             if all(targs):
                 return '%s(%s)' % (expr1.name, ', '.join(targs))
@@ -612,9 +597,9 @@ class SimpleFeedback(object):
         # Cast
         if expr1.name == 'cast' and len(expr1.args) == 2:
             if expr2.name == 'cast' and len(expr2.args) == 2:
-                t = self.gettemplate(expr1.args[1], expr2.args[1], oks=oks)
+                t = self.gettemplate(expr1.args[1], expr2.args[1])
             else:
-                t = self.gettemplate(expr1.args[1], None, oks=oks)
+                t = self.gettemplate(expr1.args[1], None)
             if t:
                 return '(%s)%s' % (expr1.args[0], t)
             else:
@@ -642,7 +627,7 @@ class SimpleFeedback(object):
 
                 else:
                     targs = map(
-                        lambda x: self.gettemplate(x, None, outer=True, oks=oks),
+                        lambda x: self.gettemplate(x, None, outer=True),
                         expr1.args[1].args
                     )
                 
@@ -663,9 +648,9 @@ class SimpleFeedback(object):
                 tt2 = Op('xxx')
                 ff2 = Op('xxx')
 
-            tcond = self.gettemplate(expr1.args[0], cond2, outer=True, oks=oks)
-            tt = self.gettemplate(expr1.args[1], tt2, outer=True, oks=oks)
-            tf = self.gettemplate(expr1.args[2], ff2, outer=True, oks=oks)
+            tcond = self.gettemplate(expr1.args[0], cond2, outer=True)
+            tt = self.gettemplate(expr1.args[1], tt2, outer=True)
+            tf = self.gettemplate(expr1.args[2], ff2, outer=True)
 
             if not tcond or not tt or not tf:
                 return
