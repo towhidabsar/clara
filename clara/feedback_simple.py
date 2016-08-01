@@ -309,12 +309,12 @@ class SimpleFeedback(object):
         if isinstance(expr1, Const):
             if isinstance(expr2, Const):    
                 if expr1.value != expr2.value:
-                    return "use a constant '%s' intead of '%s'" % (
+                    return "use the constant '%s' intead of '%s'" % (
                         expr1.value, expr2.value,)
                 else:
                     return
             elif isinstance(expr2, Var):
-                return "use some constant instead of a variable '%s'" % (expr2.name,)
+                return "use some constant instead of the variable '%s'" % (expr2.name,)
             
             else:
                 if first:
@@ -341,7 +341,7 @@ class SimpleFeedback(object):
                         return "use a different variable instead of '%s'" % (
                             expr2.name,)
                     else:
-                        return "use a variable '%s', instead of '%s'" % (
+                        return "use the variable '%s', instead of '%s'" % (
                             expr1.name, expr2.name,)
                 else:
                     return
