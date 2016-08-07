@@ -292,8 +292,9 @@ class Parser(object):
         self.addexpr(VAR_COND, condexpr)
         
         # Add true loc
+        trueline = self.getline(true) or self.getline(node)
         trueloc = self.addloc('inside the if-branch starting at line %d' % (
-            self.getline(true)))
+            trueline))
         self.visit(true)
         afterloc1 = self.loc
 

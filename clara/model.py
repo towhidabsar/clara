@@ -621,7 +621,7 @@ class Function(object):
         ]
         for loc in sorted(self.locexprs.keys()):
             s.append('')
-            s.append('Loc %d' % (loc,))
+            s.append('Loc %d (%s)' % (loc,self.locdescs[loc]))
             s.append('-' * 39)
             
             for (var, expr) in self.locexprs[loc]:
