@@ -5,7 +5,7 @@ Generating (simple, raw) textual feedback from repair
 
 class RepairFeedback(object):
 
-    def __init__(self, impl, spec, result):
+    def __init__(self, impl, spec, result, cleanstrings=None):
         self.impl = impl
         self.spec = spec
         self.result = result

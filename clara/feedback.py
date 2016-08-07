@@ -180,10 +180,11 @@ class FeedGen(object):
     '''
 
     def __init__(self, verbose=False, timeout=False, poolsize=None,
-                 allowsuboptimal=True, feedmod=RepairFeedback):
+                 allowsuboptimal=True, pool=None, feedmod=RepairFeedback):
         self.verbose = verbose
         self.timeout = timeout
         self.poolsize = poolsize
+        self.pool = pool
         self.allowsuboptimal = allowsuboptimal
         self.feedmod = feedmod
 
@@ -205,7 +206,8 @@ class FeedGen(object):
         self.cleanstrings = cleanstrings
 
         # Create a pool
-        self.pool = Pool(processes=self.poolsize)
+        if self.pool is None:
+            self.pool = Pool(processes=self.poolsize)
 
         # Creates list of tasks, for each spec one
         tasks = [
