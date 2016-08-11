@@ -573,9 +573,9 @@ class SimpleFeedback(object):
         if expr1.name in self.unops and len(expr1.args) == 1:
             
             if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
-                t = self.gettemplate(expr.args[0], expr.args[1])
+                t = self.gettemplate(expr1.args[0], expr2.args[1])
             else:
-                t = self.gettemplate(expr.args[0], None)
+                t = self.gettemplate(expr1.args[0], None)
                 
             if t:
                 return '%s%s' % (expr1.name, t,)
