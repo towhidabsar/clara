@@ -361,8 +361,8 @@ class SimpleFeedback(object):
                 
                 # Operators
                 for opname, ops in self.opdefs:
-                    if expr1.name in ops:
-                        if expr2.name in ops:
+                    if expr1.name in ops and len(expr1.args) == 2:
+                        if expr2.name in ops and len(expr2.args) == 2:
 
                             same1 = self.issame(expr1.args[0], expr2.args[0])
                             same2 = self.issame(expr1.args[1], expr2.args[1])
@@ -573,7 +573,7 @@ class SimpleFeedback(object):
         if expr1.name in self.unops and len(expr1.args) == 1:
             
             if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
-                t = self.gettemplate(expr1.args[0], expr2.args[1])
+                t = self.gettemplate(expr1.args[0], expr2.args[0])
             else:
                 t = self.gettemplate(expr1.args[0], None)
                 
