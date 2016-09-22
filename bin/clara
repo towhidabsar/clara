@@ -16,6 +16,7 @@ from clara.common import parseargs, debug
 from clara.feedback import Feedback, FeedGen
 from clara.feedback_repair import RepairFeedback
 from clara.feedback_simple import SimpleFeedback
+from clara.feedback_python import PythonFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
 from clara.parser import getlangparser
@@ -127,6 +128,8 @@ Options are:
             self.feedtype = RepairFeedback
         elif self.feedtype == 'simple':
             self.feedtype = SimpleFeedback
+        elif self.feedtype == 'python':
+            self.feedtype = PythonFeedback
         else:
             self.error("Unknown feedback type: '%s'", self.feedtype)
 
