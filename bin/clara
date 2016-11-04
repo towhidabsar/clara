@@ -167,7 +167,7 @@ Options are:
     def model(self):
 
         if len(self.models) != 1:
-            self.error('Model requres one program!')
+            self.error('Model requires one program!')
 
         print self.models[0]
 
