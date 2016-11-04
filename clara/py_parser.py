@@ -138,7 +138,9 @@ class PyParser(Parser):
                     elif isinstance(node.value.func.value, ast.Name):
                         var = self.visit(node.value.func.value)
                         if isinstance(var, Var):
-                            self.addexpr(var.name, call)
+                            # Skip assignment of 'pop' function
+                            if node.value.func.attr != 'pop':
+                                self.addexpr(var.name, call)
                         else:
                             raise NotSupported("Non-name call",
                                                line=node.lineno)
