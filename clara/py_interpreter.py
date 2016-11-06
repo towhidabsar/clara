@@ -365,6 +365,10 @@ class PyInterpreter(Interpreter):
     def execute_enumerate(self, *a):
         return list(enumerate(*a))
 
+    @eargs
+    def execute_format(self, s, *a):
+        return s.format(*a)
+
     def execute_reversed(self, o, mem):
         return self.execute_reverse(o, mem)
 
