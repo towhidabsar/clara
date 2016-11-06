@@ -369,6 +369,10 @@ class PyInterpreter(Interpreter):
     def execute_format(self, s, *a):
         return s.format(*a)
 
+    @eargs
+    def execute_type(self, s):
+        return type(s)
+
     def execute_reversed(self, o, mem):
         return self.execute_reverse(o, mem)
 

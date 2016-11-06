@@ -23,7 +23,7 @@ class PyParser(Parser):
     BUILTIN_FNCS = [
         'input', 'float', 'int', 'bool', 'str', 'list', 'dict',
         'set', 'tuple', 'round', 'pow', 'sum', 'range', 'xrange', 'len',
-        'reversed', 'enumerate', 'abs', 'max', 'min']
+        'reversed', 'enumerate', 'abs', 'max', 'min', 'type']
     CONSTS = ['True', 'False', 'None']
     MODULE_NAMES = ['math', 'string']
 
