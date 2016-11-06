@@ -71,6 +71,17 @@ class PyInterpreter(Interpreter):
         if c in ('True', 'False'):
             return c == 'True'
 
+        if c == 'list':
+            return list
+        elif c == 'int':
+            return int
+        elif c == 'dict':
+            return dict
+        elif c == 'float':
+            return float
+        elif c == 'bool':
+            return bool
+
         # None
         if c == 'None':
             return None

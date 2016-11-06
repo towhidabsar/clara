@@ -24,7 +24,7 @@ class PyParser(Parser):
         'input', 'float', 'int', 'bool', 'str', 'list', 'dict',
         'set', 'tuple', 'round', 'pow', 'sum', 'range', 'xrange', 'len',
         'reversed', 'enumerate', 'abs', 'max', 'min', 'type']
-    CONSTS = ['True', 'False', 'None']
+    CONSTS = ['True', 'False', 'None', 'list', 'int', 'dict', 'float', 'bool']
     MODULE_NAMES = ['math', 'string']
 
     NOTOP = 'Not'
