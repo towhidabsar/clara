@@ -381,6 +381,10 @@ class PyInterpreter(Interpreter):
         return s.format(*a)
 
     @eargs
+    def execute_eval(self, *a):
+        return eval(*a)
+
+    @eargs
     def execute_type(self, s):
         return type(s)
 
