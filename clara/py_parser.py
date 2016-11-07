@@ -23,7 +23,8 @@ class PyParser(Parser):
     BUILTIN_FNCS = [
         'input', 'float', 'int', 'bool', 'str', 'list', 'dict',
         'set', 'tuple', 'round', 'pow', 'sum', 'range', 'xrange', 'len',
-        'reversed', 'enumerate', 'abs', 'max', 'min', 'type', 'eval']
+        'reversed', 'enumerate', 'abs', 'max', 'min', 'type']
+    UNSUPPORTED_BUILTIN_FNCS = ['eval']
     CONSTS = ['True', 'False', 'None', 'list', 'int', 'dict', 'float', 'bool']
     MODULE_NAMES = ['math', 'string']
 
@@ -379,6 +380,8 @@ class PyParser(Parser):
                 fncname = node.func.id
                 args = list(map(self.visit_expr, node.args))
                 return Op(fncname, *args, line=node.lineno)
+            elif node.func.id in self.UNSUPPORTED_BUILTIN_FNCS:
+                raise NotSupported("builtin: '%s'" % (node.func.id,))
             else:
                 fnc = Var(node.func.id)
                 args = list(map(self.visit_expr, node.args))

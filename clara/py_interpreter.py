@@ -109,7 +109,7 @@ class PyInterpreter(Interpreter):
         return list(a)
 
     @eargs
-    def execute_list(self, *a):
+    def execute_list(self, a):
         return list(a)
 
     @eargs
@@ -133,8 +133,8 @@ class PyInterpreter(Interpreter):
         return tuple(t)
 
     @eargs
-    def execute_tuple(self, *t):
-        return tuple(*t)
+    def execute_tuple(self, t):
+        return tuple(t)
 
     @eargs
     def execute_Not(self, x):
@@ -379,10 +379,6 @@ class PyInterpreter(Interpreter):
     @eargs
     def execute_format(self, s, *a):
         return s.format(*a)
-
-    @eargs
-    def execute_eval(self, *a):
-        return eval(*a)
 
     @eargs
     def execute_type(self, s):
