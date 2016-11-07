@@ -23,10 +23,12 @@ class PyParser(Parser):
     BUILTIN_FNCS = [
         'input', 'float', 'int', 'bool', 'str', 'list', 'dict',
         'set', 'tuple', 'round', 'pow', 'sum', 'range', 'xrange', 'len',
-        'reversed', 'enumerate', 'abs', 'max', 'min', 'type']
-    UNSUPPORTED_BUILTIN_FNCS = ['eval']
-    CONSTS = ['True', 'False', 'None', 'list', 'int', 'dict', 'float', 'bool']
-    MODULE_NAMES = ['math', 'string']
+        'reversed', 'enumerate', 'abs', 'max', 'min', 'type', 'zip', 'map',
+        'isinstance']
+    UNSUPPORTED_BUILTIN_FNCS = ['eval', 'iter']
+    CONSTS = ['True', 'False', 'None', 'list', 'tuple', 'int', 'dict',
+              'float', 'bool']
+    MODULE_NAMES = ['math', 'string', 'm']
 
     NOTOP = 'Not'
     OROP = 'Or'
@@ -103,9 +105,10 @@ class PyParser(Parser):
     # Methods for Variables
 
     def visit_Name(self, node):
-        if node.id in self.CONSTS:
+        if node.id in self.CONSTS and not self.hasvar(node.id):
             return Const(node.id)
-        self.addtype(node.id, '*')
+        if node.id not in self.MODULE_NAMES:
+            self.addtype(node.id, '*')
         return Var(node.id)
 
     # Methods for Expressions
@@ -125,6 +128,10 @@ class PyParser(Parser):
             elif isinstance(node.value.func, ast.Attribute):
                 if node.value.func.attr in self.ATTR_FNCS:
                     call = self.visit_expr(node.value)
+                    
+                    if isinstance(call, Op) and call.name == 'ignore_none':
+                        call = call.args[0]
+                        
                     if isinstance(node.value.func.value, ast.Subscript):
                         var = self.visit_expr(node.value.func.value.value)
                         index = self.visit_expr(node.value.func.value.slice)
@@ -287,9 +294,10 @@ class PyParser(Parser):
         
         target = node.targets[0]
 
+        right = self.visit_expr(node.value)
+
         # Assignment to a variable
         if isinstance(target, ast.Name):
-            right = self.visit_expr(node.value)
             self.addtype(target.id, '*')
             self.addexpr(target.id, right)
 
@@ -298,7 +306,6 @@ class PyParser(Parser):
             if isinstance(target.slice, ast.Index):
                 var = Var(target.value.id)
                 self.addtype(target.value.id, '*')
-                right = self.visit_expr(node.value)
                 index = self.visit_expr(target.slice.value)
                 
                 self.addexpr(target.value.id,
@@ -313,7 +320,6 @@ class PyParser(Parser):
         # Assignment to a tuple
         elif isinstance(target, ast.Tuple):
             targets = map(self.visit_expr, target.elts)
-            right = self.visit_expr(node.value)
             for i, target in enumerate(targets):
                 expr = Op('GetElement', right.copy(), Const(str(i)),
                           line=right.line)
@@ -330,13 +336,20 @@ class PyParser(Parser):
                 line=node.lineno)
 
     def visit_AugAssign(self, node):
+
+        op = node.op.__class__.__name__
+
+        # For some reason concatenation of lists and tuples works in Python
+        # if it is done with += instead of +, so hacking this distinction
+        if op == 'Add':
+            op = 'AssAdd'
         
         # Aug assign to a name
         if isinstance(node.target, ast.Name):
             target = Var(node.target.id)
             self.addtype(node.target.id, '*')
             value = self.visit_expr(node.value)
-            rhs = Op(node.op.__class__.__name__, target, value,
+            rhs = Op(op, target, value,
                      line=node.lineno)
             self.addexpr(target.name, rhs)
 
@@ -346,7 +359,7 @@ class PyParser(Parser):
                 var = Var(node.target.value.id)
                 right = self.visit_expr(node.value)
                 index = self.visit_expr(node.target.slice.value)
-                rhs = Op(node.op.__class__.__name__, self.visit(node.target),
+                rhs = Op(op, self.visit(node.target),
                          right, line=node.lineno)
                 self.addexpr(var.name, Op('AssignElement', var, index, rhs,
                                           line=node.lineno))
@@ -393,11 +406,17 @@ class PyParser(Parser):
                          num, num.line)
             return Const('?')
 
-        elif isinstance(node.func, ast.Attribute):
+        elif isinstance(node.func, ast.Attribute):            
             attr = node.func.attr
             val = self.visit_expr(node.func.value)
             args = list(map(self.visit_expr, node.args))
-            if isinstance(val, Var) and val.name in self.MODULE_NAMES:
+            if (isinstance(val, Var) and val.name in self.MODULE_NAMES
+                and not self.hasvar(val.name)):
+
+                # A bit of hack...
+                if val.name == 'm':
+                    val.name = 'math'
+                    
                 return Op('%s_%s' % (val, attr), *args, line=node.lineno)
             if attr == 'pop':
                 if isinstance(val, Var):
@@ -409,7 +428,22 @@ class PyParser(Parser):
                     return Op('GetElement', Var(popvar), Const('1'))
                 else:
                     raise NotSupported('Pop to a non-name list')
-            return Op(attr, val, *args, line=node.lineno)
+            elif attr == 'len':
+                # we don't distinguish between a.len() and len(a), but the
+                # former is a mistake, so we convert it to something that
+                # will produce runtime error - this should be handled
+                # in some other way
+                return Op('attr_len', val, *args, line=node.lineno)
+
+            op = Op(attr, val, *args, line=node.lineno)
+
+            # Results of (side-effect) attr functions are None,
+            # so the result should be ignored, but we want to keep it
+            # syntatically
+            if attr in self.ATTR_FNCS:
+                op = Op('ignore_none', op, line=op.line)
+
+            return op
         
         else:
             raise NotSupported(
@@ -453,8 +487,12 @@ class PyParser(Parser):
 
         # Targets of iteration
         if isinstance(node.target, ast.Name):
+            self.addtype(node.target.id, '*')
             targets = [self.visit_expr(node.target)]
         elif isinstance(node.target, ast.Tuple):
+            for el in node.target.elts:
+                if isinstance(el, ast.Name):
+                    self.addtype(el.id, '*')
             targets = map(self.visit_expr, node.target.elts)
         else:
             raise NotSupported(
@@ -510,6 +548,7 @@ class PyParser(Parser):
         # Find loop
         lastloop = self.lastloop()
         if not lastloop:
+            self.addexpr(VAR_RET, Const('break_outside_loop'))
             self.addwarn("'break' outside loop at line %s", node.lineno)
             return
 

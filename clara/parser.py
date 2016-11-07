@@ -477,6 +477,10 @@ class Parser(object):
         assert (self.fnc), 'No active fnc!'
         self.fnc.addtype(var, type, skiponexist)
 
+    def hasvar(self, var):
+        assert (self.fnc), 'No active fnc'
+        return self.fnc.gettype(var) is not None
+
     def addloop(self, l):
         self.loops.append(l)
 

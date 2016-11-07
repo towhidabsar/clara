@@ -23,10 +23,14 @@ def eargs(fun):
     # Wrapper function that calls original 'fun'
     def wrap(self, f, mem):
         args = map(lambda x: self.execute(x, mem), f.args)
+        for a in args:
+            if isinstance(a, UndefValue):
+                raise RuntimeErr('undefined value')
         return fun(self, *args)
 
     return wrap
 
+DEFAULT = object()
 
 class PyInterpreter(Interpreter):
 
@@ -40,7 +44,7 @@ class PyInterpreter(Interpreter):
         
         # Undef
         if c == '?':
-            return UndefValue
+            return UndefValue()
 
         # Integer
         try:
@@ -73,6 +77,8 @@ class PyInterpreter(Interpreter):
 
         if c == 'list':
             return list
+        if c == 'tuple':
+            return tuple
         elif c == 'int':
             return int
         elif c == 'dict':
@@ -109,8 +115,11 @@ class PyInterpreter(Interpreter):
         return list(a)
 
     @eargs
-    def execute_list(self, a):
-        return list(a)
+    def execute_list(self, a=DEFAULT):
+        if a is DEFAULT:
+            return list()
+        else:
+            return list(a)
 
     @eargs
     def execute_DictInit(self, *d):
@@ -133,8 +142,11 @@ class PyInterpreter(Interpreter):
         return tuple(t)
 
     @eargs
-    def execute_tuple(self, t):
-        return tuple(t)
+    def execute_tuple(self, t=DEFAULT):
+        if t is DEFAULT:
+            return tuple()
+        else:
+            return tuple(t)
 
     @eargs
     def execute_Not(self, x):
@@ -184,6 +196,10 @@ class PyInterpreter(Interpreter):
     @eargs
     def execute_math_pow(self, *a):
         return math.pow(*a)
+
+    @eargs
+    def execute_math_ceil(self, *a):
+        return math.ceil(*a)
     
     @eargs
     def execute_sum(self, *x):
@@ -231,6 +247,17 @@ class PyInterpreter(Interpreter):
 
     @eargs
     def execute_Add(self, x, y):
+        return x + y
+
+    @eargs
+    def execute___add__(self, x, y):
+        return x + y
+
+    # See Python parser for explanation of this hack
+    @eargs
+    def execute_AssAdd(self, x, y):
+        if isinstance(x, list) and isinstance(y, tuple):
+            y = list(y)
         return x + y
 
     @eargs
@@ -327,6 +354,10 @@ class PyInterpreter(Interpreter):
         return self.execute_range(e, mem)
 
     @eargs
+    def execute_zip(self, s1, s2):
+        return list(zip(s1, s2))
+
+    @eargs
     def execute_extend(self, l, i):
         l = deepcopy(l)
         l.extend(i)
@@ -357,6 +388,10 @@ class PyInterpreter(Interpreter):
         return l.index(v, *a)
 
     @eargs
+    def execute_count(self, l, *a):
+        return l.count(*a)
+
+    @eargs
     def execute_pop(self, l, *a):
         nl = deepcopy(l)
         res = nl.pop(*a)
@@ -367,6 +402,10 @@ class PyInterpreter(Interpreter):
         nl = deepcopy(l)
         del nl[i]
         return nl
+
+    @eargs
+    def execute_isinstance(self, a, b):
+        return isinstance(a, b)
 
     @eargs
     def execute_reverse(self, l):
@@ -383,6 +422,19 @@ class PyInterpreter(Interpreter):
     @eargs
     def execute_type(self, s):
         return type(s)
+
+    @eargs
+    def execute_ignore_none(self, s):
+        return
+
+    def execute_map(self, m, mem):
+        if isinstance(m.args[0], Var) and m.args[0].name == 'mul':
+            import operator
+            f = operator.mul
+        else:
+            f = self.execute(m.args[0], mem)
+        ls = map(lambda x: self.execute(x, mem), m.args[1:])
+        return map(f, *ls)
 
     def execute_reversed(self, o, mem):
         return self.execute_reverse(o, mem)
