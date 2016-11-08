@@ -101,7 +101,7 @@ class PythonFeedback(object):
                 # '*' means adding a new variable (and also statement)
                 if var2 == '*':
                     self.add("Add assignment '%s' %s (cost=%s)",
-                             str(self.assignmentStatement('$new_%s' % (var1, expr1))), locdesc, cost)
+                             str(self.assignmentStatement('$new_%s' % (var1,), expr1)), locdesc, cost)
                     continue
 
                 # Output original and new (rewriten) expression for var2
