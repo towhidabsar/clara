@@ -3,7 +3,7 @@ Simulation relation
 '''
 
 # clara imports
-from common import debug
+from common import debug, equals
 from interpreter import Interpreter, RuntimeErr, UndefValue, isundef
 from model import SPECIAL_VARS, VAR_RET, VAR_IN, VAR_OUT, isprimed, prime
 
@@ -57,7 +57,7 @@ class Matching(object):
                 if self.debugvar == '%s-%s' % (loc, var1):
                     self.debug('VAR %s = %s', var1, val1)
                     self.debug('VAR %s = %s', var2, val2)
-                    if isundef(val1) or val1 == val2:
+                    if isundef(val1) or equals(val1, val2):
                         self.debug('VAR equal')
                     else:
                         self.debug('VAR unequal')
@@ -65,7 +65,7 @@ class Matching(object):
                 
                 # Check if equal
                 # TODO: Different equality?
-                if isundef(val1) or val1 == val2:
+                if isundef(val1) or equals(val1, val2):
                     newmatch.add(var2)
 
             # If no match for then done

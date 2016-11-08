@@ -10,7 +10,7 @@ import time
 from zss import Node, simple_distance as tree_distance
 
 # clara imports
-from common import debug
+from common import debug, equals
 from interpreter import RuntimeErr, isundef
 from model import isprimed, unprime, prime, SPECIAL_VARS, VAR_IN, VAR_OUT
 from model import Var, Const, Op
@@ -376,7 +376,7 @@ class Repair(object):
                             if isinstance(val2, str) and self.cleanstrings:
                                 val2 = val2.strip()
 
-                            if  val2 != val1:
+                            if  not equals(val2, val1):
                                 ok = False
                                 break
                         except RuntimeErr:

@@ -101,3 +101,37 @@ def cleanstr(s):
     s = s.replace('\t', '\\t')
 
     return s
+
+
+def equals(v1, v2):
+    '''
+    Different equality
+
+    (mainly because different representations of two "same" floats)
+    '''
+
+    # List and tuples
+    if ((isinstance(v1, list) and isinstance(v2, list))
+        or (isinstance(v1, tuple) and isinstance(v2, tuple))):
+        
+        if len(v1) != len(v2):
+            return False
+        
+        for e1, e2 in zip(v1, v2):
+            if not equals(e1, e2):
+                return False
+
+        return True
+
+    # Do we need this for any other structures (e.g., dict)?
+
+    # Floats
+    if isinstance(v1, float) and isinstance(v2, float):
+        # Two floats with the same string representation can be differently
+        # represented in memory, so their equality test with == fails.
+        # However, when converted to strings first, they have the same
+        # representation also in memory
+        return float(str(v1)) == float(str(v2))
+
+    # Other values
+    return v1 == v2
