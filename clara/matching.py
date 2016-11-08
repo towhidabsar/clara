@@ -102,7 +102,7 @@ class Matching(object):
             newtaken = set(taken)
             newtaken.add(var2)
 
-            m = self.one_to_one(match[1:], taken)
+            m = self.one_to_one(match[1:], newtaken)
             if m is not None:
                 m = dict(m)
                 m[var1] = var2
@@ -162,6 +162,12 @@ class Matching(object):
 
         # Go through all functions
         sm = {}
+        
+        for fnc2 in fncs2:
+            if fnc2 not in fncs1:
+                self.debug("Function '%s' not found in P", fnc2)
+                return
+            
         for fnc1 in fncs1:
 
             if fnc1 not in fncs2:
