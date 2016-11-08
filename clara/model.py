@@ -177,6 +177,29 @@ class Op(Expr):
 
     def __repr__(self):
         return '%s(%s)' % (self.name, ', '.join(map(str, self.args)))
+
+    
+def expr_to_dict(e):
+    if isinstance(e, Var):
+        return {'type': 'Var', 'name': e.name, 'primed': e.primed}
+    
+    elif isinstance(e, Const):
+        return {'type': 'Const', 'value': e.value}
+
+    else:
+        return {'type': 'Op', 'name': e.name,
+                'args': map(expr_to_dict, e.args)}
+
+def dict_to_expr(d):
+
+    if d['type'] == 'Var':
+        return Var(name=d['name'], primed=d['primed'])
+
+    elif d['type'] == 'Const':
+        return Const(value=d['value'])
+
+    else:
+        return Op(name=d['name'], *map(dict_to_expr, d['args']))
     
 
 class Program(object):
