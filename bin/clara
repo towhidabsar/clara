@@ -47,6 +47,7 @@ Options are:
                      (default is 'main')
   --ignoreio [0|1]   whether to ignore IO in matching or repair
   --ignoreret [0|1]  whether to ignore return value in matching or repair
+  --bijective [0|1]  whether to perform bijective matching (default is 0)
   --cleanstrings [0|1]
                      whether to clean (trim) strings when checking correctness
                      in the repair algorithm (default is 0)
@@ -114,6 +115,7 @@ Options are:
         self.timeout = int(self.opts.pop('timeout', 60))
         self.ignoreio = int(self.opts.pop('ignoreio', 0))
         self.ignoreret = int(self.opts.pop('ignoreret', 0))
+        self.bijective = int(self.opts.pop('bijective', 0))
         self.cleanstrings = int(self.opts.pop('cleanstrings', 0))
         self.entryfnc = self.opts.pop('entryfnc', 'main')
         self.suboptimal = int(self.opts.pop('suboptimal', 1))
@@ -180,7 +182,7 @@ Options are:
             self.debug('Match requires two programs, ignoring the rest!')
 
         M = Matching(ignoreio=self.ignoreio, ignoreret=self.ignoreret,
-                     verbose=self.verbose)
+                     verbose=self.verbose, bijective=self.bijective)
 
         m = M.match_programs(self.models[0], self.models[1], self.inter,
                              ins=self.ins, args=self.args,

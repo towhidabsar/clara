@@ -11,10 +11,12 @@ from model import SPECIAL_VARS, VAR_RET, VAR_IN, VAR_OUT, isprimed, prime
 class Matching(object):
 
     def __init__(self, ignoreio=False, ignoreret=False, verbose=False,
-                 debugvar=None):
+                 debugvar=None, bijective=False):
 
         self.ignoreio = ignoreio
         self.ignoreret = ignoreret
+
+        self.bijective = bijective
         
         self.verbose = verbose
         self.debugvar = debugvar
@@ -25,6 +27,13 @@ class Matching(object):
         debug(*args)
 
     def match_mems(self, match, loc, mem1, mem2, V1):
+
+        V2 = {var2 for var2 in mem2.keys() if not isprimed(var2)}
+
+        if self.bijective:
+            if len(V1 | SPECIAL_VARS) != len(V2 | SPECIAL_VARS):
+                self.debug('Not bijective - different number of variables')
+                return False
 
         # Go through all variables
         for var1 in V1 | SPECIAL_VARS:
@@ -40,8 +49,7 @@ class Matching(object):
                 if var1 in SPECIAL_VARS:
                     match[var1] = set([var1])
                 else:
-                    match[var1] = {
-                        var2 for var2 in mem2.keys() if not isprimed(var2)}
+                    match[var1] = set(V2)
 
             # Check list of potential matches
             newmatch = set([])
@@ -64,7 +72,6 @@ class Matching(object):
                     self.debug('')
                 
                 # Check if equal
-                # TODO: Different equality?
                 if isundef(val1) or equals(val1, val2):
                     newmatch.add(var2)
 
