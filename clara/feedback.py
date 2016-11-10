@@ -8,6 +8,9 @@ import traceback
 
 from multiprocessing import Pool
 
+# External libs
+from zss import Node
+
 # clara imports
 from feedback_repair import RepairFeedback
 from model import Var, isprimed, unprime, prime
@@ -51,6 +54,8 @@ class Feedback(object):
         self.status = None
         self.error = None
 
+        self.impl_size = None
+
         self.start = time.time()
 
     def generate(self):
@@ -75,9 +80,11 @@ class Feedback(object):
             self.cost = 0
             self.size = 0
             for _, repairs, _ in self.results.values():
-                for (_, _, _, cost, _) in repairs:
-                    self.cost += cost
+                for rep in repairs:
+                    self.cost += rep.cost
                     self.size += 1
+
+            self.impl_size = self.treesize(R.T2)
             self.large = self.islarge()
             
             self.status = self.STATUS_REPAIRED
@@ -98,6 +105,25 @@ class Feedback(object):
             self.status = self.STATUS_TIMEOUT
             self.error = 'timeout'
 
+    def treesize(self, t):
+        '''
+        Calculates the total size of the tree
+        '''
+
+        size = 0
+
+        def ts(node):
+            return 1 + sum(map(ts, Node.get_children(node)))
+                
+        for loc in t:
+            for var, tree in t[loc].items():
+                lab = Node.get_label(tree)
+                if lab == ('V', var):
+                    continue
+                size += ts(tree)
+
+        return size
+
     def islarge(self):
         '''
         Decides if generated repair is large
@@ -105,12 +131,20 @@ class Feedback(object):
         '''
         
         for fnc, (m, repairs, sm) in self.results.items():
-            for (loc1, var1, var2, _, _) in repairs:
+            for rep in repairs:
+                
+                loc1 = rep.loc1
+                var1 = rep.var1
+                var2 = rep.var2
+                expr1 = rep.expr1
+                
                 loc2 = sm[loc1]
 
-                # Added variable
+                # Added/deleted variable
                 if var2 == '*':
                     return True
+                if var1 == '-':
+                    return False
 
                 # Added stmt
                 if self.spec.getfnc(fnc).hasexpr(loc1, var1) \
@@ -118,7 +152,7 @@ class Feedback(object):
                     return True
 
                 # Swapped stmts
-                expr1 = self.spec.getfnc(fnc).getexpr(loc1, var1)
+                #expr1 = self.spec.getfnc(fnc).getexpr(loc1, var1)
                 expr2 = self.impl.getfnc(fnc).getexpr(loc2, var2)
                 vars1 = expr1.vars()
                 vars2 = expr2.vars()

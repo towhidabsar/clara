@@ -114,7 +114,13 @@ class SimpleFeedback(object):
             # var1 - variable from the spec.
             # var2 - variable from the impl.
             # cost - cost of the repair
-            for (loc1, var1, var2, cost, _) in repairs:
+            for rep in repairs:
+
+                loc1 = rep.loc1
+                var1 = rep.var1
+                var2 = rep.var2
+                cost = rep.cost
+                expr1 = rep.expr1
 
                 # Get functions and loc2
                 fnc1 = self.spec.getfnc(fname)
@@ -126,7 +132,7 @@ class SimpleFeedback(object):
                 self.cloc = loc2
 
                 # Get exprs (spec. and impl.)
-                expr1 = fnc1.getexpr(loc1, var1)
+                #expr1 = fnc1.getexpr(loc1, var1)
                 expr2 = fnc2.getexpr(loc2, var2)
 
                 # Location of the expression

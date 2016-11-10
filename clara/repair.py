@@ -33,15 +33,15 @@ def label_dist(m):
 
     def f(l1, l2):
         if not l1:
-            return 0 if (not l2) else 3
+            return 0 if (not l2) else 1
         if not l2:
-            return 0 if (not l1) else 3
+            return 0 if (not l1) else 1
 
         (t1, v1) = l1
         (t2, v2) = l2
 
         if t1 != t2:
-            return 2
+            return 1
 
         if t2 == 'V':
             if isprimed(v2):
@@ -53,6 +53,20 @@ def label_dist(m):
     
     return f
 
+class RepairResult(object):
+
+    def __init__(self):
+        self.loc1 = None
+        self.var1 = None
+        self.var2 = None
+        self.cost = None
+        self.order = None
+        self.expr1 = None
+        self.expr1_orig = None
+
+    def __repr__(self):
+        return '%s-%s %s (%s)' % (self.loc1, self.var1, self.var2,
+                                  self.cost)
 
 class Repair(object):
 
@@ -147,8 +161,8 @@ class Repair(object):
             for var1 in P[loc1]:
                 totalcost = 0
                 newp = []
-                for (m, cost, order) in sorted(P[loc1][var1],
-                                               key=lambda x: x[1]):
+                for (m, cost, order, _) in sorted(P[loc1][var1],
+                                                  key=lambda x: x[1]):
                     totalcost += cost
                     
                 if totalcost == 0:
@@ -178,7 +192,7 @@ class Repair(object):
                 if self.verbose:
                     assert var1 == '-' or len(P[loc1][var1]) > 0, \
                         '%s,%s' % (loc1, var1)
-                    for (m, cost, order) in P[loc1][var1]:
+                    for (m, cost, order, _) in P[loc1][var1]:
                         self.debug('P %s-%s-%s %s %s %s',
                                    f1.name, loc1, var1, cost, m, order)
                     self.debug('P for %s-%s generated in %.3fs',
@@ -190,6 +204,24 @@ class Repair(object):
         solvertime = self.lefttime()
         res = self.solver.solve(self.V1 | set(['-']), self.V2 | set(['*']), P,
                                 timeout=solvertime)
+        # Retreive expressions used in repair
+        ress = []
+        for rep in res[1]:
+            (loc1, var1, var2, cost, order, idx) = rep
+            repobj = RepairResult()
+            repobj.loc1 = loc1
+            repobj.var1 = var1
+            repobj.var2 = var2
+            repobj.cost = cost
+            repobj.order = order
+            if idx is None:
+                repobj.expr1 = self.E1[loc1][var1]
+            else:
+                repobj.expr1 = self.ER[loc1][var1][idx][0]
+                repobj.expr1_orig = self.ER[loc1][var1][idx][1]
+            ress.append(repobj)
+        res = (res[0], ress)
+            
         self.debug('PGEN time: %.3f' % round(self.pgentime, 3))
         self.debug('mapping: %s', res[0])
         self.debug('repairs: %s', res[1])
@@ -221,13 +253,33 @@ class Repair(object):
                     self.debug('T2 %s-%s-%s := %s', f2.name, loc2, var2,
                                self.treetostr(self.T2[loc2][var2]))
 
+        hasrep = hasattr(f1, 'repair_exprs')
+        self.ER = {}
+        self.TR = {}
+        for loc1 in f1.locs():
+            self.ER[loc1] = {}
+            self.TR[loc1] = {}
+            for var1 in self.V1:
+                if hasrep and var1 in f1.repair_exprs[loc1]:
+                    self.ER[loc1][var1] = []
+                    self.TR[loc1][var1] = []
+                    for expr in f1.repair_exprs[loc1][var1]:
+                        self.ER[loc1][var1].append(expr)
+                        self.TR[loc1][var1].append(self.totree(expr[0]))
+                else:
+                    self.ER[loc1][var1] = [(self.E1[loc1][var1], None)]
+                    self.TR[loc1][var1] = [self.T1[loc1][var1]]
+
     def totree(self, e):
         if isinstance(e, Var):
             return Node(('V', str(e)))
         if isinstance(e, Const):
             return Node(('C', str(e)))
         if isinstance(e, Op):
-            n = Node(('O', e.name))
+            name = e.name
+            if name == 'AssAdd':
+                name = 'Ass'
+            n = Node(('O', name))
             for arg in e.args:
                 n.addkid(self.totree(arg))
             return n
@@ -273,7 +325,15 @@ class Repair(object):
             if (s1 in SPECIAL_VARS or s2 in SPECIAL_VARS) and s1 != s2:
                 continue
 
-            if s1 in self.pmap and s2 != self.pmap[s1]:
+            if s2 != '*':
+                if s1.startswith('ind#') != s2.startswith('ind#'):
+                    continue
+
+                if s1.startswith('iter#') != s2.startswith('iter#'):
+                    continue
+
+            if ((s1 in self.pmap or s2 in self.pmap.keys())
+                and s2 != self.pmap.get(s1)):
                 continue
 
             if s2 == '*':
@@ -314,7 +374,8 @@ class Repair(object):
 
         varp1 = prime(var1)
         expr1 = self.E1[loc1][var1]
-        isid = isinstance(expr1, Var) and expr1.name == var1
+        isid = (isinstance(expr1, Var) and expr1.name == var1
+                and expr1.primed == False)
         tree1 = self.T1[loc1][var1]
         vars1 = list(set(map(unprimes, expr1.vars())) | set([var1]))
         vars1.sort()
@@ -332,8 +393,16 @@ class Repair(object):
             if (var1 in SPECIAL_VARS or var2 in SPECIAL_VARS) and var1 != var2:
                 continue
 
+            # other special variables
+            if var2 != '*':
+                if var1.startswith('ind#') != var2.startswith('ind#'):
+                    continue
+                if var1.startswith('iter#') != var2.startswith('iter#'):
+                    continue
+
             # Params can only be mapped to params
-            if var1 in self.pmap and var2 != self.pmap[var1]:
+            if ((var1 in self.pmap or var2 in self.pmap.keys())
+                and var2 != self.pmap.get(var1)):
                 continue
 
             # Cannot delete new variable
@@ -351,7 +420,7 @@ class Repair(object):
                 deltree = self.totree(delexpr)
                 delcost = self.distance(tree2, deltree, {var2: var2})
                 if delcost:
-                    yield ([(var1, var2)], delcost, ())
+                    yield ([(var1, var2)], delcost, (), None)
                 continue
 
             # (1) Generate corrects (if not new variable)
@@ -390,28 +459,55 @@ class Repair(object):
                         ms = list(m)
                         ms.sort()
                         sofar.add((tuple(ms), tuple(order)))
-                        yield (m, 0, set(order))
+                        yield (m, 0, set(order), None)
 
             # (2) Generate repairs
-            for m in self.one_to_ones(vars1, V2, var1, var2):
-                order = self.getorder(var2, expr1, dict(m))
-                if order is None:
-                    self.debug(
-                        'skipping repair %s := %s (%s) because \
-impossible order',
-                        var1, expr1, m)
-                    continue
-                if isid and var2 == '*':
-                    cost = 0
-                else:
-                    cost = self.distance(tree2, tree1, dict(m))
-                    
-                # Account for *declaring* a new variable
-                if var2 == '*' and loc1 == 1:
-                    cost += 1
+            tmprepairs = {}
+            #for rexpr, rtree in zip([self.E1[loc1][var1]], [self.T1[loc1][var1]]):
+            for idx, ((rexpr, _), rtree) in enumerate(zip(self.ER[loc1][var1], self.TR[loc1][var1])):
                 
-                ms = list(m)
-                ms.sort()
-                if (tuple(ms), tuple(order)) in sofar:
-                    continue
-                yield (m, cost, set(order))
+                risid = (isinstance(rexpr, Var) and rexpr.name == var1
+                        and rexpr.primed == False)
+                rvars = list(set(map(unprimes, rexpr.vars())) | set([var1]))
+                
+                for m in self.one_to_ones(rvars, V2, var1, var2):
+                    order = self.getorder(var2, rexpr, dict(m))
+                    
+                    if order is None:
+                        self.debug(
+                            'skipping repair %s := %s (%s) because impossible order',
+                            var1, expr1, m)
+                        continue
+                    
+                    if risid and var2 == '*':
+                        cost = 0
+                    else:
+                        cost = self.distance(tree2, rtree, dict(m))
+                    
+                    # Account for *declaring* a new variable
+                    if var2 == '*' and loc1 == 1:
+                        cost += 1
+                
+                    ms = list(m)
+                    ms.sort()
+
+                    tms = tuple(ms)
+                    torder = tuple(order)
+                
+                    if (tms, torder) in sofar:
+                        continue
+
+                    # From each 'm'-'order' pair we first remember all pairs
+                    # and later yield only the one with the smallest cost
+                    # since other ones have no sense
+                    tmp = (tms, torder)
+                    if tmp not in tmprepairs:
+                        tmprepairs[tmp] = []
+                    tmprepairs[tmp].append((cost, (m, cost, set(order), idx)))
+
+                    #yield (m, cost, set(order))
+                
+            for treps in tmprepairs.values():
+                treps.sort()
+                #print treps[0][1]
+                yield treps[0][1]

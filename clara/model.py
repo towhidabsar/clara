@@ -61,12 +61,12 @@ class Var(Expr):
         
         super(Var, self).__init__(*args, **kwargs)
 
-        assert isinstance(name, str), \
-            "Variable name should be string, got '%s'" % (name,)
+        assert isinstance(name, (str, unicode)), \
+            "Variable name should be string or unicode, got '%s'" % (name,)
         assert isinstance(primed, bool), \
             "Variable 'primed' should be bool, got '%s'" % (primed,)
         
-        self.name = name
+        self.name = str(name)
         self.primed = primed
 
     def copy(self):
@@ -109,10 +109,10 @@ class Const(Expr):
 
         super(Const, self).__init__(*args, **kwargs)
 
-        assert isinstance(value, str), \
+        assert isinstance(value, (str, unicode)), \
             "Constant value should be string, got '%s'" % (value,)
         
-        self.value = value
+        self.value = str(value)
 
     def copy(self):
         return Const(self.value, **self.copyargs())
@@ -142,14 +142,14 @@ class Op(Expr):
 
         super(Op, self).__init__(**kwargs)
 
-        assert isinstance(name, str), \
+        assert isinstance(name, (str, unicode)), \
             "Operation name should be string, got '%s'" % (name,)
         for i, arg in enumerate(args, 1):
             assert isinstance(arg, Expr), \
                 "Operation's argument (#%d) should be Expression, got '%s'" % (
                     i, arg)
 
-        self.name = name
+        self.name = str(name)
         self.args = list(args)
 
     def copy(self):
@@ -199,7 +199,7 @@ def dict_to_expr(d):
         return Const(value=d['value'])
 
     else:
-        return Op(name=d['name'], *map(dict_to_expr, d['args']))
+        return Op(d['name'], *map(dict_to_expr, d['args']))
     
 
 class Program(object):

@@ -10,6 +10,7 @@ BINARY_OPS = {
     'And': 'and',
     'Or': 'or',
     'Add': '+',
+    'AssAdd': '+',
     'Sub': '-',
     'Mult': '*',
     'Div': '/',
@@ -48,10 +49,14 @@ class PythonFeedback(object):
         self.result = result
         self.feedback = []
 
+        self.expr_orig = None
+
     def add(self, msg, *args):
         if args:
             msg %= args
-        self.feedback.append('(python) %s' % (msg,))
+        if self.expr_orig:
+            msg = '%s [%s]' % (msg, self.expr_orig)
+        self.feedback.append('* ' + msg)
 
     def genfeedback(self):
         # Iterate all functions
@@ -70,7 +75,14 @@ class PythonFeedback(object):
             # var1 - variable from the spec.
             # var2 - variable from the impl.
             # cost - cost of the repair
-            for (loc1, var1, var2, cost, _) in repairs:
+            for rep in repairs:
+
+                loc1 = rep.loc1
+                var1 = rep.var1
+                var2 = rep.var2
+                cost = rep.cost
+                expr1 = rep.expr1
+                self.expr_orig = rep.expr1_orig
 
                 # Get functions and loc2
                 fnc1 = self.spec.getfnc(fname)
@@ -78,7 +90,7 @@ class PythonFeedback(object):
                 loc2 = sm[loc1]
 
                 # Get exprs (spec. and impl.)
-                expr1 = fnc1.getexpr(loc1, var1)
+                #expr1 = fnc1.getexpr(loc1, var1)
                 expr2 = fnc2.getexpr(loc2, var2)
 
                 # Location of the expression

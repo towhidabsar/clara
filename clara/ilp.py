@@ -95,7 +95,7 @@ class Solver(object):
         for loc1 in self.P:
             for var1 in self.P[loc1]:
                 RV = {}  # All repairs for (loc1,var1)
-                for m, cost, order in self.P[loc1][var1]:
+                for m, cost, order, idx in self.P[loc1][var1]:
                     maxcost = max(maxcost, cost)
                     ri = self.N  # Variable denoting this repair
                     self.N += 1
@@ -117,7 +117,7 @@ class Solver(object):
                     if cost > 0:
                         self.O[ri] = float(cost)  # cost of r1
                     # Remember repair ri
-                    self.R[ri] = (loc1, var1, var2, cost, order)
+                    self.R[ri] = (loc1, var1, var2, cost, order, idx)
                 if len(RV) and var1 != '-':
                     # sum ri >= 1
                     # At least one ri for (loc1,var) should be chosen
@@ -199,7 +199,7 @@ class Solver(object):
                         "%s already mapped" % (var2,)
                 mapping[var1] = var2
             else:
-                (loc1, var1, var2, cost, order) = r = self.R[i]
+                (loc1, var1, var2, cost, order, idx) = r = self.R[i]
                 if loc1 not in orders:
                     orders[loc1] = []
                 orders[loc1].append((i, order))

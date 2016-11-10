@@ -28,7 +28,8 @@ class Matching(object):
 
     def match_mems(self, match, loc, mem1, mem2, V1):
 
-        V2 = {var2 for var2 in mem2.keys() if not isprimed(var2)}
+        V2 = ({var2 for var2 in mem2.keys() if not isprimed(var2)}
+              - SPECIAL_VARS)
 
         if self.bijective:
             if len(V1 | SPECIAL_VARS) != len(V2 | SPECIAL_VARS):
@@ -56,6 +57,12 @@ class Matching(object):
             varp1 = prime(var1)
             for var2 in match[var1]:
                 varp2 = prime(var2)
+
+                if var1.startswith('ind#') != var2.startswith('ind#'):
+                    continue
+
+                if var1.startswith('iter#') != var2.startswith('iter#'):
+                    continue
 
                 # Get values
                 val1 = mem1.get(varp1, UndefValue())

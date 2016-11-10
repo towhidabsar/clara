@@ -490,6 +490,9 @@ class Parser(object):
     def lastloop(self):
         return self.loops[-1] if len(self.loops) else None
 
+    def isfncname(self, name):
+        return name in self.fncs
+
     @classmethod
     def parse_code(cls, code, *args, **kwargs):
         parser = cls(*args, **kwargs)

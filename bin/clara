@@ -162,6 +162,9 @@ Options are:
         elif self.cmd == 'feedback':
             self.feedback()
 
+        elif self.cmd == 'eval':
+            self.eval()
+
         else:
             self.usage()
             self.error("Unknown command: '%s'", self.cmd)
@@ -192,6 +195,19 @@ Options are:
             print 'Match!'
         else:
             print 'No match!'
+
+    def eval(self):
+
+        if len(self.models) != 1:
+            self.error('Eval requires exactly one program!')
+
+        print self.models[0]
+        print
+
+        inter = self.inter(entryfnc=self.entryfnc)
+        trace = inter.run(self.models[0], args=self.args, ins=self.ins)
+
+        print trace
 
     def repair(self):
 
