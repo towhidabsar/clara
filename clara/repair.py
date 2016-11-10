@@ -446,7 +446,7 @@ class Repair(object):
                             if isinstance(val2, str) and self.cleanstrings:
                                 val2 = val2.strip()
 
-                            if  not equals(val2, val1):
+                            if not equals(val2, val1):
                                 ok = False
                                 break
                         except RuntimeErr:

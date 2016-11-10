@@ -162,7 +162,11 @@ class Parser(object):
                         lastret = len(exprs)
                         
                     exprs.append((var, expr))
-                    primed.add(var)
+                    
+                    # TODO: This fix should be examined!
+                    # (And if it makes sense 'True' should be removed!)
+                    if True or var != VAR_RET:
+                        primed.add(var)
 
             # "Merge" return stmts
             nexprs = []
