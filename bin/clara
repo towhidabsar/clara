@@ -42,7 +42,9 @@ Options are:
   --lang LANG        language of the source files
                      (default is to guess from the first source file extension)
   --args ARGS        arguments for matching or repair
+  --argsfile FILE    file with arguments for matching or repair
   --ins INS          inputs for matching or repair
+  --insfile FILE     file with arguments for matching or repair
   --entryfnc FNC     entry function for matching or repair
                      (default is 'main')
   --ignoreio [0|1]   whether to ignore IO in matching or repair
@@ -137,10 +139,24 @@ Options are:
 
         self.ins = self.opts.pop('ins', None)
         self.args = self.opts.pop('args', None)
+        self.insfile = self.opts.pop('insfile', None)
+        self.argsfile = self.opts.pop('argsfile', None)
+
+        if self.ins is not None and self.insfile is not None:
+            self.error('Got both inputs and file with inputs: which to use?')
+        if self.args is not None and self.argsfile is not None:
+            self.error('Got both args and file with args: which to use?')
+        
         if self.ins is not None:
             self.ins = literal_eval(self.ins)
         if self.args is not None:
             self.args = literal_eval(self.args)
+        if self.insfile is not None:
+            with open(self.insfile, 'r') as f:
+                self.ins = literal_eval(f.read())
+        if self.argsfile is not None:
+            with open(self.argsfile, 'r') as f:
+                self.args = literal_eval(f.read())
 
         if self.lang is None:
             self.guess_lang()
