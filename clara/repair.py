@@ -12,7 +12,8 @@ from zss import Node, simple_distance as tree_distance
 # clara imports
 from common import debug, equals
 from interpreter import RuntimeErr, isundef
-from model import isprimed, unprime, prime, SPECIAL_VARS, VAR_IN, VAR_OUT
+from model import isprimed, unprime, prime
+from model import SPECIAL_VARS, VAR_IN, VAR_OUT, VAR_RET
 from model import Var, Const, Op
 from matching import Matching
 
@@ -431,7 +432,7 @@ class Repair(object):
                     for mem1 in self.trace.get(f1.name, {}).get(loc1, []):
                         val1 = mem1.get(varp1)
                         
-                        if isundef(val1):
+                        if isundef(val1) and (var1 != VAR_RET):
                             continue
                         
                         if isinstance(val1, str) and self.cleanstrings:
