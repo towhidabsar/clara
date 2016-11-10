@@ -92,6 +92,9 @@ class PyInterpreter(Interpreter):
         if c == 'None':
             return None
 
+        if c == 'break_outside_loop':
+            return UndefValue()
+
         assert False, 'unknown constant: %s' % (c,)
 
     @eargs
