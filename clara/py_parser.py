@@ -34,6 +34,8 @@ class PyParser(Parser):
     OROP = 'Or'
     ANDOP = 'And'
 
+    BOUND_VARS = []
+
     def __init__(self, *args, **kwargs):
         super(PyParser, self).__init__(*args, **kwargs)
         
@@ -105,9 +107,15 @@ class PyParser(Parser):
     # Methods for Variables
 
     def visit_Name(self, node):
+        try:
+            bindx = self.BOUND_VARS.index(node.id)
+            return Op('BoundVar', Const(str(bindx)), line=node.lineno)
+        except ValueError:
+            pass
         if node.id in self.CONSTS and not self.hasvar(node.id):
             return Const(node.id)
-        if node.id not in self.MODULE_NAMES:
+        if (node.id not in self.MODULE_NAMES):
+            #and not self.isfncname(node.id)):
             self.addtype(node.id, '*')
         return Var(node.id)
 
@@ -596,69 +604,106 @@ class PyParser(Parser):
     
     def visit_comprehension(self, node):
 
-        if node.ifs is None or len(node.ifs) == 0:
+        # elt is an expression generating elements
+        # generators is a comprehension object
+
+        if len(node.generators) != 1:
+            raise NotSupported("Only one generator supported",
+                               line=node.lineno)
+
+        gen = node.generators[0]
+
+        iter = self.visit(gen.iter)
+
+        bounds = self.BOUND_VARS
+        self.BOUND_VARS = []
+        target = self.listofnames(gen.target)
+        tlen = Const(str(len(target)))
+        self.BOUND_VARS = bounds
+
+        bound_len = len(target)
+        self.BOUND_VARS = list(target) + self.BOUND_VARS
+
+        if gen.ifs is None or len(gen.ifs) == 0:
             ifs = Const('True')
-        elif len(node.ifs) == 1:
-            ifs = self.visit_expr(node.ifs[0])
+        elif len(gen.ifs) == 1:
+            ifs = self.visit_expr(gen.ifs[0])
         else:
             raise NotSupported("Comprehension multiple ifs")
-        
-        target = self.visit(node.target)
-        if not self.islistofnames(target):
-            raise NotSupported("Target is not a list of names")
-        
-        iter = self.visit(node.iter)
 
-        return Op('Comp', target, iter, ifs)
+        if isinstance(node, ast.DictComp):
+            key = self.visit_expr(node.key)
+            value = self.visit_expr(node.value)
+            op = Op(node.__class__.__name__, tlen, key, value, iter, ifs)
+        else:
+            elt = self.visit_expr(node.elt)
+            op = Op(node.__class__.__name__, tlen, elt, iter, ifs)
+
+        self.BOUND_VARS = self.BOUND_VARS[bound_len:]
+
+        return op
 
     def visit_ListComp(self, node):
-        elt = self.visit_expr(node.elt)
+        return self.visit_comprehension(node)
+    
+        # elt = self.visit_expr(node.elt)
 
-        if len(node.generators) != 1:
-            raise NotSupported("Only one generator supported",
-                               line=node.lineno)
+        # if len(node.generators) != 1:
+        #     raise NotSupported("Only one generator supported",
+        #                        line=node.lineno)
         
-        gen = self.visit_expr(node.generators[0])
+        # gen = self.visit_expr(node.generators[0])
 
-        return Op('ListComp', elt, gen, line=node.lineno)
+        # return Op('ListComp', elt, gen, line=node.lineno)
 
     def visit_SetComp(self, node):
-        elt = self.visit_expr(node.elt)
+        return self.visit_comprehension(node)
+    
+        # elt = self.visit_expr(node.elt)
 
-        if len(node.generators) != 1:
-            raise NotSupported("Only one generator supported",
-                               line=node.lineno)
+        # if len(node.generators) != 1:
+        #     raise NotSupported("Only one generator supported",
+        #                        line=node.lineno)
         
-        gen = self.visit_expr(node.generators[0])
+        # gen = self.visit_expr(node.generators[0])
 
-        return Op('SetComp', elt, gen, line=node.lineno)
+        # return Op('SetComp', elt, gen, line=node.lineno)
 
     def visit_DictComp(self, node):
-        key = self.visit_expr(node.key)
-        value = self.visit_expr(node.value)
+        return self.visit_comprehension(node)
+    
+        # key = self.visit_expr(node.key)
+        # value = self.visit_expr(node.value)
         
-        if len(node.generators) != 1:
-            raise NotSupported("Only one generator supported",
-                               line=node.lineno)
+        # if len(node.generators) != 1:
+        #     raise NotSupported("Only one generator supported",
+        #                        line=node.lineno)
         
-        gen = self.visit_expr(node.generators[0])
+        # gen = self.visit_expr(node.generators[0])
 
-        return Op('DictComp', key, value, gen, line=node.lineno)
+        # return Op('DictComp', key, value, gen, line=node.lineno)
+
+    def visit_Global(self, node):
+        # ignore
+        pass
 
     # Auxiliary methods
 
-    def islistofnames(self, node):
+    def listofnames(self, node):
 
-        if isinstance(node, Var):
-            return True
+        if isinstance(node, ast.Name):
+            return [node.id]
 
-        if isinstance(node, Op) and node.name == 'TupleInit':
-            for arg in node.args:
-                if not isinstance(arg, Var):
-                    return False
-            return True
+        if isinstance(node, ast.Tuple):
+            names = []
+            for arg in node.elts:
+                if isinstance(arg, ast.Name):
+                    names.append(arg.id)
+                else:
+                    raise NotSupported("Comprehension: not a list of names")
+            return names
 
-        return False
+        raise NotSupported("Comprehension: not a list of names")
     
     def getline(self, node):
         if isinstance(node, list):

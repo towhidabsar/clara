@@ -440,9 +440,6 @@ class PyInterpreter(Interpreter):
         return self.execute_reverse(o, mem)
 
     def execute_Comp(self, c, mem):
-        # Arg #1 is a list of names
-        names = self.extract_names(c.args[0])
-
         # Arg #2 is an expression evaluating to a list
         l = list(self.execute(c.args[1], mem))
 
@@ -470,55 +467,127 @@ class PyInterpreter(Interpreter):
 
         return names, nl
 
+    def execute_BoundVar(self, c, mem):
+        var = int(c.args[0].value)
+        return mem['#__bound'][var]
+
     def execute_ListComp(self, lc, mem):
 
-        # Execute comprehension expression
-        vars, l = self.execute(lc.args[1], mem)
+        # Arg #1 is an elements expresion
+        eexpr = lc.args[1]
 
-        # Generator expression
-        expr = lc.args[0]
+        # Arg #2 is a list expression
+        l = self.execute(lc.args[2], mem)
+
+        # Arg #3 is a filter
+        filt = lc.args[3]
+
+        # Arg #0 is a number of bound variables
+        boundlen = int(lc.args[0].value)
+
+        mem = deepcopy(mem)
+        bound = mem['#__bound'] = ([None for _ in xrange(boundlen)] \
+                                   + mem.get('#__bound', []))
 
         # Construct a new list
         nl = []
         for el in l:
 
             # Construct a new memory from a list element
-            newmem = deepcopy(mem)
-            for var, val in zip(vars, el):
-                newmem[var] = val
+            if boundlen == 1:
+                bound[0] = el
+            else:
+                el = tuple(el)
+                if len(el) != boundlen:
+                    raise RuntimeErr('Cannot unpack')
+                for var, val in zip(xrange(boundlen), el):
+                    bound[var] = val
+
+            # Apply filter
+            ok = self.execute(filt, mem)
+            if not ok:
+                continue
 
             # Get a value of an element by executing it
-            el = self.execute(expr, newmem)
+            el = self.execute(eexpr, mem)
             nl.append(el)
 
         return nl
 
-    def execute_SetComp(self, sc, mem):
-        return set(self.execute_ListComp(sc, mem))
+    def execute_DictComp(self, lc, mem):
 
-    def execute_DictComp(self, dc, mem):
+        # Arg #1,#2 are key val exprs
+        kexpr = lc.args[1]
+        vexpr = lc.args[2]
 
-        # Comprehension expression
-        vars, l = self.execute(dc.args[2], mem)
+        # Arg #3 is a list expression
+        l = self.execute(lc.args[3], mem)
 
-        # Key, value exprs
-        ke, ve = dc.args[:2]
+        # Arg #4 is a filter
+        filt = lc.args[4]
+
+        # Arg #0 is a number of bound variables
+        boundlen = int(lc.args[0].value)
+
+        mem = deepcopy(mem)
+        bound = mem['#__bound'] = ([None for _ in xrange(boundlen)] \
+                                   + mem.get('#__bound', []))
 
         # Construct a dict
         nd = {}
         for el in l:
 
-            # New memory from a list element
-            newmem = deepcopy(mem)
-            for var, val in zip(vars, el):
-                newmem[var] = val
+            # Construct a new memory from a list element
+            if boundlen == 1:
+                bound[0] = el
+            else:
+                el = tuple(el)
+                if len(el) != boundlen:
+                    raise RuntimeErr('Cannot unpack')
+                for var, val in zip(xrange(boundlen), el):
+                    bound[var] = val
 
-            # Get key and value by executing expressions
-            key = self.execute(ke, newmem)
-            val = self.execute(ve, newmem)
+            # Apply filter
+            ok = self.execute(filt, mem)
+            if not ok:
+                continue
+
+            # Get a value of an element by executing it
+            key = self.execute(kexpr, mem)
+            val = self.execute(vexpr, mem)
             nd[key] = val
 
         return nd
+
+    def execute_SetComp(self, sc, mem):
+        return set(self.execute_ListComp(sc, mem))
+
+    def execute_GeneratorExp(self, sc, mem):
+        return self.execute_ListComp(sc, mem)
+
+    # def execute_DictComp(self, dc, mem):
+
+    #     # Comprehension expression
+    #     vars, l = self.execute(dc.args[2], mem)
+
+    #     # Key, value exprs
+    #     ke, ve = dc.args[:2]
+
+    #     # Construct a dict
+    #     nd = {}
+    #     for el in l:
+
+    #         # New memory from a list element
+    #         newmem = deepcopy(mem)
+    #         for var, val in zip(vars, el):
+    #             newmem[var] = val
+
+    #         # Get key and value by executing expressions
+    #         key = self.execute(ke, newmem)
+    #         val = self.execute(ve, newmem)
+    #         nd[key] = val
+
+    #     return nd
 
     def extract_names(self, node):
         # Single variable
