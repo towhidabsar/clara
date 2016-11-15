@@ -59,6 +59,7 @@ class PythonFeedback(object):
         self.feedback.append('* ' + msg)
 
     def genfeedback(self):
+        gen = PythonStatementGenerator()
         # Iterate all functions
         # fname - function name
         # mapping - one-to-one mapping of variables
@@ -104,7 +105,7 @@ class PythonFeedback(object):
                 # Delete feedback
                 if var1 == '-':
                     self.add("Delete '%s' at line %s (cost=%s)",
-                             str(self.assignmentStatement(var2, expr2)), expr2.line, cost)
+                             str(gen.assignmentStatement(var2, expr2)), expr2.line, cost)
                     continue
 
                 # Rewrite expr1 (from spec.) with variables of impl.
@@ -113,14 +114,16 @@ class PythonFeedback(object):
                 # '*' means adding a new variable (and also statement)
                 if var2 == '*':
                     self.add("Add assignment '%s' %s (cost=%s)",
-                             str(self.assignmentStatement('$new_%s' % (var1,), expr1)), locdesc, cost)
+                             str(gen.assignmentStatement('$new_%s' % (var1,), expr1)), locdesc, cost)
                     continue
 
                 # Output original and new (rewriten) expression for var2
                 self.add(
                     "Change '%s' to '%s' %s (cost=%s)",
-                    str(self.assignmentStatement(var2, expr2)), str(self.assignmentStatement(var2, expr1)), locdesc, cost)
+                    str(gen.assignmentStatement(var2, expr2)), str(gen.assignmentStatement(var2, expr1)), locdesc, cost)
                 
+                
+class PythonStatementGenerator(object):
     def assignmentStatement(self, var, expr):
         if var == VAR_COND:
             return PyCondition(self.pythonExpression(expr))
