@@ -401,6 +401,10 @@ class PyInterpreter(Interpreter):
         return (nl, res)
 
     @eargs
+    def execute_join(self, s, l):
+        return s.join(l)
+
+    @eargs
     def execute_Delete(self, l, i):
         nl = deepcopy(l)
         del nl[i]
