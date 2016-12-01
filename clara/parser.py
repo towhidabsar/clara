@@ -149,6 +149,8 @@ class Parser(object):
             # Remember "real" vars and replace temps
             for var, expr in fnc.exprs(loc):
 
+                expr.statement = True
+                
                 expr.prime(primed)
                 
                 for v, e in m.items():
@@ -163,9 +165,7 @@ class Parser(object):
                         
                     exprs.append((var, expr))
                     
-                    # TODO: This fix should be examined!
-                    # (And if it makes sense 'True' should be removed!)
-                    if True or var != VAR_RET:
+                    if var != VAR_RET:
                         primed.add(var)
 
             # "Merge" return stmts
