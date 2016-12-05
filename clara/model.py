@@ -45,11 +45,12 @@ class Expr(object):
     An expression
     '''
 
-    def __init__(self, line=None):
+    def __init__(self, line=None, statement=False):
         self.line = line
+        self.statement = statement
 
     def copyargs(self):
-        return {'line': self.line}
+        return {'line': self.line, 'statement': self.statement}
 
     
 class Var(Expr):
