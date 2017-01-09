@@ -2,6 +2,8 @@
 Common parser stuff
 '''
 
+import re
+
 # clara lib imports
 from common import UnknownLanguage
 from model import Program, Function, Expr, Op, Var, Const, VAR_COND, VAR_RET
@@ -130,6 +132,9 @@ class Parser(object):
                         m.pop(var, None)
                         newvar = var
 
+                if var != newvar:
+                    expr.original = (var, self.cnt)
+
                 exprs.append((newvar, expr))
 
             fnc.replaceexprs(loc, exprs)
@@ -149,7 +154,7 @@ class Parser(object):
             # Remember "real" vars and replace temps
             for var, expr in fnc.exprs(loc):
 
-                expr.statement = True
+                #expr.statement = True
                 
                 expr.prime(primed)
                 

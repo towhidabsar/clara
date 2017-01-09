@@ -2,6 +2,8 @@
 Program model
 '''
 
+import re
+
 # Special variables definitions
 VAR_COND = '$cond'
 VAR_RET = '$ret'
@@ -45,12 +47,29 @@ class Expr(object):
     An expression
     '''
 
-    def __init__(self, line=None, statement=False):
+    def __init__(self, line=None, statement=False, original=None):
         self.line = line
         self.statement = statement
+        self.original = original
 
     def copyargs(self):
-        return {'line': self.line, 'statement': self.statement}
+        return {'line': self.line,
+                'statement': self.statement,
+                'original': self.original}
+
+    def replace_original(self, d):
+        if not self.original:
+            return
+        
+        if self.original[0] in d:
+            self.original = (d[self.original[0]],
+                             self.original[1])
+
+    def expr_original(self, s):
+        if self.original:
+            return '%s{%s, %d}' % (s, self.original[0], self.original[1],)
+        else:
+            return s
 
     
 class Var(Expr):
@@ -75,7 +94,8 @@ class Var(Expr):
 
     def replace(self, var, expr, primedonly=False):
         if self.name == var and ((not primedonly) or self.primed):
-            return expr.copy()
+            expr = expr.copy()
+            return expr
         else:
             return self.copy()
 
@@ -83,9 +103,12 @@ class Var(Expr):
         if self.name in d:
             v = self.copy()
             v.name = d[self.name]
-            return v
         else:
-            return self.copy()
+            v = self.copy()
+
+        v.replace_original(d)
+
+        return v
 
     def prime(self, vars):
         if self.name in vars:
@@ -96,9 +119,11 @@ class Var(Expr):
     
     def __repr__(self):
         if self.primed:
-            return "%s'" % (self.name,)
+            s = "%s'" % (self.name,)
         else:
-            return self.name
+            s = self.name
+            
+        return self.expr_original(s)
 
         
 class Const(Expr):
@@ -122,7 +147,9 @@ class Const(Expr):
         return self.copy()
 
     def replace_vars(self, d):
-        return self.copy()
+        e = self.copy()
+        e.replace_original(d)
+        return e
 
     def prime(self, vars):
         pass
@@ -131,7 +158,8 @@ class Const(Expr):
         return set()
 
     def __repr__(self):
-        return self.value
+        s = self.value
+        return self.expr_original(s)
 
 
 class Op(Expr):
@@ -164,9 +192,11 @@ class Op(Expr):
                   **self.copyargs())
 
     def replace_vars(self, d):
-        return Op(self.name,
-                  *map(lambda x: x.replace_vars(d), self.args),
-                  **self.copyargs())
+        e = Op(self.name,
+               *map(lambda x: x.replace_vars(d), self.args),
+               **self.copyargs())
+        e.replace_original(d)
+        return e
 
     def prime(self, vars):
         map(lambda x: x.prime(vars), self.args)
@@ -177,7 +207,8 @@ class Op(Expr):
                       set())
 
     def __repr__(self):
-        return '%s(%s)' % (self.name, ', '.join(map(str, self.args)))
+        s = '%s(%s)' % (self.name, ', '.join(map(str, self.args)))
+        return self.expr_original(s)
 
     
 def expr_to_dict(e):
