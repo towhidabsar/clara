@@ -155,7 +155,6 @@ class PythonStatementGenerator(object):
         pyexpr = self.pythonExpression(expr, ignoreStandalone, replacement)
         assignment = PyAssignment(PyVariable(var), pyexpr[0])
         try:
-            print expr.name
             if self.shouldEliminateLeftSide(expr):
                 assignment = pyexpr[0]
             if str(assignment.assigned.elseexpr) == str(var): # if we have an 'ite' with an else part that's supposed to be empty
