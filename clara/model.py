@@ -116,6 +116,12 @@ class Var(Expr):
 
     def vars(self):
         return set([str(self)])
+
+    def tostr(self):
+        if self.primed:
+            return "%s'" % (self.name,)
+        else:
+            return str(self.name)
     
     def __repr__(self):
         if self.primed:
@@ -212,27 +218,32 @@ class Op(Expr):
 
     
 def expr_to_dict(e):
+    d = None
+
     if isinstance(e, Var):
-        return {'type': 'Var', 'name': e.name, 'primed': e.primed}
+        d = {'type': 'Var', 'name': e.name, 'primed': e.primed}
     
     elif isinstance(e, Const):
-        return {'type': 'Const', 'value': e.value}
+        d = {'type': 'Const', 'value': e.value}
 
     else:
-        return {'type': 'Op', 'name': e.name,
+        d = {'type': 'Op', 'name': e.name,
                 'args': map(expr_to_dict, e.args)}
+
+    d['original'] = e.original
 
 def dict_to_expr(d):
 
     if d['type'] == 'Var':
-        return Var(name=d['name'], primed=d['primed'])
+        e = Var(name=d['name'], primed=d['primed'])
 
     elif d['type'] == 'Const':
-        return Const(value=d['value'])
+        e = Const(value=d['value'])
 
     else:
-        return Op(d['name'], *map(dict_to_expr, d['args']))
+        e = Op(d['name'], *map(dict_to_expr, d['args']))
     
+    e.original = d['original']
 
 class Program(object):
     '''
