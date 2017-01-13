@@ -201,7 +201,7 @@ class Interpreter(object):
         return meth(op, mem)
 
     def execute_Var(self, v, mem):
-        return mem.get(str(v), UndefValue())
+        return mem.get(v.tostr(), UndefValue())
 
     def execute_ListHead(self, l, mem):
 
