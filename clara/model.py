@@ -66,7 +66,7 @@ class Expr(object):
                              self.original[1])
 
     def expr_original(self, s):
-        if self.original:
+        if self.original and False:
             return '%s{%s, %d}' % (s, self.original[0], self.original[1],)
         else:
             return s
@@ -232,6 +232,8 @@ def expr_to_dict(e):
 
     d['original'] = e.original
 
+    return d
+
 def dict_to_expr(d):
 
     if d['type'] == 'Var':
@@ -244,6 +246,8 @@ def dict_to_expr(d):
         e = Op(d['name'], *map(dict_to_expr, d['args']))
     
     e.original = d['original']
+
+    return e
 
 class Program(object):
     '''
