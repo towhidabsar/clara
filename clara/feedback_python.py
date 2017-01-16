@@ -183,7 +183,6 @@ class PythonStatementGenerator(object):
 
     def pythonExpression(self, expr, ignoreStandalone=False, replacement=None):
         assignments = []
-        previous_ids = []
         try:
             if replacement:
                 try:
@@ -236,14 +235,12 @@ class PythonStatementGenerator(object):
                 ret = PyDelete(args)
             elif expr.name == 'FuncCall':
                 ret = PyFuncCall(args[0], (args[1:]))
-            elif expr.name == 'Comp':
-                ret = PyComprehension(args[0], args[1], args[2:])
             elif expr.name == 'ListComp':
-                ret = PyListComp(args[1], PyComprehension(', '.join(args[1:])))
+                ret = PyListComp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
             elif expr.name == 'SetComp':
-                ret = PySetComp(args[1], PyComprehension(', '.join(args[1:])))
+                ret = PySetComp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
             elif expr.name == 'DictComp':
-                ret = PyDictComp(args[1], args[2], PyComprehension(', '.join(args[1:])))
+                ret = PyDictComp(args[1], args[2], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
             elif expr.name == 'BoundVar':
                 ret = PyVariable(self.getBoundVarName(int(expr.args[0].value)))
             elif expr.args != None:
@@ -264,16 +261,21 @@ class PythonStatementGenerator(object):
             assignments.append((var_ret, ret, expr.original[1]))
             ret = var_ret
         previous_ids = []
+        ret_assignments = []
         for i in range(len(assignments)): # eliminate duplicates
-            if assignments[i][2] in previous_ids:
-                del assignments[i]
-            else:
+            if assignments[i][2] not in previous_ids:
+                ret_assignments.append(assignments[i])
                 previous_ids.append(assignments[i][2])
-        return [ret, assignments]
+        return [ret, ret_assignments]
 
     def extractAssignments(self, assignmentlist, assignment):
+        ret_assignmentlist = []
+
         if len(assignmentlist) > 0:
-            return PyAssignments([PyAssignment(ass[0], ass[1]) for ass in assignmentlist]+[assignment])
+            for ass in assignmentlist:
+                if (str(ass[0]) != str(ass[1]).strip()) and (not str(ass[1]).strip().startswith('iter#')):
+                    ret_assignmentlist.append(PyAssignment(ass[0], ass[1]))
+            return PyAssignments(ret_assignmentlist+[assignment])
         return assignment
     
 class StandaloneStatementException(Exception):
@@ -514,7 +516,7 @@ class PyComprehension(PyExpression):
         self.ifs = ifs
         
     def __repr__(self):
-        return 'for %s in %s if %s' % (self.target, self.iter, ' '.join(['if ' + str(cond) for cond in self.ifs]))
+        return 'for %s in %s if %s' % (', '.join([str(var) for var in self.target]), str(self.iter), ' if '.join([str(cond) for cond in self.ifs]))
     
 class PyListComp(PyExpression):
     def __init__(self, elt, generators):
