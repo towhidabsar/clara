@@ -241,6 +241,8 @@ class PythonStatementGenerator(object):
                 ret = PySetComp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
             elif expr.name == 'DictComp':
                 ret = PyDictComp(args[1], args[2], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
+            elif expr.name == 'GeneratorExp':
+                ret = PyGeneratorExp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
             elif expr.name == 'BoundVar':
                 ret = PyVariable(self.getBoundVarName(int(expr.args[0].value)))
             elif expr.args != None:
@@ -348,6 +350,7 @@ class PyAssignment(PyExpression):
     def __init__(self, variable, assigned):
         if not variable.isLValue():
             raise NotAnLValueException(variable)
+            pass
         self.variable = variable
         self.assigned = assigned
         
@@ -543,3 +546,10 @@ class PyDictComp(PyExpression):
     def __repr__(self):
         return '{%s: %s %s}' % (self.key, self.value, (' ').join([str(gen) for gen in self.generators]) )
     
+class PyGeneratorExp(PyExpression):
+    def __init__(self, elt, generators):
+        self.elt = elt
+        self.generators = generators
+        
+    def __repr__(self):
+        return '%s %s' % (self.elt , ' '.join([str(gen) for gen in self.generators]))
