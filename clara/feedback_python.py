@@ -519,7 +519,10 @@ class PyComprehension(PyExpression):
         self.ifs = ifs
         
     def __repr__(self):
-        return 'for %s in %s if %s' % (', '.join([str(var) for var in self.target]), str(self.iter), ' if '.join([str(cond) for cond in self.ifs]))
+        ret = 'for %s in %s' % (', '.join([str(var) for var in self.target]), str(self.iter))
+        if len(self.ifs) != 1 or str(self.ifs[0]) != 'True':
+            ret = ret + ' if ' + 'if '.join([str(cond) for cond in self.ifs])
+        return ret
     
 class PyListComp(PyExpression):
     def __init__(self, elt, generators):
