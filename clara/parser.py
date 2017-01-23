@@ -161,6 +161,11 @@ class Parser(object):
                 for v, e in m.items():
                     expr = expr.replace(v, e)
 
+                    if isinstance(expr, Op) and expr.name == 'ite':
+                        expr.args[0].original = None
+                        expr.args[1].original = None
+                        expr.args[2].original = None
+
                 if var.endswith('&'):
                     m[var] = expr
 
@@ -365,6 +370,7 @@ class Parser(object):
                 # Replace vars mapped so far
                 for (v1, v2) in m.items():
                     expr = expr.replace(v1, Var(v2))
+                expr.original = (var, self.cnt)
                 self.addexpr(newvar, expr)
 
                 # Remember replacement

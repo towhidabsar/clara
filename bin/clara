@@ -190,7 +190,7 @@ Options are:
         if len(self.models) != 1:
             self.error('Model requires one program!')
 
-        print self.models[0]
+        print self.models[0].tostring()
 
     def match(self):
 

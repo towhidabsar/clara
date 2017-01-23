@@ -66,7 +66,7 @@ class Expr(object):
                              self.original[1])
 
     def expr_original(self, s):
-        if self.original and False:
+        if self.original:
             return '%s{%s, %d}' % (s, self.original[0], self.original[1],)
         else:
             return s
@@ -122,14 +122,17 @@ class Var(Expr):
             return "%s'" % (self.name,)
         else:
             return str(self.name)
+
+    def tostring(self):
+        return self.expr_original(repr(self))
     
     def __repr__(self):
         if self.primed:
-            s = "%s'" % (self.name,)
+            return "%s'" % (self.name,)
         else:
-            s = self.name
+            return self.name
             
-        return self.expr_original(s)
+        #return self.expr_original(s)
 
         
 class Const(Expr):
@@ -163,9 +166,12 @@ class Const(Expr):
     def vars(self):
         return set()
 
+    def tostring(self):
+        return self.expr_original(repr(self))
+
     def __repr__(self):
-        s = self.value
-        return self.expr_original(s)
+        return self.value
+        #return self.expr_original(s)
 
 
 class Op(Expr):
@@ -212,9 +218,13 @@ class Op(Expr):
         return reduce(lambda x, y: x | y, map(lambda x: x.vars(), args),
                       set())
 
-    def __repr__(self):
-        s = '%s(%s)' % (self.name, ', '.join(map(str, self.args)))
+    def tostring(self):
+        s = '%s(%s)' % (self.name, ', '.join(
+            map(lambda x: x.tostring(), self.args)))
         return self.expr_original(s)
+
+    def __repr__(self):
+        return '%s(%s)' % (self.name, ', '.join(map(str, self.args)))
 
     
 def expr_to_dict(e):
@@ -288,6 +298,9 @@ class Program(object):
 
     def __repr__(self):
         return '\n\n'.join(map(str, self.fncs.values()))
+
+    def tostring(self):
+        return '\n\n'.join(map(lambda x: x.tostring(), self.fncs.values()))
 
     def getstruct(self):
         
@@ -679,6 +692,30 @@ class Function(object):
         for v in list(self.types):
             if v not in used:
                 del self.types[v]
+
+    def tostring(self):
+        s = [
+            'fun %s (%s) : %s' % (self.name,
+                                  ', '.join(map(lambda x: '%s: %s' % x,
+                                                self.params)),
+                                  self.rettype),
+            '-' * 69,
+            ', '.join(map(lambda x: '%s : %s' % x, self.types.items())),
+        ]
+        for loc in sorted(self.locexprs.keys()):
+            s.append('')
+            s.append('Loc %d (%s)' % (loc,self.locdescs[loc]))
+            s.append('-' * 39)
+            
+            for (var, expr) in self.locexprs[loc]:
+                s.append('  %s := %s' % (var, expr.tostring()))
+
+            s.append('-' * 39)
+
+            s.append('  True -> %s   False -> %s' % (
+                self.loctrans[loc][True], self.loctrans[loc][False]))
+
+        return '\n'.join(s)
         
     def __repr__(self):
         s = [
