@@ -134,25 +134,32 @@ class PythonFeedback(object):
 class PythonStatementGenerator(object):
     def __init__(self):
         self.indexVariables = {}
+        self.indentation = 0
         
-    def assignmentStatement(self, var, expr):
-        if var == VAR_COND:
-            return PyCondition(self.pythonExpression(expr, True)[0])
-        elif var == VAR_RET:
-            return PyReturn(self.pythonExpression(expr, True)[0])
-        elif var == VAR_OUT:
-            return PyPrint(self.pythonExpression(expr, True)[0])
+    def assignmentStatement(self, var, expr, replacement=None):
         try:
-            if expr.name == 'GetElement' and expr.args[0].name.startswith('iter#') and expr.args[1].name.startswith('ind#'):
-                self.indexVariables[(expr.args[0].name, expr.args[1].name)] = var
-        except NameError:
-            pass
-        except AttributeError:
-            pass
-        return self.generateAssignments(var, expr)
+            if var == VAR_COND:
+                return PyCondition(self.pythonExpression(expr, replacement)[0])
+            elif var == VAR_RET:
+                return PyReturn(self.pythonExpression(expr, replacement)[0])
+            elif var == VAR_OUT:
+                return PyPrint(self.pythonExpression(expr, replacement)[0])
+                try:
+                    if expr.name == 'GetElement' and expr.args[0].name.startswith('iter#') and expr.args[1].name.startswith('ind#'):
+                        self.indexVariables[(expr.args[0].name, expr.args[1].name)] = var
+                except NameError:
+                    pass
+                except AttributeError:
+                    pass
+            return self.generateAssignments(var, expr, replacement)
+        except NotAnLValueException as ex:
+            if expr.name == 'ite':
+                return self.pythonIfThenElseClause(var, expr, replacement)
+            else:
+                raise
     
-    def generateAssignments(self, var, expr, ignoreStandalone=False, replacement=None): # unmerge any wrongly merged things
-        pyexpr = self.pythonExpression(expr, ignoreStandalone, replacement)
+    def generateAssignments(self, var, expr, replacement=None): # unmerge any wrongly merged things
+        pyexpr = self.pythonExpression(expr, replacement)
         assignment = PyAssignment(PyVariable(var), pyexpr[0])
         try:
             if self.shouldEliminateLeftSide(expr):
@@ -181,83 +188,116 @@ class PythonStatementGenerator(object):
             bvarname = str(chr(120+bvarnumber%3)) + str(bvarnumber/3)
         return bvarname
 
-    def pythonExpression(self, expr, ignoreStandalone=False, replacement=None):
-        assignments = []
-        try:
-            if replacement:
-                try:
-                    if self.areExpressionsEqual(expr, replacement[0]):
-                        expr = replacement[1]
-                    for arg, i in expr.args:
-                        if self.areExpressionsEqual(arg, replacement[0]):
-                            expr.args[i] = replacement[1]
-                except TypeError:
-                    pass
-                except AttributeError:
-                    pass
-            
-            args_both = [self.pythonExpression(arg, ignoreStandalone, replacement) for arg in expr.args]
-            args = []
-            for arg in args_both:
-                args.append(arg[0])
-                assignments = assignments + arg[1]
-            if expr.name == 'ListInit':
-                ret = PyListInit(args)
-            elif expr.name == 'SetInit':
-                ret = PySetInit(args)
-            elif expr.name == 'DictInit':
-                ret = PyDictInit(args)
-            elif expr.name == 'TupleInit':
-                ret = PyTupleInit(args)
-            elif expr.name == 'AssignElement':
-                ret = PyAssignment(PyGetElement(args[0], args[1]), args[2])
-            elif expr.name in BINARY_OPS:
-                ret = PyBinaryOperation(args[0], expr.name, args[1])
-            elif expr.name in UNARY_OPS:
-                ret = PyUnaryOperation(expr.name, args[0])
-            elif expr.name == 'StrAppend':
-                ret = PyStrAppend(args[0], args[1])
-            elif expr.name == 'ite':
-                ret = PyIfThenElse(args[0], args[1], args[2])
-            elif expr.name == 'GetAttr':
-                ret = PyGetAttr(args[0], args[1])
-            elif expr.name == 'Slice':
-                ret = PySlice(args[0], args[1], args[2])
-            elif expr.name == 'GetElement':
-                try:
-                    if (args[0].name, args[1].name) in self.indexVariables:
-                        ret = PyVariable(self.indexVariables[args[0].name, args[1].name])
-                    else:
-                        ret = PyGetElement(args[0], args[1])
-                except AttributeError:
-                    ret = PyGetElement(args[0], args[1])
-            elif expr.name == 'Delete':
-                ret = PyDelete(args)
-            elif expr.name == 'FuncCall':
-                ret = PyFuncCall(args[0], (args[1:]))
-            elif expr.name == 'ListComp':
-                ret = PyListComp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
-            elif expr.name == 'SetComp':
-                ret = PySetComp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
-            elif expr.name == 'DictComp':
-                ret = PyDictComp(args[1], args[2], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
-            elif expr.name == 'GeneratorExp':
-                ret = PyGeneratorExp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
-            elif expr.name == 'BoundVar':
-                ret = PyVariable(self.getBoundVarName(int(expr.args[0].value)))
-            elif expr.args != None:
-                try:
-                    if expr.name in PRIMITIVE_FUNC or callable(eval(expr.name)):
-                        ret = PyFuncCall(expr.name, args)
-                    else:
-                        ret = PyFuncCall(PyGetAttr(self.pythonExpression(expr.args[0])[0], expr.name), args[1:])
-                except NameError:
-                    ret = PyFuncCall(PyGetAttr(self.pythonExpression(expr.args[0])[0], expr.name), args[1:])
-        except AttributeError as ex:
+    def pythonIfThenElseClause(self, var, expr, replacement):
+        ret = []
+        if expr.name == 'ite':
+            ret = ret + [(PyCondition(self.pythonExpression(expr.args[0])[0]), self.indentation)]
+            self.indentation = self.indentation + 1
             try:
-                ret = PyConstant(expr.value)
+                ret = ret + [(self.assignmentStatement(var, expr.args[1]), self.indentation, replacement)]
+            except NotAnLValueException as ex:
+                ret = ret + [(PyAssignment(PyVariable(var), self.pythonExpression(ex.orig_val)[0]), self.indentation)]
+                if replacement == None:
+                    replacement = []
+                ret = ret + [(self.assignmentStatement(var, expr.args[1], replacement + [(ex.orig_val, var)]), self.indentation)]
+            self.indentation = self.indentation - 1
+            ret = ret + [('else', self.indentation)]
+            self.indentation = self.indentation + 1
+            try:
+                ret = ret + [(self.assignmentStatement(var, expr.args[2]), self.indentation, replacement)]
+            except NotAnLValueException as ex:
+                ret = ret + [(PyAssignment(PyVariable(var), self.pythonExpression(ex.orig_val)[0]), self.indentation, replacement)]
+                if replacement == None:
+                    replacement = []
+                ret = ret + [(self.assignmentStatement(var, expr.args[2], replacement + [(ex.orig_val, var)]), self.indentation)]
+            self.indentation = self.indentation - 1
+        return PyIfThenElseClause(ret)
+
+    def pythonExpression(self, expr, replacement=None):
+        assignments = []
+        ret = None
+        if replacement:
+            try:
+                for repl in replacement:
+                    if self.areExpressionsEqual(expr, repl[0]):
+                        ret = PyVariable(repl[1])
+                    for arg, i in expr.args:
+                        if self.areExpressionsEqual(arg, repl[0]):
+                            expr.args[i] = PyVariable(repl[1])
+            except TypeError:
+                pass
             except AttributeError:
-                ret = PyVariable(expr.name)
+                pass
+        if ret == None:
+            try:
+                args_both = [self.pythonExpression(arg, replacement) for arg in expr.args]
+                args = []
+                for arg in args_both:
+                    args.append(arg[0])
+                    assignments = assignments + arg[1]
+                if expr.name == 'ListInit':
+                    ret = PyListInit(args)
+                elif expr.name == 'SetInit':
+                    ret = PySetInit(args)
+                elif expr.name == 'DictInit':
+                    ret = PyDictInit(args)
+                elif expr.name == 'TupleInit':
+                    ret = PyTupleInit(args)
+                elif expr.name == 'AssignElement':
+                    try:
+                        ret = PyAssignment(PyGetElement(args[0], args[1]), args[2])
+                    except NotAnLValueException as ex:
+                        ex.orig_val = expr.args[0]
+                        raise ex
+                elif expr.name in BINARY_OPS:
+                    ret = PyBinaryOperation(args[0], expr.name, args[1])
+                elif expr.name in UNARY_OPS:
+                    ret = PyUnaryOperation(expr.name, args[0])
+                elif expr.name == 'StrAppend':
+                    ret = PyStrAppend(args[0], args[1])
+                elif expr.name == 'ite':
+                    ret = PyIfThenElse(args[0], args[1], args[2])
+                elif expr.name == 'GetAttr':
+                    ret = PyGetAttr(args[0], args[1])
+                elif expr.name == 'Slice':
+                    ret = PySlice(args[0], args[1], args[2])
+                elif expr.name == 'GetElement':
+                    try:
+                        if (args[0].name, args[1].name) in self.indexVariables:
+                            ret = PyVariable(self.indexVariables[args[0].name, args[1].name])
+                        else:
+                            ret = PyGetElement(args[0], args[1])
+                    except AttributeError:
+                        ret = PyGetElement(args[0], args[1])
+                elif expr.name == 'Delete':
+                    ret = PyDelete(args)
+                elif expr.name == 'FuncCall':
+                    ret = PyFuncCall(args[0], (args[1:]))
+                elif expr.name == 'ListComp':
+                    ret = PyListComp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
+                elif expr.name == 'SetComp':
+                    ret = PySetComp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
+                elif expr.name == 'DictComp':
+                    ret = PyDictComp(args[1], args[2], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
+                elif expr.name == 'GeneratorExp':
+                    ret = PyGeneratorExp(args[1], [PyComprehension([PyVariable(self.getBoundVarName(x)) for x in range(int(str(args[0])))], args[-2], [args[-1]])])
+                elif expr.name == 'BoundVar':
+                    ret = PyVariable(self.getBoundVarName(int(expr.args[0].value)))
+                elif expr.args != None:
+                    try:
+                        if expr.name in PRIMITIVE_FUNC or callable(eval(expr.name)):
+                            ret = PyFuncCall(expr.name, args)
+                        else:
+                            ret = PyFuncCall(PyGetAttr(self.pythonExpression(expr.args[0])[0], expr.name), args[1:])
+                    except NameError:
+                        ret = PyFuncCall(PyGetAttr(self.pythonExpression(expr.args[0])[0], expr.name), args[1:])
+            except AttributeError as ex:
+                try:
+                    ret = PyConstant(expr.value)
+                except AttributeError:
+                    ret = PyVariable(expr.name)
+            else:
+                pass
         if expr.original:
             var_ret = PyVariable(expr.original[0])
             assignments.append((var_ret, ret, expr.original[1]))
@@ -350,7 +390,6 @@ class PyAssignment(PyExpression):
     def __init__(self, variable, assigned):
         if not variable.isLValue():
             raise NotAnLValueException(variable)
-            pass
         self.variable = variable
         self.assigned = assigned
         
@@ -556,3 +595,16 @@ class PyGeneratorExp(PyExpression):
         
     def __repr__(self):
         return '%s %s' % (self.elt , ' '.join([str(gen) for gen in self.generators]))
+
+class PyIfThenElseClause(PyStatement):
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        ret = '\n'
+        for statement in self.value:
+            if statement[0] == 'else':
+                ret = ret + statement[1]*'\t'+'else:'
+            else:
+                ret = ret + statement[1]*'\t'+str(statement[0])
+            ret = ret + '\n'
+        return ret
