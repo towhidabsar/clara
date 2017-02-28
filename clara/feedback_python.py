@@ -139,18 +139,18 @@ class PythonStatementGenerator(object):
     def assignmentStatement(self, var, expr, replacement=None):
         try:
             if var == VAR_COND:
-                return PyCondition(self.pythonExpression(expr, replacement)[0])
+                return self.pythonExpression(expr, replacement)[0]
             elif var == VAR_RET:
                 return PyReturn(self.pythonExpression(expr, replacement)[0])
             elif var == VAR_OUT:
                 return PyPrint(self.pythonExpression(expr, replacement)[0])
-                try:
-                    if expr.name == 'GetElement' and expr.args[0].name.startswith('iter#') and expr.args[1].name.startswith('ind#'):
-                        self.indexVariables[(expr.args[0].name, expr.args[1].name)] = var
-                except NameError:
-                    pass
-                except AttributeError:
-                    pass
+            try:
+                if expr.name == 'GetElement' and expr.args[0].name.startswith('iter#') and expr.args[1].name.startswith('ind#'):
+                    self.indexVariables[(expr.args[0].name, expr.args[1].name)] = var
+            except NameError:
+                pass
+            except AttributeError:
+                pass
             return self.generateAssignments(var, expr, replacement)
         except NotAnLValueException as ex:
             if expr.name == 'ite':
@@ -268,7 +268,16 @@ class PythonStatementGenerator(object):
                         else:
                             ret = PyGetElement(args[0], args[1])
                     except AttributeError:
-                        ret = PyGetElement(args[0], args[1])
+                        try:
+                            if (expr.args[0].name) == 'pop':
+                                if str(expr.args[1]) == '0':
+                                    ret = PyFuncCall('pop#list', [])
+                                elif str(expr.args[1]) == '1':
+                                    ret = PyFuncCall('pop#element', [])
+                                else:
+                                    ret = PyGetElement(args[0], args[1])
+                        except AttributeError:
+                            ret = PyGetElement(args[0], args[1])
                 elif expr.name == 'Delete':
                     ret = PyDelete(args)
                 elif expr.name == 'FuncCall':
