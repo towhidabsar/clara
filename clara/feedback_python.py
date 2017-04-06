@@ -278,6 +278,7 @@ class PythonStatementGenerator(object):
                                     ret = PyGetElement(args[0], args[1])
                         except AttributeError:
                             ret = PyGetElement(args[0], args[1])
+                    ret = PyGetElement(args[0], args[1])
                 elif expr.name == 'Delete':
                     ret = PyDelete(args)
                 elif expr.name == 'FuncCall':
