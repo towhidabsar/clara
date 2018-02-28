@@ -5,6 +5,8 @@ clara CLI interface
 '''
 
 # Python imports
+import json
+import os
 import pprint
 import sys
 import traceback
@@ -19,6 +21,7 @@ from clara.feedback_simple import SimpleFeedback
 from clara.feedback_python import PythonFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
+from clara.model import dict_to_expr
 from clara.parser import getlangparser
 from clara.repair import Repair
 
@@ -296,6 +299,39 @@ Options are:
         self.lang = file_parts[1]
         self.debug('Guessed language: %s', self.lang)
 
+    def extract_exprs(self, model):
+        '''
+        Loads additional expressions for the specification.
+        '''
+        ext = '.' + self.lang
+        exprs_filename = model.name.replace(ext, '-exprs.json')
+        print exprs_filename
+        if not os.path.isfile(exprs_filename): return
+        with open(exprs_filename, 'r') as f:
+            print 'opening', exprs_filename
+            exprs = json.load(f)
+
+        for expr_entry in exprs:
+            fname = expr_entry['fnc']
+            loc = expr_entry['loc']
+            var = expr_entry['var']
+            expr = dict_to_expr(expr_entry['expr'])
+
+            fnc = model.fncs[fname]
+
+            if not hasattr(fnc, 'repair_exprs'):
+                fnc.repair_exprs = {}
+
+            rex = fnc.repair_exprs
+
+            if loc not in rex:
+                rex[loc] = {}
+
+            if var not in rex[loc]:
+                rex[loc][var] = []
+
+            rex[loc][var].append((expr, None))
+
     def process_sources(self):
         '''
         Reads and parses source files (sets models field).
@@ -310,6 +346,7 @@ Options are:
                 code = f.read().decode('utf-8')
                 model = self.parser.parse_code(code)
                 model.name = src
+                self.extract_exprs(model)
                 self.models.append(model)
                 
 
