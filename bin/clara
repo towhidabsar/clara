@@ -305,10 +305,8 @@ Options are:
         '''
         ext = '.' + self.lang
         exprs_filename = model.name.replace(ext, '-exprs.json')
-        print exprs_filename
         if not os.path.isfile(exprs_filename): return
         with open(exprs_filename, 'r') as f:
-            print 'opening', exprs_filename
             exprs = json.load(f)
 
         for expr_entry in exprs:
