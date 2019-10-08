@@ -1,12 +1,8 @@
 def computeDeriv(poly):
-  index = 0
   result = []
-    
-  while index < len(poly)-1:
-    result.append(float(poly[index+1]*(index+1)))
-    index += 1
-    
-  if len(poly) == 1:
-    result.append(0.0)
-    
-  return result
+  for e in range(1, len(poly)):
+    result.append(float(poly[e]*e))
+  if result == []:
+    return [0.0]  
+  else:
+    return result
