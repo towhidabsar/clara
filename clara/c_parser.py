@@ -635,7 +635,7 @@ of 'scanf' at line %s.",
         self.loc = self.addloc(
             desc="after 'continue' statement at line %s" % (
                 node.coord.line,))
-        self.addtrans(preloc, True, lastloop[0])
+        self.addtrans(preloc, True, lastloop[2] if lastloop[2] else lastloop[0])
 
     def visit_Label(self, node):
         '''

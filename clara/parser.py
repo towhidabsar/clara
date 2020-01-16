@@ -426,11 +426,20 @@ class Parser(object):
             name, self.getline(node)
         ))
 
+        # Add next loc
+        if next:
+            nextloc = self.addloc("update of the '%s' loop at line %d" % (
+                name, self.getline(next)
+            ))
+            self.visit(next)
+        else:
+            nextloc = None
+
         # Add body with (new location)
         bodyloc = self.addloc("inside the body of the '%s' loop beginning at line %d" % (
             name, self.getline(body) or self.getline(node)
         ))
-        self.addloop((condloc, exitloc))
+        self.addloop((condloc, exitloc, nextloc))
         if prebody:
             map(lambda x: self.addexpr(*x), prebody)
         self.visit(body)
@@ -443,7 +452,11 @@ class Parser(object):
         self.addtrans(preloc, True, bodyloc if do else condloc)
         self.addtrans(condloc, True, bodyloc)
         self.addtrans(condloc, False, exitloc)
-        self.addtrans(afterloc, True, condloc)
+        if nextloc:
+            self.addtrans(afterloc, True, nextloc)
+            self.addtrans(nextloc, True, condloc)
+        else:
+            self.addtrans(afterloc, True, condloc)
 
         self.loc = exitloc
 
