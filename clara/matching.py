@@ -26,10 +26,10 @@ class Matching(object):
             return
         debug(*args)
 
-    def match_mems(self, match, loc, mem1, mem2, V1):
+    def match_mems(self, match, loc, mem1, mem2, V1, V2):
 
-        V2 = ({var2 for var2 in mem2.keys() if not isprimed(var2)}
-              - SPECIAL_VARS)
+        #V2 = ({var2 for var2 in mem2.keys() if not isprimed(var2)}
+        #      - SPECIAL_VARS)
 
         if self.bijective:
             if len(V1 | SPECIAL_VARS) != len(V2 | SPECIAL_VARS):
@@ -115,7 +115,7 @@ class Matching(object):
                 m[var1] = var2
                 return m
 
-    def match_traces(self, T1, T2, sm, V1):
+    def match_traces(self, T1, T2, sm, V1, V2):
 
         # Check number of traces
         if len(T1) != len(T2):
@@ -145,7 +145,7 @@ class Matching(object):
                 if fnc1 not in match:
                     match[fnc1] = {}
                 if not self.match_mems(match[fnc1], '%s-%s' % (fnc1, loc1),
-                                       mem1, mem2, V1[fnc1]):
+                                       mem1, mem2, V1[fnc1], V2[fnc2]):
                     return
 
         # Debug matches
@@ -269,10 +269,13 @@ class Matching(object):
             t2 = I.run(Q, ins=i, args=a)
 
             T1.append(t1)
+            # self.debug("P1: %s", t1)
             T2.append(t2)
+            # self.debug("P1: %s", t2)
 
         self.debug("Programs executed, matching traces")
 
         # Match traces
         V1 = {f: P.getfnc(f).getvars() for f in P.getfncnames()}
-        return self.match_traces(T1, T2, sm, V1)
+        V2 = {f: Q.getfnc(f).getvars() for f in Q.getfncnames()}
+        return self.match_traces(T1, T2, sm, V1, V2)
