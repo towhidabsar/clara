@@ -677,7 +677,7 @@ of 'scanf' at line %s.",
         if init:
             self.addexpr(name, init)
             
-        if dim:
+        if dim and not self.fncdef:
             self.addexpr(name, Op('ArrayCreate', dim, line=dim.line))
 
         return (name, type, dim)
