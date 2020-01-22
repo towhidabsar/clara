@@ -443,8 +443,6 @@ class Parser(object):
         if prebody:
             map(lambda x: self.addexpr(*x), prebody)
         self.visit(body)
-        if next:
-            self.visit(next)
         self.poploop()
         afterloc = self.loc
 
