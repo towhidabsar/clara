@@ -5,9 +5,11 @@ clara CLI interface
 '''
 
 # Python imports
+import glob
 import json
 import os
 import pprint
+import shutil
 import sys
 import traceback
 
@@ -21,7 +23,8 @@ from clara.feedback_simple import SimpleFeedback
 from clara.feedback_python import PythonFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
-from clara.model import dict_to_expr
+from clara.clustering import Clustering
+from clara.model import expr_to_dict, dict_to_expr
 from clara.parser import getlangparser
 from clara.repair import Repair
 
@@ -36,6 +39,7 @@ Commands are:
   help       print this usage message
   model      prints a model of a program
   match      run the matching procedure on two source files
+  cluster    run the clustering on a set of files
   repair     run the repair algorithm on two source files
   feedback   generates feedback on multiple specifications
 
@@ -66,6 +70,7 @@ Options are:
   --maxfeedcost N    maximum cost of a repair for feedback; if cost is larger
                      than N, an error occurs
                      (default is 0, which means that there is no limit)
+  --clusterdir DIR   directory to write/read clustering results
 '''
 
     def __init__(self):
@@ -125,6 +130,7 @@ Options are:
         self.entryfnc = self.opts.pop('entryfnc', 'main')
         self.suboptimal = int(self.opts.pop('suboptimal', 1))
         self.maxfeedcost = int(self.opts.pop('maxfeedcost', 0))
+        self.clusterdir = self.opts.pop('clusterdir', 'clusters')
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -172,6 +178,9 @@ Options are:
         if self.cmd == 'match':
             self.match()
 
+        elif self.cmd == 'cluster':
+            self.cluster()
+
         elif self.cmd == 'model':
             self.model()
 
@@ -214,6 +223,48 @@ Options are:
             print 'Match!'
         else:
             print 'No match!'
+
+    def cluster(self):
+        if len(self.models) < 1:
+            self.error('Clustering requires at least one program!')
+
+        if not os.path.isdir(self.clusterdir):
+            self.error("Clustering directory '%s' does not exist!", self.clusterdir)
+
+        M = Matching(ignoreio=self.ignoreio, ignoreret=self.ignoreret,
+                     verbose=self.verbose, bijective=self.bijective)
+        C = Clustering(M)
+
+        existing = []
+        for f in glob.glob(os.path.join(self.clusterdir, "*." + self.lang)):
+            model = self.process_source(f)
+            existing.append(model)
+        print "Found %d existing clusters" % (len(existing))
+                    
+        new, mod = C.cluster(self.models, self.inter,
+                             ins=self.ins, args=self.args,
+                             entryfnc=self.entryfnc, existing=existing)
+
+        print "Done, %d new clusters, %d modified clusters" % (len(new), len(mod))
+        
+        # Add new clusters
+        for f in new:
+            f.new_name = os.path.join(self.clusterdir, f.new_name)
+            print "NEW:", f.name, "->", f.new_name
+
+            # Copy the source file
+            if os.path.exists(f.new_name):
+                self.error("Filename '%s' already exists!")
+            shutil.copyfile(f.name, f.new_name)
+
+            # Dump expressions
+            f.name = f.new_name
+            self.dump_exprs(f)
+
+        # Write modifications for the modified clusters
+        for f in mod:
+            print "MOD:", f.name
+            self.dump_exprs(f)
 
     def eval(self):
 
@@ -299,6 +350,40 @@ Options are:
         self.lang = file_parts[1]
         self.debug('Guessed language: %s', self.lang)
 
+    def dump_exprs(self, model):
+        '''
+        Dumps additional expressions.
+        '''
+        
+        exprs = []
+        for fnc in model.getfncs():
+            if not hasattr(fnc, 'repair_exprs'):
+                continue
+            rex = fnc.repair_exprs
+
+            for loc in rex:
+                for var in rex[loc]:
+                    exprs.append({
+                        "fnc": fnc.name,
+                        "loc": loc,
+                        "var": var,
+                        "expr": expr_to_dict(fnc.getexpr(loc, var)),
+                        "src": None,
+                    })
+                    for expr in set(rex[loc][var]):
+                        exprs.append({
+                            "fnc": fnc.name,
+                            "loc": loc,
+                            "var": var,
+                            "expr": expr_to_dict(expr),
+                            "src": expr.src,
+                        })
+                        
+        ext = '.' + self.lang
+        exprs_filename = model.name.replace(ext, '-exprs.json')
+        with open(exprs_filename, 'w') as f:
+            json.dump(exprs, f, indent=2)
+
     def extract_exprs(self, model):
         '''
         Loads additional expressions for the specification.
@@ -314,6 +399,7 @@ Options are:
             loc = expr_entry['loc']
             var = expr_entry['var']
             expr = dict_to_expr(expr_entry['expr'])
+            expr.src = expr_entry.get('src')
 
             fnc = model.fncs[fname]
 
@@ -328,8 +414,24 @@ Options are:
             if var not in rex[loc]:
                 rex[loc][var] = []
 
-            rex[loc][var].append((expr, None))
+            rex[loc][var].append(expr)
 
+    def process_source(self, src):
+        '''
+        Reads and parses a single source file `src` and stets model fields.
+        '''
+
+        self.debug("Reading and parsing source file '%s'", src)
+            
+        with open(src, 'r') as f:
+            code = f.read().decode('utf-8')
+            
+        model = self.parser.parse_code(code)
+        model.name = src
+        self.extract_exprs(model)
+
+        return model
+            
     def process_sources(self):
         '''
         Reads and parses source files (sets models field).
@@ -338,14 +440,8 @@ Options are:
         self.models = []
 
         for src in self.sources:
-            self.debug("Reading and parsing source file '%s'", src)
-            
-            with open(src, 'r') as f:
-                code = f.read().decode('utf-8')
-                model = self.parser.parse_code(code)
-                model.name = src
-                self.extract_exprs(model)
-                self.models.append(model)
+            model = self.process_source(src)
+            self.models.append(model)
                 
 
 if __name__ == '__main__':

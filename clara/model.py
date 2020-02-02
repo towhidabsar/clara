@@ -134,6 +134,14 @@ class Var(Expr):
             
         #return self.expr_original(s)
 
+    def __eq__(self, other):
+        if other is None: return False
+        if not isinstance(other, Var): return False
+        return self.name == other.name and self.primed == other.primed
+
+    def __ne__(self, other):
+        return not self == other
+        
         
 class Const(Expr):
     '''
@@ -173,6 +181,13 @@ class Const(Expr):
         return self.value
         #return self.expr_original(s)
 
+    def __eq__(self, other):
+        if other is None: return False
+        if not isinstance(other, Const): return False
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return not self == other
 
 class Op(Expr):
     '''
@@ -225,6 +240,18 @@ class Op(Expr):
 
     def __repr__(self):
         return '%s(%s)' % (self.name, ', '.join(map(str, self.args)))
+
+    def __eq__(self, other):
+        if other is None: return False
+        if not isinstance(other, Op): return False
+        if self.name != other.name: return False
+        if len(self.args) != len(other.args): return False
+        for arg1, arg2 in zip(self.args, other.args):
+            if arg1 != arg2: return False
+        return True
+
+    def __ne__(self, other):
+        return not self == other
 
     
 def expr_to_dict(e):

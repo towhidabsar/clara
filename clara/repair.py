@@ -261,12 +261,14 @@ class Repair(object):
             self.ER[loc1] = {}
             self.TR[loc1] = {}
             for var1 in self.V1:
-                if hasrep and var1 in f1.repair_exprs[loc1]:
+                if (hasrep and loc1 in f1.repair_exprs
+                    and var1 in f1.repair_exprs[loc1]):
+                    
                     self.ER[loc1][var1] = []
                     self.TR[loc1][var1] = []
                     for expr in f1.repair_exprs[loc1][var1]:
-                        self.ER[loc1][var1].append(expr)
-                        self.TR[loc1][var1].append(self.totree(expr[0]))
+                        self.ER[loc1][var1].append((expr, expr.src))
+                        self.TR[loc1][var1].append(self.totree(expr))
                 else:
                     self.ER[loc1][var1] = [(self.E1[loc1][var1], None)]
                     self.TR[loc1][var1] = [self.T1[loc1][var1]]
