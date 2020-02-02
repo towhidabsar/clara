@@ -1,58 +1,47 @@
 CLuster And RepAir tool for introductory programming assignments
 
-
 About
 =====
 This is an implementation of the clustering and repair tool for introductory
 programming assignments, described in the following paper:
   http://arxiv.org/abs/1603.03165
 
-
 Requires
 ========
 - C compiler (tested with gcc 4.9.2)
 - Cython (tested with v0.23.4)
-    $ sudo aptitude install cython (Debian)
-    # dnf install Cython (Fedora)
+  - `$ sudo aptitude install cython` (Debian)
+  - `# dnf install Cython` (Fedora)
 - lpsolve 5.5 (development files and library)
-    $ sudo aptitude install lp-solve liblpsolve55-dev (Debian)
-    # dnf install lpsolve-devel (Fedora)
+  - `$ sudo aptitude install lp-solve liblpsolve55-dev` (Debian)
+  - `# dnf install lpsolve-devel` (Fedora)
 - pip
-    $ sudo aptitude install python-pip (Debian)
-    # dnf install python-pip (Fedora)
+  - `$ sudo aptitude install python-pip` (Debian)
+  - `# dnf install python-pip` (Fedora)
 - pip module pycparser zss
-    $ pip install --user pycparser zss
-
-
+  - `$ pip install --user pycparser zss`
 
 Installation
 ============
-- Run 'make install' in this directory; or
+- Run `make install` in this directory; or
 - See docker installation below
-
 
 Docker installation
 ===================
-1) Build the image with: 'docker build --rm=true -t clara .'
-2) Run the container with:
-     'docker run -ti -h clara --name clara clara /bin/bash'
-
+1) Build the image with: `docker build --rm=true -t clara .`
+2) Run the container with: `docker run -ti -h clara --name clara clara /bin/bash`
 
 Running
 =======
-- 'make' from above installs a binary file called 'clara'
-- Run 'clara help' or see examples below
-
+- `make` from above installs a binary file called `clara`
+- Run `clara help` or see examples below
 
 Debian note
 ===========
-- On Debian system the following is required before running the tool:
-    'export LD_LIBRARY_PATH=/usr/lib/lp_solve/'
+- On Debian system the following is required before running the tool: `export LD_LIBRARY_PATH=/usr/lib/lp_solve/`
 
 
 Examples
 ========
-- Matching example:
-  'clara match examples/ex1.py examples/ex2.py --entryfnc computeDeriv --args "[[[4.5]], [[1.0,3.0,5.5]]]" --verbose 1'
-- Repair example:
-  'clara repair examples/ex1.py examples/ex3.py --entryfnc computeDeriv --args "[[[4.5]], [[1.0,3.0,5.5]]]" --verbose 1'
+- Matching example: `clara match examples/ex1.py examples/ex2.py --entryfnc computeDeriv --args "[[[4.5]], [[1.0,3.0,5.5]]]" --verbose 1`
+- Repair example: `clara repair examples/ex1.py examples/ex3.py --entryfnc computeDeriv --args "[[[4.5]], [[1.0,3.0,5.5]]]" --verbose 1`
