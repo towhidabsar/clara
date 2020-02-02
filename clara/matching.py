@@ -11,7 +11,7 @@ from model import SPECIAL_VARS, VAR_RET, VAR_IN, VAR_OUT, isprimed, prime
 class Matching(object):
 
     def __init__(self, ignoreio=False, ignoreret=False, verbose=False,
-                 debugvar=None, bijective=False):
+                 debugvar=None, bijective=True):
 
         self.ignoreio = ignoreio
         self.ignoreret = ignoreret

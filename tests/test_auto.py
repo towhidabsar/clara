@@ -21,7 +21,8 @@ def matching_helper(f1, f2, lang, ins=None, args=None, entryfnc="main"):
                                     args=args, entryfnc=entryfnc)
 
 testdata_c = [
-    ('p1.c', 'p2.c', [[4]], True)
+    ('p1.c', 'p2.c', [[4]], True),
+    ('sym1.c', 'sym2.c', [[3]], False),
 ]
 
 @pytest.mark.parametrize(
