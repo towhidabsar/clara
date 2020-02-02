@@ -2,11 +2,11 @@ import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-def get_full_data_filename(f):
+def get_full_data_filename(f, reldir='data'):
     """
     Gets the full path to the data file `f`.
     """
-    return os.path.join(dir_path, 'data', f)
+    return os.path.join(dir_path, reldir, f)
 
 def parse_file(fname, parser):
     """
