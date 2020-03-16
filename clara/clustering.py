@@ -20,14 +20,14 @@ class Clustering(object):
             rex = fnc1.repair_exprs
 
             fm = m[fnc1.name]
-            fm_trans = {v2: v1 for (v1, v2) in fm.items()}
-            print fm
+            fm_trans = {v2: v1 for (v1, v2) in list(fm.items())}
+            print(fm)
 
             # Iterate all locations
             for loc1 in fnc1.locs():
                 loc2 = sm[fnc1.name][loc1]
-                print loc1, loc2
-                for (v1, v2) in fm.items():
+                print(loc1, loc2)
+                for (v1, v2) in list(fm.items()):
                     expr_exist = fnc1.getexpr(loc1, v1)
                     expr = fnc2.getexpr(loc2, v2)
                     expr_new = expr.replace_vars(fm_trans)
@@ -43,7 +43,7 @@ class Clustering(object):
                         continue
                     expr_new.src = prog.name
 
-                    print loc1, v1, expr_new
+                    print(loc1, v1, expr_new)
                     rex[loc1][v1].append(expr_new)
                     anymod = True
 

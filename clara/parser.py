@@ -5,8 +5,8 @@ Common parser stuff
 import re
 
 # clara lib imports
-from common import UnknownLanguage
-from model import Program, Function, Expr, Op, Var, Const, VAR_COND, VAR_RET
+from .common import UnknownLanguage
+from .model import Program, Function, Expr, Op, Var, Const, VAR_COND, VAR_RET
 
 
 class NotSupported(Exception):
@@ -120,7 +120,7 @@ class Parser(object):
             exprs = []
             for i, (var, expr) in enumerate(fnc.exprs(loc)):
                 
-                for v1, v2 in m.items():
+                for v1, v2 in list(m.items()):
                     expr = expr.replace(v1, Var(v2))
 
                 if var == VAR_RET:
@@ -158,7 +158,7 @@ class Parser(object):
                 
                 expr.prime(primed)
                 
-                for v, e in m.items():
+                for v, e in list(m.items()):
                     expr = expr.replace(v, e)
 
                     if isinstance(expr, Op) and expr.name == 'ite':
@@ -245,7 +245,7 @@ class Parser(object):
             return
 
         self.rmemptyfncs()
-        for fnc in self.prog.fncs.values():
+        for fnc in list(self.prog.fncs.values()):
             self.rmunreachlocs(fnc)
             self.ssa(fnc)
             self.rmtmp(fnc)
@@ -368,7 +368,7 @@ class Parser(object):
                     varsl.append(var)
 
                 # Replace vars mapped so far
-                for (v1, v2) in m.items():
+                for (v1, v2) in list(m.items()):
                     expr = expr.replace(v1, Var(v2))
                 expr.original = (var, self.cnt)
                 self.addexpr(newvar, expr)
@@ -441,7 +441,8 @@ class Parser(object):
         ))
         self.addloop((condloc, exitloc, nextloc))
         if prebody:
-            map(lambda x: self.addexpr(*x), prebody)
+            for x in prebody:
+                self.addexpr(*x)
         self.visit(body)
         self.poploop()
         afterloc = self.loc

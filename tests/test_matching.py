@@ -57,6 +57,10 @@ def test_match_c(f1, f2, ins, should_match):
 
 def test_examples():
     args=[[[4.5]], [[1.0,3.0,5.5]]]
-    matching_test_helper('ex1.py', 'ex2.py', 'py', True, args=args,
+    matching_test_helper('c1.py', 'c2.py', 'py', True, args=args,
+                         datadir="../examples", entryfnc="computeDeriv")
+    matching_test_helper('c1.py', 'c3.py', 'py', False, args=args,
+                         datadir="../examples", entryfnc="computeDeriv")
+    matching_test_helper('c2.py', 'c3.py', 'py', False, args=args,
                          datadir="../examples", entryfnc="computeDeriv")
     

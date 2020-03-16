@@ -7,7 +7,7 @@ import math
 import sys
 
 # clara imports
-from interpreter import Interpreter, addlanginter, RuntimeErr, UndefValue
+from .interpreter import Interpreter, addlanginter, RuntimeErr, UndefValue
 
 
 def libcall(*args):
@@ -27,7 +27,7 @@ def libcall(*args):
                     len(args), f.name, len(f.args)))
             
             # Evaluate args
-            fargs = map(lambda x: self.execute(x, mem), f.args)
+            fargs = [self.execute(x, mem) for x in f.args]
 
             # Convert args
             nargs = []
@@ -162,10 +162,10 @@ class CInterpreter(Interpreter):
 
     def execute_ArrayCreate(self, ac, mem):
         x = int(self.tonumeric(self.execute(ac.args[0], mem)))
-        return [None for _ in xrange(x)]
+        return [None for _ in range(x)]
 
     def execute_ArrayInit(self, ai, mem):
-        return map(lambda x: self.execute(x, mem), ai.args)
+        return [self.execute(x, mem) for x in ai.args]
 
     def execute_ArrayAssign(self, aa, mem):
 
@@ -275,8 +275,7 @@ class CInterpreter(Interpreter):
         if t.endswith('[]'):
             st = t[:-2]
             if isinstance(val, list):
-                return map(
-                    lambda x: x if x is None else self.convert(x, st), val)
+                return [x if x is None else self.convert(x, st) for x in val]
             raise RuntimeErr("Expected list, got '%s'" % (val,))
 
         return val

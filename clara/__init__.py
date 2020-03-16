@@ -2,20 +2,20 @@
 imports of all (required) sub-modules
 '''
 
-import common
+from . import common
 
-import model
+from . import model
 
-import parser
-import c_parser
-import py_parser
+from . import parser
+from . import c_parser
+from . import py_parser
 
-import interpreter
-import c_interpreter
-import py_interpreter
+from . import interpreter
+from . import c_interpreter
+from . import py_interpreter
 
-import matching
+from . import matching
 
-import pylpsolve
-import ilp
-import repair
+from . import pylpsolve
+from . import ilp
+from . import repair

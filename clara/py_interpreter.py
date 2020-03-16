@@ -9,10 +9,10 @@ import string
 from copy import deepcopy
 
 # Feedback lib imports
-from py_parser import PyParser
+from .py_parser import PyParser
 
-from interpreter import Interpreter, addlanginter, RuntimeErr, UndefValue
-from model import Var, Op, VAR_IN, VAR_OUT, VAR_RET, prime
+from .interpreter import Interpreter, addlanginter, RuntimeErr, UndefValue
+from .model import Var, Op, VAR_IN, VAR_OUT, VAR_RET, prime
 
 
 def eargs(fun):
@@ -22,7 +22,7 @@ def eargs(fun):
 
     # Wrapper function that calls original 'fun'
     def wrap(self, f, mem):
-        args = map(lambda x: self.execute(x, mem), f.args)
+        args = [self.execute(x, mem) for x in f.args]
         for a in args:
             if isinstance(a, UndefValue):
                 raise RuntimeErr('undefined value')
@@ -380,11 +380,11 @@ class PyInterpreter(Interpreter):
 
     @eargs
     def execute_items(self, d):
-        return d.items()
+        return list(d.items())
 
     @eargs
     def execute_keys(self, d):
-        return d.keys()
+        return list(d.keys())
 
     @eargs
     def execute_index(self, l, v, *a):
@@ -440,8 +440,8 @@ class PyInterpreter(Interpreter):
             f = operator.mul
         else:
             f = self.execute(m.args[0], mem)
-        ls = map(lambda x: self.execute(x, mem), m.args[1:])
-        return map(f, *ls)
+        ls = [self.execute(x, mem) for x in m.args[1:]]
+        return list(map(f, *ls))
 
     def execute_reversed(self, o, mem):
         return self.execute_reverse(o, mem)
@@ -493,7 +493,7 @@ class PyInterpreter(Interpreter):
         boundlen = int(lc.args[0].value)
 
         mem = deepcopy(mem)
-        bound = mem['#__bound'] = ([None for _ in xrange(boundlen)] \
+        bound = mem['#__bound'] = ([None for _ in range(boundlen)] \
                                    + mem.get('#__bound', []))
 
         # Construct a new list
@@ -507,7 +507,7 @@ class PyInterpreter(Interpreter):
                 el = tuple(el)
                 if len(el) != boundlen:
                     raise RuntimeErr('Cannot unpack')
-                for var, val in zip(xrange(boundlen), el):
+                for var, val in zip(range(boundlen), el):
                     bound[var] = val
 
             # Apply filter
@@ -537,7 +537,7 @@ class PyInterpreter(Interpreter):
         boundlen = int(lc.args[0].value)
 
         mem = deepcopy(mem)
-        bound = mem['#__bound'] = ([None for _ in xrange(boundlen)] \
+        bound = mem['#__bound'] = ([None for _ in range(boundlen)] \
                                    + mem.get('#__bound', []))
 
         # Construct a dict
@@ -551,7 +551,7 @@ class PyInterpreter(Interpreter):
                 el = tuple(el)
                 if len(el) != boundlen:
                     raise RuntimeErr('Cannot unpack')
-                for var, val in zip(xrange(boundlen), el):
+                for var, val in zip(range(boundlen), el):
                     bound[var] = val
 
             # Apply filter

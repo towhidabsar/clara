@@ -81,7 +81,7 @@ Options are:
         Prints usage information (to stderr).
         '''
 
-        print >> sys.stderr, self.USAGE % (sys.argv[0],)
+        print(self.USAGE % (sys.argv[0],), file=sys.stderr)
 
     def debug(self, msg, *args):
         '''
@@ -98,7 +98,7 @@ Options are:
         
         if args:
             msg %= args
-        print >> sys.stderr, 'Error: %s\n' % (msg,)
+        print('Error: %s\n' % (msg,), file=sys.stderr)
         sys.exit(1)
 
     def main(self):
@@ -202,7 +202,7 @@ Options are:
         if len(self.models) != 1:
             self.error('Model requires one program!')
 
-        print self.models[0].tostring()
+        print(self.models[0].tostring())
 
     def match(self):
 
@@ -220,9 +220,9 @@ Options are:
                              entryfnc=self.entryfnc)
         if m:
             self.debug('Match: %s', pprint.pformat(m[1]))
-            print 'Match!'
+            print('Match!')
         else:
-            print 'No match!'
+            print('No match!')
 
     def cluster(self):
         if len(self.models) < 1:
@@ -239,18 +239,18 @@ Options are:
         for f in glob.glob(os.path.join(self.clusterdir, "*." + self.lang)):
             model = self.process_source(f)
             existing.append(model)
-        print "Found %d existing clusters" % (len(existing))
+        print("Found %d existing clusters" % (len(existing)))
                     
         new, mod = C.cluster(self.models, self.inter,
                              ins=self.ins, args=self.args,
                              entryfnc=self.entryfnc, existing=existing)
 
-        print "Done, %d new clusters, %d modified clusters" % (len(new), len(mod))
+        print("Done, %d new clusters, %d modified clusters" % (len(new), len(mod)))
         
         # Add new clusters
         for f in new:
             f.new_name = os.path.join(self.clusterdir, f.new_name)
-            print "NEW:", f.name, "->", f.new_name
+            print("NEW:", f.name, "->", f.new_name)
 
             # Copy the source file
             if os.path.exists(f.new_name):
@@ -263,7 +263,7 @@ Options are:
 
         # Write modifications for the modified clusters
         for f in mod:
-            print "MOD:", f.name
+            print("MOD:", f.name)
             self.dump_exprs(f)
 
     def eval(self):
@@ -271,13 +271,13 @@ Options are:
         if len(self.models) != 1:
             self.error('Eval requires exactly one program!')
 
-        print self.models[0]
-        print
+        print(self.models[0])
+        print()
 
         inter = self.inter(entryfnc=self.entryfnc)
         trace = inter.run(self.models[0], args=self.args, ins=self.ins)
 
-        print trace
+        print(trace)
 
     def repair(self):
 
@@ -297,10 +297,10 @@ Options are:
         if r:
             txt = RepairFeedback(self.models[1], self.models[0], r)
             txt.genfeedback()
-            print 'Repairs:'
-            print '\n'.join(map(lambda x: '  * %s' % (x,), txt.feedback))
+            print('Repairs:')
+            print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
         else:
-            print 'No repair!'
+            print('No repair!')
 
     def feedback(self):
 
@@ -325,7 +325,7 @@ Options are:
                 self.error('max cost exceeded (%d > %d)',
                            feed.cost, self.maxfeedcost)
             for f in feed.feedback:
-                print '*', f
+                print('*', f)
                 
         elif feed.status == Feedback.STATUS_ERROR:
             self.error(feed.error)
@@ -423,8 +423,8 @@ Options are:
 
         self.debug("Reading and parsing source file '%s'", src)
             
-        with open(src, 'r') as f:
-            code = f.read().decode('utf-8')
+        with open(src, 'r', encoding="utf-8") as f:
+            code = f.read()
             
         model = self.parser.parse_code(code)
         model.name = src
@@ -449,8 +449,8 @@ if __name__ == '__main__':
         clara = Clara()
         clara.main()
         sys.exit(0)
-    except Exception, err:
-        print >> sys.stderr, 'Error occured: %s' % (err,)
+    except Exception as err:
+        print('Error occured: %s' % (err,), file=sys.stderr)
         if VERBOSE:
             traceback.print_exc()
         sys.exit(1)

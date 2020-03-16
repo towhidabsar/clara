@@ -12,9 +12,9 @@ from multiprocessing import Pool
 from zss import Node
 
 # clara imports
-from feedback_repair import RepairFeedback
-from model import Var, isprimed, unprime, prime
-from repair import Repair, Timeout, StructMismatch
+from .feedback_repair import RepairFeedback
+from .model import Var, isprimed, unprime, prime
+from .repair import Repair, Timeout, StructMismatch
 
 
 class Feedback(object):
@@ -79,7 +79,7 @@ class Feedback(object):
             # Collect result
             self.cost = 0
             self.size = 0
-            for _, repairs, _ in self.results.values():
+            for _, repairs, _ in list(self.results.values()):
                 for rep in repairs:
                     self.cost += rep.cost
                     self.size += 1
@@ -116,7 +116,7 @@ class Feedback(object):
             return 1 + sum(map(ts, Node.get_children(node)))
                 
         for loc in t:
-            for var, tree in t[loc].items():
+            for var, tree in list(t[loc].items()):
                 lab = Node.get_label(tree)
                 if lab == ('V', var):
                     continue
@@ -130,7 +130,7 @@ class Feedback(object):
         (new variable, new statement, swapped statements)
         '''
         
-        for fnc, (m, repairs, sm) in self.results.items():
+        for fnc, (m, repairs, sm) in list(self.results.items()):
             for rep in repairs:
                 
                 loc1 = rep.loc1
@@ -200,7 +200,7 @@ def run_feedback(f):
     '''
     try:
         f.generate()
-    except Exception, ex:
+    except Exception as ex:
         f.error = traceback.format_exc()
         f.status = Feedback.STATUS_ERROR
     return f

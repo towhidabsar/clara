@@ -8,7 +8,7 @@ import pygraphviz as pgv
 def stmts_to_str(title, types, ss):
     l = [title]
     if types:
-        l.append(', '.join(map(lambda x: '%s: %s' % x, types)))
+        l.append(', '.join(['%s: %s' % x for x in types]))
     for (v, e) in ss:
         ls = str(e)
         ls = ls.replace(r'\n', r'\\n')
@@ -16,7 +16,7 @@ def stmts_to_str(title, types, ss):
         ls = ls.replace(r'\t', r'\\t')
         l.append('%s := %s' % (v, ls))
 
-    ml = max(map(lambda x: len(x), l))
+    ml = max([len(x) for x in l])
     l.insert(2 if types else 1, '-' * ml)
 
     return '\n'.join(l)
@@ -25,13 +25,13 @@ def stmts_to_str(title, types, ss):
 def create_graph(pm):
     G = pgv.AGraph(directed=True)
     
-    for name, fnc in pm.fncs.items():
+    for name, fnc in list(pm.fncs.items()):
 
         fnclab = 'fun %s (%s) : %s --- ' % (
             fnc.name,
-            ', '.join(map(lambda x: '%s : %s' % x, fnc.params)),
+            ', '.join(['%s : %s' % x for x in fnc.params]),
             fnc.rettype)
-        types = fnc.types.items()
+        types = list(fnc.types.items())
         
         for loc in fnc.locs():
             fnclabel = fnclab if loc == fnc.initloc else ''

@@ -3,6 +3,7 @@ Program model
 '''
 
 import re
+from functools import reduce
 
 # Special variables definitions
 VAR_COND = '$cond'
@@ -81,7 +82,7 @@ class Var(Expr):
         
         super(Var, self).__init__(*args, **kwargs)
 
-        assert isinstance(name, (str, unicode)), \
+        assert isinstance(name, str), \
             "Variable name should be string or unicode, got '%s'" % (name,)
         assert isinstance(primed, bool), \
             "Variable 'primed' should be bool, got '%s'" % (primed,)
@@ -141,7 +142,10 @@ class Var(Expr):
 
     def __ne__(self, other):
         return not self == other
-        
+
+    def __hash__(self):
+        return hash((self.name, self.primed))
+    
         
 class Const(Expr):
     '''
@@ -152,7 +156,7 @@ class Const(Expr):
 
         super(Const, self).__init__(*args, **kwargs)
 
-        assert isinstance(value, (str, unicode)), \
+        assert isinstance(value, str), \
             "Constant value should be string, got '%s'" % (value,)
         
         self.value = str(value)
@@ -189,6 +193,10 @@ class Const(Expr):
     def __ne__(self, other):
         return not self == other
 
+    def __hash__(self):
+        return hash(self.value)
+        
+
 class Op(Expr):
     '''
     Operations
@@ -198,7 +206,7 @@ class Op(Expr):
 
         super(Op, self).__init__(**kwargs)
 
-        assert isinstance(name, (str, unicode)), \
+        assert isinstance(name, str), \
             "Operation name should be string, got '%s'" % (name,)
         for i, arg in enumerate(args, 1):
             assert isinstance(arg, Expr), \
@@ -210,32 +218,33 @@ class Op(Expr):
 
     def copy(self):
         return Op(self.name,
-                  *map(lambda x: x.copy(), self.args),
+                  *[x.copy() for x in self.args],
                   **self.copyargs())
 
     def replace(self, v, e, primedonly=False):
         return Op(self.name,
-                  *map(lambda x: x.replace(v, e, primedonly), self.args),
+                  *[x.replace(v, e, primedonly) for x in self.args],
                   **self.copyargs())
 
     def replace_vars(self, d):
         e = Op(self.name,
-               *map(lambda x: x.replace_vars(d), self.args),
+               *[x.replace_vars(d) for x in self.args],
                **self.copyargs())
         e.replace_original(d)
         return e
 
     def prime(self, vars):
-        map(lambda x: x.prime(vars), self.args)
+        for arg in self.args:
+            arg.prime(vars)
 
     def vars(self):
         args = self.args[1:] if self.name == 'FuncCall' else self.args
-        return reduce(lambda x, y: x | y, map(lambda x: x.vars(), args),
+        return reduce(lambda x, y: x | y, [x.vars() for x in args],
                       set())
 
     def tostring(self):
         s = '%s(%s)' % (self.name, ', '.join(
-            map(lambda x: x.tostring(), self.args)))
+            [x.tostring() for x in self.args]))
         return self.expr_original(s)
 
     def __repr__(self):
@@ -253,6 +262,9 @@ class Op(Expr):
     def __ne__(self, other):
         return not self == other
 
+    def __hash__(self):
+        return hash((self.name, tuple(self.args)))
+
     
 def expr_to_dict(e):
     d = None
@@ -265,7 +277,7 @@ def expr_to_dict(e):
 
     else:
         d = {'type': 'Op', 'name': e.name,
-                'args': map(expr_to_dict, e.args)}
+                'args': list(map(expr_to_dict, e.args))}
 
     d['original'] = e.original
 
@@ -280,7 +292,7 @@ def dict_to_expr(d):
         e = Const(value=d['value'])
 
     else:
-        e = Op(d['name'], *map(dict_to_expr, d['args']))
+        e = Op(d['name'], *list(map(dict_to_expr, d['args'])))
     
     e.original = d['original']
 
@@ -303,10 +315,10 @@ class Program(object):
         return self.fncs[name]
 
     def getfncs(self):
-        return self.fncs.values()
+        return list(self.fncs.values())
 
     def getfncnames(self):
-        return self.fncs.keys()
+        return list(self.fncs.keys())
 
     def rmfnc(self, name):
         del self.fncs[name]
@@ -321,13 +333,14 @@ class Program(object):
         self.warns.append(msg)
 
     def slice(self):
-        map(lambda x: x.slice(), self.fncs.values())
+        for fnc in self.fncs.values():
+            fnc.slice()
 
     def __repr__(self):
-        return '\n\n'.join(map(str, self.fncs.values()))
+        return '\n\n'.join(map(str, list(self.fncs.values())))
 
     def tostring(self):
-        return '\n\n'.join(map(lambda x: x.tostring(), self.fncs.values()))
+        return '\n\n'.join([x.tostring() for x in list(self.fncs.values())])
 
     def getstruct(self):
         
@@ -417,7 +430,7 @@ class Function(object):
         # Check that location is a new integer
         assert isinstance(loc, int), \
             "Location should be 'int', got '%s'" % (loc,)
-        assert loc not in self.loctrans.keys(), \
+        assert loc not in list(self.loctrans.keys()), \
             'Location %d already exists' % (loc,)
 
         # Assign init location if one doesn't exist yet
@@ -545,7 +558,7 @@ class Function(object):
 
         assert loc in self.loctrans, "Unknown location: '%s'" % (loc,)
 
-        return sum(1 for v in self.loctrans[loc].values() if v is not None)
+        return sum(1 for v in list(self.loctrans[loc].values()) if v is not None)
 
     def rmtrans(self, loc, cond):
         '''
@@ -630,9 +643,9 @@ class Function(object):
             
             for (_, expr) in self.exprs(loc):
                 used = expr.vars()
-                usedpre[loc] |= set(filter(lambda x: not isprimed(x), used))
+                usedpre[loc] |= set([x for x in used if not isprimed(x)])
                 usedpost[loc] |= set(map(unprime,
-                                         filter(lambda x: isprimed(x), used)))
+                                         [x for x in used if isprimed(x)]))
 
         return usedpre, usedpost
 
@@ -650,7 +663,7 @@ class Function(object):
 
         locs = self.locs()
         assigned = {loc: {var for (var, _) in self.exprs(loc)} for loc in locs}
-        succ = {loc: {l for l in self.loctrans[loc].values() if l is not None}
+        succ = {loc: {l for l in list(self.loctrans[loc].values()) if l is not None}
                 for loc in locs}
 
         # Note: Special vars are always live!
@@ -692,7 +705,7 @@ class Function(object):
 
             for (var, expr) in self.exprs(loc):
 
-                for v, e in m.items():
+                for v, e in list(m.items()):
                     expr = expr.replace(v, e.copy(), primedonly=True)
                 
                 # Definitively unsed var!
@@ -723,11 +736,10 @@ class Function(object):
     def tostring(self):
         s = [
             'fun %s (%s) : %s' % (self.name,
-                                  ', '.join(map(lambda x: '%s: %s' % x,
-                                                self.params)),
+                                  ', '.join(['%s: %s' % x for x in self.params]),
                                   self.rettype),
             '-' * 69,
-            ', '.join(map(lambda x: '%s : %s' % x, self.types.items())),
+            ', '.join(['%s : %s' % x for x in list(self.types.items())]),
         ]
         for loc in sorted(self.locexprs.keys()):
             s.append('')
@@ -747,11 +759,10 @@ class Function(object):
     def __repr__(self):
         s = [
             'fun %s (%s) : %s' % (self.name,
-                                  ', '.join(map(lambda x: '%s: %s' % x,
-                                                self.params)),
+                                  ', '.join(['%s: %s' % x for x in self.params]),
                                   self.rettype),
             '-' * 69,
-            ', '.join(map(lambda x: '%s : %s' % x, self.types.items())),
+            ', '.join(['%s : %s' % x for x in list(self.types.items())]),
         ]
         for loc in sorted(self.locexprs.keys()):
             s.append('')

@@ -8,9 +8,9 @@ import time
 from copy import deepcopy
 
 # clara imports
-from common import UnknownLanguage
-from model import Program, VAR_IN, VAR_OUT, VAR_RET, VAR_COND
-from model import prime, unprime, isprimed
+from .common import UnknownLanguage
+from .model import Program, VAR_IN, VAR_OUT, VAR_RET, VAR_COND
+from .model import prime, unprime, isprimed
 
 
 class RuntimeErr(Exception):
@@ -81,7 +81,7 @@ class Interpreter(object):
         mem[VAR_RET] = UndefValue()
 
         # Init all vars to Undef
-        for (var, _) in fnc.types.items():
+        for (var, _) in list(fnc.types.items()):
             if var not in mem:
                 mem[var] = UndefValue()
 
@@ -115,7 +115,7 @@ class Interpreter(object):
         try:
             return meth(obj, mem)
         except (OverflowError, ZeroDivisionError, AttributeError,
-                TypeError, IndexError, RuntimeError, ValueError, KeyError), ex:
+                TypeError, IndexError, RuntimeError, ValueError, KeyError) as ex:
             raise RuntimeErr("Exception '%s' on execution of '%s'" % (
                 ex, obj))
                 
@@ -167,7 +167,7 @@ class Interpreter(object):
     def procmem(self, mem):
         newmem = dict()
 
-        for var, val in mem.items():
+        for var, val in list(mem.items()):
             if isprimed(var):
                 var = unprime(var)
                 newmem[var] = deepcopy(val)
@@ -224,7 +224,7 @@ class Interpreter(object):
 
     def execute_StrAppend(self, a, mem):
 
-        return ''.join(map(lambda x: str(self.execute(x, mem)), a.args))
+        return ''.join([str(self.execute(x, mem)) for x in a.args])
 
     def execute_StrFormat(self, f, mem):
 
@@ -232,7 +232,7 @@ class Interpreter(object):
         if not isinstance(fmt, str):
             raise RuntimeErr("Expected 'str' for format, got '%s'" % (fmt,))
         
-        args = map(lambda x: self.execute(x, mem), f.args[1:])
+        args = [self.execute(x, mem) for x in f.args[1:]]
 
         return fmt % tuple(args)
 
@@ -252,7 +252,7 @@ class Interpreter(object):
         except KeyError:
             raise RuntimeErr("Unknown function: '%s'" % (name,))
 
-        args = map(lambda x: self.execute(x, mem), f.args[1:])
+        args = [self.execute(x, mem) for x in f.args[1:]]
 
         newmem = {
             VAR_IN: mem.get(VAR_IN, UndefValue()),

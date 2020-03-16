@@ -22,11 +22,11 @@ class RepairFeedback(object):
         # mapping - one-to-one mapping of variables
         # repairs - list of repairs
         # sm - structural matching betweeb locations of programs
-        for fname, (mapping, repairs, sm) in self.result.items():
+        for fname, (mapping, repairs, sm) in list(self.result.items()):
 
             # Copy mapping with converting '*' into a 'new_' variable
             nmapping = {k: '$new_%s' % (k,)
-                        if v == '*' else v for (k, v) in mapping.items()}
+                        if v == '*' else v for (k, v) in list(mapping.items())}
 
             # Go through all repairs
             # loc1 - location from the spec.

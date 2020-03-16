@@ -3,9 +3,9 @@ Simulation relation
 '''
 
 # clara imports
-from common import debug, equals
-from interpreter import Interpreter, RuntimeErr, UndefValue, isundef
-from model import SPECIAL_VARS, VAR_RET, VAR_IN, VAR_OUT, isprimed, prime
+from .common import debug, equals
+from .interpreter import Interpreter, RuntimeErr, UndefValue, isundef
+from .model import SPECIAL_VARS, VAR_RET, VAR_IN, VAR_OUT, isprimed, prime
 
 
 class Matching(object):
@@ -150,13 +150,13 @@ class Matching(object):
 
         # Debug matches
         for fnc in match:
-            for var, m in match[fnc].items():
+            for var, m in list(match[fnc].items()):
                 self.debug('matches for %s-%s: %s' % (fnc, var, m))
 
         # Construct one-to-one match
         newmatch = {}
         for fnc in sm:
-            newmatch[fnc] = self.one_to_one(match.get(fnc, {}).items())
+            newmatch[fnc] = self.one_to_one(list(match.get(fnc, {}).items()))
             if newmatch[fnc] is None:
                 self.debug("Couldn't find one-to-one match for '%s'", fnc)
                 return
@@ -192,7 +192,7 @@ class Matching(object):
                     return sm[fnc1][loc1] == loc2
 
                 # Check if loc2 already mapped
-                if loc2 in sm[fnc1].values():
+                if loc2 in list(sm[fnc1].values()):
                     return False
 
                 # Remember this pair
@@ -250,9 +250,9 @@ class Matching(object):
 
         # Populate ins or args (whichever may be missing)
         if not ins:
-            ins = [None for _ in xrange(len(args))]
+            ins = [None for _ in range(len(args))]
         if not args:
-            args = [None for _ in xrange(len(ins))]
+            args = [None for _ in range(len(ins))]
 
         # Create interpreter
         I = inter(timeout=timeout, entryfnc=entryfnc)

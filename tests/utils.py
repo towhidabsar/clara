@@ -12,8 +12,8 @@ def parse_file(fname, parser):
     """
     Parses the file `fname` using the parser `parser` and returns the resulting model.
     """
-    with open(fname) as f:
-        code = f.read().decode('utf-8')
+    with open(fname, encoding="utf-8") as f:
+        code = f.read()
     model = parser.parse_code(code)
     model.src = fname
     return model

@@ -19,13 +19,13 @@ ERROR_DEST = sys.stderr
 def debug(msg, *args):
     if args:
         msg %= tuple(args)
-    print >> DEBUG_DEST, '[debug] %s' % (msg,)
+    print('[debug] %s' % (msg,), file=DEBUG_DEST)
 
 
 def error(msg, *args):
     if args:
         msg %= tuple(args)
-    print >> ERROR_DEST, '[error] %s' % (msg,)
+    print('[error] %s' % (msg,), file=ERROR_DEST)
 
 
 def get_option(cf, section, option, default=None):

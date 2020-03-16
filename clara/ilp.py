@@ -6,10 +6,10 @@ ILP solver
 import time
 
 # clara imports
-from common import debug
-from model import SPECIAL_VARS
-from pylpsolve import LpModel, EQ, LE, GE, TIMEOUT, SUBOPTIMAL, NUMFAILURE
-from repair import Timeout
+from .common import debug
+from .model import SPECIAL_VARS
+from .pylpsolve import LpModel, EQ, LE, GE, TIMEOUT, SUBOPTIMAL, NUMFAILURE
+from .repair import Timeout
 
 
 class Solver(object):
@@ -130,7 +130,7 @@ class Solver(object):
             self.LP.setverbose(1)
 
         # Bound variables
-        for i in xrange(1, self.N + 1):
+        for i in range(1, self.N + 1):
             self.LP.setint(i, 1)
             self.LP.setupbo(i, 1.0)
 
@@ -195,7 +195,7 @@ class Solver(object):
                 if var1 != '-':
                     assert var1 not in mapping, "%s already mapped" % (var1,)
                 if var2 != '*':
-                    assert var2 not in mapping.values(), \
+                    assert var2 not in list(mapping.values()), \
                         "%s already mapped" % (var2,)
                 mapping[var1] = var2
             else:
@@ -288,16 +288,16 @@ class Solver(object):
     def printM(self):
         for left, op, right in self.C:
             left = ['%s*%s' % (y, self.decodevar(x))
-                    for (x, y) in left.items()]
+                    for (x, y) in list(left.items())]
             if op == EQ:
                 op = '='
             elif op == GE:
                 op = '>='
             elif op == LE:
                 op = '<='
-            print '%s %s %s' % (' + '.join(left), op, right)
+            print('%s %s %s' % (' + '.join(left), op, right))
 
-        print
-        print 'Objective: '
-        print ' + '.join('%s*%s' % (y, self.decodevar(x))
-                         for (x, y) in self.O.items())
+        print()
+        print('Objective: ')
+        print(' + '.join('%s*%s' % (y, self.decodevar(x))
+                         for (x, y) in list(self.O.items())))

@@ -8,8 +8,8 @@ import ast
 from itertools import chain
 
 # clara lib imports
-from model import Var, Const, Op, Expr, VAR_RET, VAR_OUT
-from parser import Parser, ParseError, addlangparser, NotSupported, ParseError
+from .model import Var, Const, Op, Expr, VAR_RET, VAR_OUT
+from .parser import Parser, ParseError, addlangparser, NotSupported, ParseError
 
 
 class PyParser(Parser):
@@ -46,7 +46,7 @@ class PyParser(Parser):
         # Get AST
         try:
             pyast = ast.parse(code, mode='exec')
-        except (SyntaxError, IndentationError), e:
+        except (SyntaxError, IndentationError) as e:
             raise ParseError(str(e))
         
         self.visit(pyast)
@@ -55,11 +55,10 @@ class PyParser(Parser):
         '''
         Creates functions from a module
         '''
-        funcdefs = list(filter(lambda x: isinstance(x, ast.FunctionDef),
-                               node.body))
+        funcdefs = list([x for x in node.body if isinstance(x, ast.FunctionDef)])
         for func in funcdefs:
-            
-            args = [(arg.id, '*') for arg in func.args.args]
+
+            args = [(arg.arg, '*') for arg in func.args.args]
             self.addfnc(func.name, args, '*')
             
             for arg, t in args:
@@ -76,7 +75,7 @@ class PyParser(Parser):
     # Methods for visiting literals
 
     def visit_Num(self, node):
-        if type(node.n) in (int, float, long, complex):
+        if type(node.n) in (int, float, int, complex):
             return Const(str(node.n), line=node.lineno)
         else:
             raise NotSupported(
@@ -87,21 +86,21 @@ class PyParser(Parser):
         return Const('"{}"'.format(node.s), line=node.lineno)
 
     def visit_List(self, node):
-        elts = map(self.visit_expr, node.elts)
+        elts = list(map(self.visit_expr, node.elts))
         return Op('ListInit', *elts, line=node.lineno)
 
     def visit_Set(self, node):
-        elts = map(self.visit_expr, node.elts)
+        elts = list(map(self.visit_expr, node.elts))
         return Op('SetInit', *elts, line=node.lineno)
 
     def visit_Dict(self, node):
-        keys = map(self.visit_expr, node.keys)
-        vals = map(self.visit_expr, node.values)
-        args = list(chain(*zip(keys, vals)))
+        keys = list(map(self.visit_expr, node.keys))
+        vals = list(map(self.visit_expr, node.values))
+        args = list(chain(*list(zip(keys, vals))))
         return Op('DictInit', *args, line=node.lineno)
 
     def visit_Tuple(self, node):
-        elts = map(self.visit, node.elts)
+        elts = list(map(self.visit, node.elts))
         return Op('TupleInit', *elts, line=node.lineno)
 
     # Methods for Variables
@@ -185,7 +184,7 @@ class PyParser(Parser):
 
     def visit_BoolOp(self, node):
         func = node.op.__class__.__name__
-        val_model = map(self.visit_expr, node.values)
+        val_model = list(map(self.visit_expr, node.values))
 
         expr = Op(func, val_model[0], val_model[1], line=val_model[1].line)
 
@@ -208,8 +207,8 @@ class PyParser(Parser):
         return Op(func, operand, line=node.lineno)
 
     def visit_Compare(self, node):
-        comps_model = map(self.visit, node.comparators)
-        ops_model = map(lambda x: x.__class__.__name__, node.ops)
+        comps_model = list(map(self.visit, node.comparators))
+        ops_model = [x.__class__.__name__ for x in node.ops]
 
         left = self.visit_expr(node.left)
         right = comps_model[0]
@@ -258,7 +257,7 @@ class PyParser(Parser):
         return Op('Slice', *args)
 
     def visit_ExtSlice(self, node):
-        dims = map(self.visit_expr, node.dims)
+        dims = list(map(self.visit_expr, node.dims))
         return Op('TupleInit', *dims)
 
     def visit_Subscript(self, node):
@@ -272,7 +271,8 @@ class PyParser(Parser):
     # Methods for Statements
 
     def visit_list(self, node):
-        map(self.visit, node)
+        for child in node:
+            self.visit(child)
 
     def visit_Delete(self, node):
         if len(node.targets) > 1:
@@ -327,7 +327,7 @@ class PyParser(Parser):
 
         # Assignment to a tuple
         elif isinstance(target, ast.Tuple):
-            targets = map(self.visit_expr, target.elts)
+            targets = list(map(self.visit_expr, target.elts))
             for i, target in enumerate(targets):
                 expr = Op('GetElement', right.copy(), Const(str(i)),
                           line=right.line)
@@ -386,14 +386,14 @@ class PyParser(Parser):
         '''
         Only used in Python 2.x, ignores destination and newline
         '''
-        values_model = map(self.visit_expr, node.values)
+        values_model = list(map(self.visit_expr, node.values))
         expr = Op('StrAppend', Var(VAR_OUT), *values_model, line=node.lineno)
         self.addexpr(VAR_OUT, expr)
     
     def visit_Call(self, node):
-        if len(node.keywords) > 0 or node.starargs or node.kwargs:
+        if len(node.keywords) > 0:
             raise NotSupported(
-                'starargs, kwargs and keyword arguments not supported',
+                'keyword arguments not supported',
                 line=node.lineno)
 
         if isinstance(node.func, ast.Name):
@@ -501,7 +501,7 @@ class PyParser(Parser):
             for el in node.target.elts:
                 if isinstance(el, ast.Name):
                     self.addtype(el.id, '*')
-            targets = map(self.visit_expr, node.target.elts)
+            targets = list(map(self.visit_expr, node.target.elts))
         else:
             raise NotSupported(
                 'For loop with {} as target'.format(

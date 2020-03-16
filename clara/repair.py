@@ -10,12 +10,12 @@ import time
 from zss import Node, simple_distance as tree_distance
 
 # clara imports
-from common import debug, equals
-from interpreter import RuntimeErr, isundef
-from model import isprimed, unprime, prime
-from model import SPECIAL_VARS, VAR_IN, VAR_OUT, VAR_RET
-from model import Var, Const, Op
-from matching import Matching
+from .common import debug, equals
+from .interpreter import RuntimeErr, isundef
+from .model import isprimed, unprime, prime
+from .model import SPECIAL_VARS, VAR_IN, VAR_OUT, VAR_RET
+from .model import Var, Const, Op
+from .matching import Matching
 
 
 class StructMismatch(Exception):
@@ -79,7 +79,7 @@ class Repair(object):
         self.cleanstrings = cleanstrings
 
         if solver is None:
-            from ilp import Solver
+            from .ilp import Solver
             solver = Solver
         self.solver = solver(verbose=verbose, allowsuboptimal=allowsuboptimal)
 
@@ -108,9 +108,9 @@ class Repair(object):
 
         # Populate ins or args (whichever may be missing)
         if not ins:
-            ins = [None for _ in xrange(len(args))]
+            ins = [None for _ in range(len(args))]
         if not args:
-            args = [None for _ in xrange(len(ins))]
+            args = [None for _ in range(len(ins))]
 
         I = inter(entryfnc=entryfnc)
         T = {}
@@ -335,7 +335,7 @@ class Repair(object):
                 if s1.startswith('iter#') != s2.startswith('iter#'):
                     continue
 
-            if ((s1 in self.pmap or s2 in self.pmap.keys())
+            if ((s1 in self.pmap or s2 in list(self.pmap.keys()))
                 and s2 != self.pmap.get(s1)):
                 continue
 
@@ -404,7 +404,7 @@ class Repair(object):
                     continue
 
             # Params can only be mapped to params
-            if ((var1 in self.pmap or var2 in self.pmap.keys())
+            if ((var1 in self.pmap or var2 in list(self.pmap.keys()))
                 and var2 != self.pmap.get(var1)):
                 continue
 
@@ -510,7 +510,7 @@ class Repair(object):
 
                     #yield (m, cost, set(order))
                 
-            for treps in tmprepairs.values():
+            for treps in list(tmprepairs.values()):
                 treps.sort()
                 #print treps[0][1]
                 yield treps[0][1]

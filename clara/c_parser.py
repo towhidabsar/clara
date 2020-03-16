@@ -8,8 +8,8 @@ import re
 from subprocess import Popen, PIPE
 
 # clara lib imports
-from model import Var, Const, Op, Expr, VAR_IN, VAR_OUT, VAR_RET
-from parser import Parser, ParseError, addlangparser, NotSupported, ParseError
+from .model import Var, Const, Op, Expr, VAR_IN, VAR_OUT, VAR_RET
+from .parser import Parser, ParseError, addlangparser, NotSupported, ParseError
 
 # Parser imports
 from pycparser import c_ast, c_parser, plyparser
@@ -51,9 +51,6 @@ class CParser(Parser):
         Parses C code
         '''
 
-        # Should this be somewhere else (?)
-        code = code.encode('utf-8')
-
         # Meta data
         if re.findall(r'^\s*//\s+#incorrect\s*', code, flags=re.M):
             self.prog.addmeta('incorrect', True)
@@ -62,7 +59,7 @@ class CParser(Parser):
             self.prog.addmeta('feedback', mfeed[0])
 
         # Remove includes
-        code = re.sub('\s*#include.*', ' ', code)
+        code = re.sub(r'\s*#include.*', ' ', code)
 
         # Run CPP
         args = ['cpp', '-x', 'c', '-']
@@ -74,7 +71,7 @@ class CParser(Parser):
         parser = c_parser.CParser()
         try:
             self.ast = parser.parse(code)
-        except plyparser.ParseError, e:
+        except plyparser.ParseError as e:
             raise ParseError(str(e))
     
         self.visit(self.ast)
@@ -238,7 +235,7 @@ class CParser(Parser):
         Array Initialization List
         Attrs: exprs
         '''
-        exprs = map(self.visit_expr, node.exprs or [])
+        exprs = list(map(self.visit_expr, node.exprs or []))
         return Op('ArrayInit', *exprs, line=node.coord.line)
 
     def visit_BinaryOp(self, node):
@@ -478,7 +475,7 @@ of 'scanf' at line %s.",
                          node.coord.line)
 
             if len(args) > len(fs):
-                fs += ['*' for _ in xrange(len(args) - len(fs))]
+                fs += ['*' for _ in range(len(args) - len(fs))]
 
         # Iterate formats and arguments
         for f, a in zip(fs, args):
@@ -535,7 +532,7 @@ of 'scanf' at line %s.",
         Attrs: exprs
         '''
 
-        return map(self.visit_expr, node.exprs)
+        return list(map(self.visit_expr, node.exprs))
 
     def visit_If(self, node):
         '''
@@ -702,7 +699,8 @@ of 'scanf' at line %s.",
         Attrs: decls
         '''
 
-        map(self.visit, node.decls)
+        for decl in node.decls:
+            self.visit(decl)
 
     def visit_TypeDecl(self, node):
         '''

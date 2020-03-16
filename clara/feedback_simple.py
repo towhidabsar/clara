@@ -4,8 +4,8 @@ Generating simple, but not raw textual feedback from repair
 
 import re
 
-from model import VAR_OUT, VAR_IN, VAR_COND, VAR_RET, Var, Op, Const
-from model import isprimed, unprime, prime
+from .model import VAR_OUT, VAR_IN, VAR_COND, VAR_RET, Var, Op, Const
+from .model import isprimed, unprime, prime
 
 # TODO: Maybe add importance to feedback, so only
 # a limited number of feedback messages would be shown
@@ -72,7 +72,7 @@ class SimpleFeedback(object):
     def filter_n(self, num):
         self.feedback.sort()
         self.feedback = self.feedback[:num]
-        self.feedback = map(lambda x: x[1], self.feedback)
+        self.feedback = [x[1] for x in self.feedback]
 
     def genfeedback(self):
         self.genfeedback_internal()
@@ -93,7 +93,7 @@ class SimpleFeedback(object):
         # mapping - one-to-one mapping of variables
         # repairs - list of repairs
         # sm - structural matching betweeb locations of programs
-        for fname, (mapping, repairs, sm) in self.result.items():
+        for fname, (mapping, repairs, sm) in list(self.result.items()):
 
             # Remember deleted and added variables
             deleted = set()
@@ -107,7 +107,7 @@ class SimpleFeedback(object):
 
             # Copy mapping with converting '*' into a 'new_' variable
             nmapping = {k: '$new_%s' % (k,)
-                        if v == '*' else v for (k, v) in mapping.items()}
+                        if v == '*' else v for (k, v) in list(mapping.items())}
 
             # Go through all repairs
             # loc1 - location from the spec.
@@ -591,13 +591,9 @@ class SimpleFeedback(object):
         # Function calls
         if expr1.name in self.funcs:
             if expr1.name == expr2.name and len(expr1.args) == len(expr2.args):
-                targs = map(
-                    lambda a: self.gettemplate(a[0], a[1], outer=True),
-                    zip(expr1.args, expr2.args))
+                targs = [self.gettemplate(a[0], a[1], outer=True) for a in zip(expr1.args, expr2.args)]
             else:
-                targs = map(
-                    lambda a: self.gettemplate(a, None, outer=True),
-                    expr1.args)
+                targs = [self.gettemplate(a, None, outer=True) for a in expr1.args]
             if all(targs):
                 return '%s(%s)' % (expr1.name, ', '.join(targs))
             else:
@@ -631,14 +627,10 @@ class SimpleFeedback(object):
                     while len(args2) < len1:
                         args2.append(Op('xxx'))
                     
-                    targs = map(lambda x: self.gettemplate(x[0], x[1], outer=True),
-                                zip(expr1.args[1].args, expr2.args[1].args))
+                    targs = [self.gettemplate(x[0], x[1], outer=True) for x in zip(expr1.args[1].args, expr2.args[1].args)]
 
                 else:
-                    targs = map(
-                        lambda x: self.gettemplate(x, None, outer=True),
-                        expr1.args[1].args
-                    )
+                    targs = [self.gettemplate(x, None, outer=True) for x in expr1.args[1].args]
                 
                 if all(targs):
                     return 'printf(%s);' % (', '.join(targs), )
@@ -678,5 +670,4 @@ class SimpleFeedback(object):
                 return 'if (%s) { %s }' % (tcond, tt)
 
     def unprimedvars(self, expr):
-        return set(map(lambda x: unprime(x) if isprimed(x) else x,
-                       expr.vars()))
+        return set([unprime(x) if isprimed(x) else x for x in expr.vars()])
