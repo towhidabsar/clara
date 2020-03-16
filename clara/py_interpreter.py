@@ -446,34 +446,6 @@ class PyInterpreter(Interpreter):
     def execute_reversed(self, o, mem):
         return self.execute_reverse(o, mem)
 
-    def execute_Comp(self, c, mem):
-        # Arg #2 is an expression evaluating to a list
-        l = list(self.execute(c.args[1], mem))
-
-        # Arg #3 is a filter expression
-        f = c.args[2]
-
-        # If there is only one name, transform list elements
-        # into "one-tuples"
-        if len(names) == 1:
-            l = [(x,) for x in l]
-
-        # Run filter
-        nl = []
-        for el in l:
-
-            # Construct a new memory
-            newmem = deepcopy(mem)
-            for var, val in zip(names, el):
-                newmem[var] = val
-
-            # Get filter value
-            ok = self.execute(f, newmem)
-            if ok:
-                nl.append(el)
-
-        return names, nl
-
     def execute_BoundVar(self, c, mem):
         var = int(c.args[0].value)
         return mem['#__bound'][var]
