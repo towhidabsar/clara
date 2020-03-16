@@ -8,8 +8,8 @@ programming assignments, described in the following paper:
 (https://dl.acm.org/doi/10.1145/3192366.3192387 and https://arxiv.org/abs/1603.03165).
 
 
-Requires
-========
+Dependencies
+============
 - C compiler
 - Cython
   - `$ sudo aptitude install cython` (Debian)
@@ -19,27 +19,26 @@ Requires
   - `# dnf install lpsolve-devel` (Fedora)
 
 
-Installation
-============
-- Run `make install` in this directory; or
-- See docker installation below
+Installation & running
+======================
+- `make` (in this directory) installs a binary file called `clara`
+- Run `clara help` or see examples below.
 
 
-Running
-=======
-- `make` from above installs a binary file called `clara`
-- Run `clara help` or see examples below
+Development
+===========
+- Create a new virtual environment (using `virtualenv`)
+- Install `Cython` (using `pip install Cython` inside the new virtual enviroment)
+- Run `python setup.py develop`
 
 
 Debian note
 ===========
-
 On Debian system the following is required before running the tool: `export LD_LIBRARY_PATH=/usr/lib/lp_solve/`
 
 
 Examples
 ========
-
 The `examples/` directory contains some example programs:
 - `c1.py` and `c2.py` are the correct examples from the paper
 - `i1.py` and `i2.py` are the incorrect example from the paper
