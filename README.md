@@ -1,3 +1,5 @@
+![Build and test](https://github.com/iradicek/clara/workflows/Build%20and%20test/badge.svg?branch=master)
+
 **CL**uster **A**nd **R**ep**A**ir tool for introductory programming assignments
 
 About
