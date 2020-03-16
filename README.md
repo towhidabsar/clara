@@ -25,12 +25,6 @@ Installation
 - See docker installation below
 
 
-Docker installation
-===================
-1) Build the image with: `docker build --rm=true -t clara .`
-2) Run the container with: `docker run -ti -h clara --name clara clara /bin/bash`
-
-
 Running
 =======
 - `make` from above installs a binary file called `clara`
