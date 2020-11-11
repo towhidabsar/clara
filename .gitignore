@@ -1,3 +1,5 @@
+clusters
+
 *.pyc
 *.pyo
 *.so
@@ -5,3 +7,5 @@
 dist/
 clara/pylpsolve.c
 MANIFEST
+__pycache__/
+.env

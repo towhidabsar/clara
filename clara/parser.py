@@ -250,19 +250,21 @@ class Parser(object):
             self.ssa(fnc)
             self.rmtmp(fnc)
 
-    def visit(self, node):
+    def visit(self, node, name=None):
 
         # Skip None-node
         if node is None:
             return
 
         # Name of the node class
-        name = node.__class__.__name__
+        if name is None:
+            name = node.__class__.__name__
 
         # Get method
         meth = getattr(self, 'visit_%s' % (name,), None)
         if meth is None:
-            raise NotSupported("Unimplemented visitor: '%s'" % (name,))
+            raise NotSupported("Unimplemented visitor: '%s'%s" % (name,
+                               " (%s)" % node.value if hasattr(node, "value") else ""))
 
         # Call visitor method
         return meth(node)
