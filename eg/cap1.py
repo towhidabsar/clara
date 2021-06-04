@@ -3,6 +3,7 @@ def cap(s):
     b = 2
     c = a + b
     print(c)
-    round(5)
-
+    def one():
+        return 1
+    e = one()
     return c

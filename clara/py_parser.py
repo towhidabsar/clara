@@ -48,7 +48,6 @@ class PyParser(Parser):
             pyast = ast.parse(code, mode='exec')
         except (SyntaxError, IndentationError) as e:
             raise ParseError(str(e))
-
         self.visit(pyast)
         
 
@@ -58,21 +57,22 @@ class PyParser(Parser):
         '''
         funcdefs = list([x for x in node.body if isinstance(x, ast.FunctionDef)])
         for func in funcdefs:
+            self.visit_FunctionDef(func)
+    
+    def visit_FunctionDef(self, node):
+        args = [(arg.arg, '*') for arg in node.args.args]
+        self.addfnc(node.name, args, '*')
+        
+        for arg, t in args:
+            self.addtype(arg, t)
 
-            args = [(arg.arg, '*') for arg in func.args.args]
-            self.addfnc(func.name, args, '*')
+        self.addloc(
+            desc="around the beginning of function '%s'" % node.name)
             
-            for arg, t in args:
-                self.addtype(arg, t)
+        for b in node.body:
+            self.visit(b)
 
-            self.addloc(
-                desc="around the beginning of function '%s'" % func.name)
-                
-            for b in func.body:
-                ast.dump(b)
-                self.visit(b)
-
-            self.endfnc()
+        self.endfnc()
 
     # Methods for visiting literals
 
@@ -401,14 +401,6 @@ class PyParser(Parser):
                 'Assignments to {} not supported'.format(
                     node.target.__class__.__name__),
                 line=node.lineno)
-
-    def visit_Print(self, node):
-        '''
-        Only used in Python 2.x, ignores destination and newline
-        '''
-        values_model = list(map(self.visit_expr, node.values))
-        expr = Op('StrAppend', Var(VAR_OUT), *values_model, line=node.lineno)
-        self.addexpr(VAR_OUT, expr)
     
     def visit_Call(self, node):
         if len(node.keywords) > 0:

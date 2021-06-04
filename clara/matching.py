@@ -37,7 +37,6 @@ class Matching(object):
 
         # Go through all variables
         for var1 in V1 | SPECIAL_VARS:
-
             # Ignored vars
             if self.ignoreret and var1 == VAR_RET:
                 continue

@@ -4,4 +4,9 @@ def cap(s):
     d = x + y
     print (d)
 
+    def one():
+        return 1
+
+    b = one()
+
     return d

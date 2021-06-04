@@ -248,7 +248,6 @@ class Parser(object):
             self.rmtmp(fnc)
 
     def visit(self, node, name=None):
-
         # Skip None-node
         if node is None:
             return
@@ -259,7 +258,7 @@ class Parser(object):
         # Get method
         meth = getattr(self, 'visit_%s' % (name,), None)
         if meth is None:
-            raise NotSupported("Unimplemented visitor: '%s'%s" % (name,
+            raise NotSupported("Unimplemented visitor in Visit: '%s'%s" % (name,
                                " (%s)" % node.value if hasattr(node, "value") else ""))
 
         # Call visitor method
