@@ -85,7 +85,6 @@ class Parser(object):
 
         visited = set()
         tovisit = [fnc.initloc]
-
         while len(tovisit) > 0:
             loc = tovisit.pop()
             if loc in visited:
@@ -98,7 +97,6 @@ class Parser(object):
             l2 = fnc.trans(loc, False)
             if l2:
                 tovisit.append(l2)
-
         for loc in fnc.locs():
             if loc not in visited:
                 fnc.rmloc(loc)
@@ -114,7 +112,6 @@ class Parser(object):
             last = {}
             for i, (var, _) in enumerate(fnc.exprs(loc)):
                 last[var] = i
-
             # Replace non-last appearance by a fresh var
             m = {}
             exprs = []
@@ -259,7 +256,6 @@ class Parser(object):
         # Name of the node class
         if name is None:
             name = node.__class__.__name__
-
         # Get method
         meth = getattr(self, 'visit_%s' % (name,), None)
         if meth is None:
@@ -271,7 +267,6 @@ class Parser(object):
 
     def visit_expr(self, node, allowlist=False, allownone=False):
         res = self.visit(node)
-
         if isinstance(res, list) and allowlist:
             ok = True
             for r in res:

@@ -9,3 +9,4 @@ clara/pylpsolve.c
 MANIFEST
 __pycache__/
 .env
+.vscode/*

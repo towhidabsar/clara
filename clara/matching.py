@@ -30,7 +30,6 @@ class Matching(object):
 
         #V2 = ({var2 for var2 in mem2.keys() if not isprimed(var2)}
         #      - SPECIAL_VARS)
-
         if self.bijective:
             if len(V1 | SPECIAL_VARS) != len(V2 | SPECIAL_VARS):
                 self.debug('Not bijective - different number of variables')
@@ -51,7 +50,6 @@ class Matching(object):
                     match[var1] = set([var1])
                 else:
                     match[var1] = set(V2)
-
             # Check list of potential matches
             newmatch = set([])
             varp1 = prime(var1)
@@ -89,14 +87,12 @@ class Matching(object):
             # Otherwise replace with new matches
             else:
                 match[var1] = newmatch
-
         return True
 
     def one_to_one(self, match, taken=None):
 
         if len(match) == 0:
             return {}
-
         if taken is None:
             taken = set()
 
@@ -122,7 +118,6 @@ class Matching(object):
             self.debug('Different number of traces (%d <> %d)',
                        len(T1), len(T2))
             return
-
         # Go through each trace
         match = {}
         for t1, t2 in zip(T1, T2):
@@ -163,10 +158,8 @@ class Matching(object):
         return (sm, newmatch)
 
     def match_struct(self, P, Q):
-
         fncs1 = P.getfncnames()
         fncs2 = Q.getfncnames()
-
         # Go through all functions
         sm = {}
         
@@ -186,7 +179,6 @@ class Matching(object):
 
             # Compare structure of two functions
             def build_sm(loc1, loc2):
-
                 # Check if already mapped
                 if loc1 in sm[fnc1]:
                     return sm[fnc1][loc1] == loc2

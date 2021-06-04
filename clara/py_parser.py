@@ -48,8 +48,9 @@ class PyParser(Parser):
             pyast = ast.parse(code, mode='exec')
         except (SyntaxError, IndentationError) as e:
             raise ParseError(str(e))
-        
+
         self.visit(pyast)
+        
 
     def visit_Module(self, node):
         '''
@@ -68,6 +69,7 @@ class PyParser(Parser):
                 desc="around the beginning of function '%s'" % func.name)
                 
             for b in func.body:
+                ast.dump(b)
                 self.visit(b)
 
             self.endfnc()
@@ -142,10 +144,14 @@ class PyParser(Parser):
         calls like list.append() must be handled.
         '''
         if isinstance(node.value, ast.Call):
-            if isinstance(node.value.func, ast.Name):
+            if (node.value.func.id == "print"):
+                values_model = list(map(self.visit_expr, node.value.args))
+                expr = Op('StrAppend', Var(VAR_OUT), *values_model, line=node.lineno)
+                self.addexpr(VAR_OUT, expr)
+            elif isinstance(node.value.func, ast.Name):
                 self.warns.append('Ignored call to {} at line {}'.format(
                     node.value.func.id, node.lineno))
-                
+
             elif isinstance(node.value.func, ast.Attribute):
                 if node.value.func.attr in self.ATTR_FNCS:
                     call = self.visit_expr(node.value)
