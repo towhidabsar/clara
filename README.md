@@ -1,3 +1,3 @@
 # clara
 
-Adding features to teh tool CLARA by https://github.com/iradicek/clara
+Adding features to the tool CLARA by https://github.com/iradicek/clara
