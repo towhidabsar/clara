@@ -75,6 +75,11 @@ class PyParser(Parser):
         self.endfnc()
 
     # Methods for visiting literals
+    def visit_NameConstant(self, node):
+        if isinstance(node.value, bool):
+            return Const(str(node.value), line=node.lineno)
+        else:
+            raise NotSupported("Unimplemented Constant visitor for '%s'" % (node.value,))
 
     def visit_Constant(self, node):
         if isinstance(node.value, str):
