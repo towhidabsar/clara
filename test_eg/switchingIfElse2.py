@@ -1,5 +1,5 @@
 def cap(s):
-    if (False):
+    if (True):
         return 0
     else:
         return 1
