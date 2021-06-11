@@ -41,14 +41,15 @@ class Interpreter(object):
 
         self.fnc = None
         self.loc = None
-
+        self.fncs = {}
         self.trace = []
 
         self.prog = None
 
     def getfnc(self, name):
-
-        return self.prog.getfnc(name)
+        if self.prog == None and self.fncs:
+            return self.fncs[name]
+        return self.prog.getfnc(name)  
 
     def run(self, prog, mem=None, ins=None, args=None, entryfnc=None):
 
@@ -111,7 +112,7 @@ class Interpreter(object):
         # Get name of the object to be executed
         name = obj.__class__.__name__
         meth = getattr(self, 'execute_%s' % (name,))
-
+    
         try:
             return meth(obj, mem)
         except (OverflowError, ZeroDivisionError, AttributeError,
@@ -180,7 +181,7 @@ class Interpreter(object):
         return newmem, mem
 
     def execute_Op(self, op, mem):
-
+        
         if op.name in self.UNARY_OPS:
             if len(op.args) != 1 and op.name not in self.BINARY_OPS:
                 raise RuntimeError(

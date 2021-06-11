@@ -144,14 +144,17 @@ class Repair(object):
 
         # (2) Obtain trace of P
         self.trace = self.gettrace(P, inter, ins, args, entryfnc)
-
         # (3) Repair each fnc sepearately
         self.inter = inter()
         results = {}
-        for fnc1 in P.getfncs():
-            fnc2 = Q.getfnc(fnc1.name)
-            results[fnc1.name] = (self.repair_fnc(fnc1, fnc2) +
-                                  (self.sm[fnc1.name],))
+        # for fnc1 in P.getfncs():
+        #     fnc2 = Q.getfnc(fnc1.name)
+        #     results[fnc1.name] = (self.repair_fnc(fnc1, fnc2) +
+        #                           (self.sm[fnc1.name],))
+        fnc1 = P.getfnc(entryfnc)
+        fnc2 = Q.getfnc(entryfnc)
+        results[fnc1.name] = (self.repair_fnc(fnc1, fnc2, Q) +
+                                (self.sm[fnc1.name],))
 
         self.debug('total time: %.3f', round(time.time() - self.starttime, 3))
 
@@ -171,25 +174,26 @@ class Repair(object):
                                loc1, var1)
                     P[loc1][var1] = []
 
-    def repair_fnc(self, f1, f2):
+    def repair_fnc(self, f1, f2, Q):
 
         # Remember params mapping
         self.pmap = {p1: p2 for (p1, p2) in zip(f1.getparamnames(),
                                                 f2.getparamnames())}
-
+    
         P = {}
         pgenstart = time.time()
         # (1) Generate "potential" sets
         self.V1 = (f1.getvars() | SPECIAL_VARS | set(['-'])) - self.vignore
         self.V2 = (f2.getvars() | SPECIAL_VARS | set(['*'])) - self.vignore
         self.getexprs(f1, f2)
+
         for loc1 in f1.locs():
             loc2 = self.sm[f1.name][loc1]
             P[loc1] = {}
             for var1 in self.V1 | set(['-']):
                 self.debug('Generating P for %s-%s', loc1, var1)
                 tptime = time.time()
-                P[loc1][var1] = list(self.potential(f1, f2, loc1, var1, loc2))
+                P[loc1][var1] = list(self.potential(f1, f2, loc1, var1, loc2, Q))
                 if self.verbose:
                     assert var1 == '-' or len(P[loc1][var1]) > 0, \
                         '%s,%s' % (loc1, var1)
@@ -253,7 +257,7 @@ class Repair(object):
                 if self.verbose:
                     self.debug('T2 %s-%s-%s := %s', f2.name, loc2, var2,
                                self.treetostr(self.T2[loc2][var2]))
-
+        
         hasrep = hasattr(f1, 'repair_exprs')
         self.ER = {}
         self.TR = {}
@@ -263,7 +267,7 @@ class Repair(object):
             for var1 in self.V1:
                 if (hasrep and loc1 in f1.repair_exprs
                     and var1 in f1.repair_exprs[loc1]):
-                    
+
                     self.ER[loc1][var1] = []
                     self.TR[loc1][var1] = []
                     for expr in f1.repair_exprs[loc1][var1]:
@@ -373,7 +377,7 @@ class Repair(object):
         order.sort()
         return order
 
-    def potential(self, f1, f2, loc1, var1, loc2):
+    def potential(self, f1, f2, loc1, var1, loc2, Q):
 
         varp1 = prime(var1)
         expr1 = self.E1[loc1][var1]
@@ -387,7 +391,7 @@ class Repair(object):
         V1.sort()
         V2 = list(self.V2)
         V2.sort()
-        
+
         for var2 in V2:
 
             sofar = set()
@@ -433,7 +437,7 @@ class Repair(object):
                     ok = True
                     for mem1 in self.trace.get(f1.name, {}).get(loc1, []):
                         val1 = mem1.get(varp1)
-                        
+
                         if isundef(val1) and (var1 != VAR_RET):
                             continue
                         
@@ -443,7 +447,9 @@ class Repair(object):
                         mem2 = {v2: mem1.get(v1) for (v1, v2) in m}
                         mem2.update({prime(v2): mem1.get(prime(v1))
                                      for (v1, v2) in m})
+
                         try:
+                            self.inter.fncs = Q.fncs
                             val2 = self.inter.execute(expr2, mem2)
                             if isinstance(val2, str) and self.cleanstrings:
                                 val2 = val2.strip()

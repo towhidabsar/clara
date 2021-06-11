@@ -149,7 +149,7 @@ class PyParser(Parser):
         calls like list.append() must be handled.
         '''
         if isinstance(node.value, ast.Call):
-            if (node.value.func.id == "print"):
+            if (hasattr(node.value.func, "id") and (node.value.func.id == "print")):
                 values_model = list(map(self.visit_expr, node.value.args))
                 expr = Op('StrAppend', Var(VAR_OUT), *values_model, line=node.lineno)
                 self.addexpr(VAR_OUT, expr)
