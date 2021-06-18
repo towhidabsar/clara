@@ -199,9 +199,9 @@ class Repair(object):
                         '%s,%s' % (loc1, var1)
                     for (m, cost, order, _) in P[loc1][var1]:
                         self.debug('P %s-%s-%s %s %s %s',
-                                   f1.name, loc1, var1, cost, m, order)
+                                f1.name, loc1, var1, cost, m, order)
                     self.debug('P for %s-%s generated in %.3fs',
-                               loc1, var1, round(time.time() - tptime, 3))
+                            loc1, var1, round(time.time() - tptime, 3))
         self.filter_potential(P)
         self.pgentime = time.time() - pgenstart
 
@@ -226,7 +226,7 @@ class Repair(object):
                 repobj.expr1_orig = self.ER[loc1][var1][idx][1]
             ress.append(repobj)
         res = (res[0], ress)
-            
+
         self.debug('PGEN time: %.3f' % round(self.pgentime, 3))
         self.debug('mapping: %s', res[0])
         self.debug('repairs: %s', res[1])
@@ -432,6 +432,22 @@ class Repair(object):
 
             # (1) Generate corrects (if not new variable)
             if var2 != '*':
+                # if expression is a variable, it looks up the variable 
+                # to see if it corresponds to an expression
+                exp_name = expr2.__class__.__name__
+                temp_loc = loc2
+                temp_expr = expr2
+                while(exp_name == "Var" and temp_loc > 0 and (not isprimed(temp_expr))):
+                    print("temp_loc ", temp_loc, "temp expr ", temp_expr, "expr2 ", expr2)
+                    temp_expr = self.E2[temp_loc][temp_expr.tostr()]
+                    # sets the expression to the new value
+                    if ((not isundef(temp_expr)) and temp_expr != expr2):
+                        expr2 = temp_expr
+                        exp_name = expr2.__class__.__name__
+                    temp_loc -= 1
+                vars2 += list(set(map(unprimes, expr2.vars())) | set([var2]))
+                vars2 = list(set(vars2))
+                vars2.sort()
                 for m in self.one_to_ones(vars2, V1, var2, var1):
                     m = [(s2, s1) for (s1, s2) in m]
                     ok = True
@@ -443,11 +459,11 @@ class Repair(object):
                         
                         if isinstance(val1, str) and self.cleanstrings:
                             val1 = val1.strip()
-                            
+
                         mem2 = {v2: mem1.get(v1) for (v1, v2) in m}
                         mem2.update({prime(v2): mem1.get(prime(v1))
                                      for (v1, v2) in m})
-
+                        
                         try:
                             self.inter.fncs = Q.fncs
                             val2 = self.inter.execute(expr2, mem2)
