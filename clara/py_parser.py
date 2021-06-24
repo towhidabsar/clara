@@ -150,9 +150,19 @@ class PyParser(Parser):
         '''
         if isinstance(node.value, ast.Call):
             if (hasattr(node.value.func, "id") and (node.value.func.id == "print")):
+                # add new loc for print
+                preloc = self.loc
+                printloc = self.addloc("the print function at line %s" % (
+                    self.getline(node)))
                 values_model = list(map(self.visit_expr, node.value.args))
                 expr = Op('StrAppend', Var(VAR_OUT), *values_model, line=node.lineno)
                 self.addexpr(VAR_OUT, expr)
+                # Add exit loc
+                exitloc = self.addloc("*after* the print function starting at line %d" % (
+                    self.getline(node)))
+                self.addtrans(preloc, True, printloc)
+                self.addtrans(printloc, True, exitloc)
+                self.loc = exitloc
             elif isinstance(node.value.func, ast.Name):
                 self.warns.append('Ignored call to {} at line {}'.format(
                     node.value.func.id, node.lineno))
