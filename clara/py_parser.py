@@ -614,6 +614,10 @@ class PyParser(Parser):
         self.addtrans(preloc, True, lastloop[0])
 
     def visit_Return(self, node):
+        # adding all the return locations to help Trace values in repair
+        preloc = self.loc
+        self.add_ret_loc(preloc)
+
         if node.value is None:
             ret = Const('None', line=node.lineno)
         else:

@@ -474,6 +474,11 @@ class Parser(object):
         self.loc = self.fnc.addloc(desc=desc)
         return self.loc
 
+    def add_ret_loc(self, loc):
+        assert (self.fnc), 'No active fnc!'
+        self.loc = self.fnc.add_ret_loc(loc)
+        return
+
     def addexpr(self, name, expr, loc=None, idx=None):
         assert (self.fnc), 'No active fnc!'
         if not loc:

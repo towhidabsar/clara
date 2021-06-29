@@ -157,6 +157,7 @@ class Repair(object):
                                 (self.sm[fnc1.name],))
 
         self.debug('total time: %.3f', round(time.time() - self.starttime, 3))
+        self.compareEndTracesAndFilter(P, Q, inter, ins, args, entryfnc, results)
 
         return results
 
@@ -438,16 +439,18 @@ class Repair(object):
                 temp_loc = loc2
                 temp_expr = expr2
                 while(exp_name == "Var" and temp_loc > 0 and (not isprimed(temp_expr))):
-                    print("temp_loc ", temp_loc, "temp expr ", temp_expr, "expr2 ", expr2)
                     temp_expr = self.E2[temp_loc][temp_expr.tostr()]
+
                     # sets the expression to the new value
                     if ((not isundef(temp_expr)) and temp_expr != expr2):
                         expr2 = temp_expr
                         exp_name = expr2.__class__.__name__
                     temp_loc -= 1
+
                 vars2 += list(set(map(unprimes, expr2.vars())) | set([var2]))
                 vars2 = list(set(vars2))
                 vars2.sort()
+
                 for m in self.one_to_ones(vars2, V1, var2, var1):
                     m = [(s2, s1) for (s1, s2) in m]
                     ok = True
@@ -463,7 +466,7 @@ class Repair(object):
                         mem2 = {v2: mem1.get(v1) for (v1, v2) in m}
                         mem2.update({prime(v2): mem1.get(prime(v1))
                                      for (v1, v2) in m})
-                        
+
                         try:
                             self.inter.fncs = Q.fncs
                             val2 = self.inter.execute(expr2, mem2)
@@ -490,7 +493,7 @@ class Repair(object):
             tmprepairs = {}
             #for rexpr, rtree in zip([self.E1[loc1][var1]], [self.T1[loc1][var1]]):
             for idx, ((rexpr, _), rtree) in enumerate(zip(self.ER[loc1][var1], self.TR[loc1][var1])):
-                
+
                 risid = (isinstance(rexpr, Var) and rexpr.name == var1
                         and rexpr.primed == False)
                 rvars = list(set(map(unprimes, rexpr.vars())) | set([var1]))
@@ -510,7 +513,7 @@ class Repair(object):
                         cost = self.distance(tree2, rtree, dict(m))
                     
                     # Account for *declaring* a new variable
-                    if var2 == '*' and loc1 == 1:
+                    if var2 == '*' and (not risid):
                         cost += 1
                 
                     ms = list(m)
@@ -536,3 +539,47 @@ class Repair(object):
                 treps.sort()
                 #print treps[0][1]
                 yield treps[0][1]
+
+    def compareEndTracesAndFilter(self, P, Q, inter, ins, args, entryfnc, results):
+        traceP = self.gettrace(P, inter, ins, args, entryfnc)[entryfnc]
+        traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
+
+        retFncP = P.getfnc(entryfnc).retlocs
+        retFncQ = Q.getfnc(entryfnc).retlocs
+        
+        dictP = self.findDictFromTrace(traceP, retFncP)
+        dictQ = self.findDictFromTrace(traceQ, retFncQ)
+        results = results[entryfnc]
+        matching, repairs, _ = results
+
+        for key in matching:
+            if key not in dictP:
+                continue
+            val = matching[key]
+            if val not in dictQ:
+                continue
+            key_primed = key if (isprimed(key)) else (key + "'")
+            val_primed = val if (isprimed(val)) else (val + "'")
+            k_val = dictP[key_primed] if (key_primed in dictP) else dictP[key]
+            v_val = dictQ[val_primed] if (val_primed in dictQ) else dictQ[val]
+            if (k_val == v_val):
+                for r in repairs[:]:
+                    m1 = r.var1
+                    m2 = r.var2
+                    if (m1 == key and m2 == val):
+                      repairs.remove(r)
+        return repairs
+
+
+    def findDictFromTrace(self, trace, retArr):
+        # find trace for location containing returns
+        dict_ = []
+        while(not dict_):
+            max_ = max(retArr)
+            if (max_ in trace):
+                dict_ = trace[max_]
+            else:
+                retArr.remove(max_)
+            assert (retArr), 'Return location not in Trace!'
+        return dict_[0]
+        
