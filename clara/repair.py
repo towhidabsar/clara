@@ -171,9 +171,21 @@ class Repair(object):
                     totalcost += cost
                     
                 if totalcost == 0:
+                    if ((var1 not in SPECIAL_VARS) and (self.noCostAllLoc(P, var1))):
+                        continue
                     self.debug('removing %s-%s from P, due to total cost 0',
                                loc1, var1)
                     P[loc1][var1] = []
+        
+    def noCostAllLoc(self, P, var1):
+        for loc1 in P:
+            totalcost = 0
+            for (_, cost, _, _) in sorted(P[loc1][var1],
+                                                key=lambda x: x[1]):
+                totalcost += cost
+            if totalcost != 0:
+                return False
+        return True
 
     def repair_fnc(self, f1, f2, Q):
 

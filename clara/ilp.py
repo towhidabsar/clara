@@ -90,13 +90,12 @@ class Solver(object):
         return False
 
     def encode_P(self):
-        maxcost = 0.0
         self.R = {}
         for loc1 in self.P:
             for var1 in self.P[loc1]:
                 RV = {}  # All repairs for (loc1,var1)
                 for m, cost, order, idx in self.P[loc1][var1]:
-                    maxcost = max(maxcost, cost)
+
                     ri = self.N  # Variable denoting this repair
                     self.N += 1
                     var2 = var1 if var1 in SPECIAL_VARS else None
@@ -158,7 +157,7 @@ class Solver(object):
         if self.verbose:
             debug('solver timeout: %s', lefttime)
         self.LP.settimeout(lefttime)
-        
+
         result = self.LP.solve()
         if result == 0:
             return
@@ -185,6 +184,8 @@ class Solver(object):
     def decode_model(self):
         model = self.LP.getvariables()
         mapping = {}
+        # create an array of deletes as there can be more than 1
+        mapping['-'] = []
         repairs = []
         orders = {}
         for i, v in enumerate(model):
@@ -197,7 +198,8 @@ class Solver(object):
                 if var2 != '*':
                     assert var2 not in list(mapping.values()), \
                         "%s already mapped" % (var2,)
-                mapping[var1] = var2
+                if (var1 == '-'): mapping['-'] = list(set(mapping['-'] + [var2]))
+                else : mapping[var1] = var2
             else:
                 (loc1, var1, var2, cost, order, idx) = r = self.R[i]
                 if loc1 not in orders:
@@ -208,7 +210,7 @@ class Solver(object):
                 if var1 != '-':
                     assert mapping[var1] == var2, "mapping error"
                 repairs.append(r)
-
+        if (len(mapping['-']) == 0): del mapping['-']
         conflicts = []
         for loc in orders:
             for i, (r1, order1) in enumerate(orders[loc]):
