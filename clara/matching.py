@@ -27,9 +27,6 @@ class Matching(object):
         debug(*args)
 
     def match_mems(self, match, loc, mem1, mem2, V1, V2):
-
-        #V2 = ({var2 for var2 in mem2.keys() if not isprimed(var2)}
-        #      - SPECIAL_VARS)
         if self.bijective:
             if len(V1 | SPECIAL_VARS) != len(V2 | SPECIAL_VARS):
                 self.debug('Not bijective - different number of variables')
@@ -111,10 +108,6 @@ class Matching(object):
                 return m
 
     def match_traces(self, T1, T2, sm, V1, V2, entryfnc):
-        # print("T1: ", T1)
-        # print("T2: ", T2)
-        print("V1: ", V1)
-        print("V2: ", V2)
         # Check number of traces
         if len(T1) != len(T2):
             self.debug('Different number of traces (%d <> %d)',
@@ -123,27 +116,6 @@ class Matching(object):
         # Go through each trace
         match = {}
         for t1, t2 in zip(T1, T2):
-
-            # Check length of traces
-            # if len(t1) != len(t2):
-            #     self.debug('Different length of traces (%d <> %d)',
-            #                len(t1), len(t2))
-            #     return
-
-            # for (fnc1, loc1, mem1), (fnc2, loc2, mem2) in zip(t1, t2):
-            #     # Check if valid with struct match
-            #     if fnc1 != fnc2:
-            #         return
-            #     if sm[fnc1][loc1] != loc2:
-            #         return
-
-            #     # Check memories
-            #     if fnc1 not in match:
-            #         match[fnc1] = {}
-            #     if not self.match_mems(match[fnc1], '%s-%s' % (fnc1, loc1),
-            #                            mem1, mem2, V1[fnc1], V2[fnc2]):
-            #         return
-                
             for (fnc1, loc1, mem1) in t1:
                 print("fnc1 ", fnc1)
                 if (fnc1 != entryfnc):
@@ -161,16 +133,12 @@ class Matching(object):
                     # Check memories
                     if fnc1 not in match:
                         match[fnc1] = {}
-                    # if not self.match_mems(match[fnc1], '%s-%s' % (fnc1, loc1),
-                    #                        mem1, mem2, V1[fnc1], V2[fnc2]):
-                    #     return
                     if not self.match_mems(match[fnc1], '%s-%s' % (fnc1, loc1),
                                         mem1, mem2, V1, V2):
                         return
                     else:
                         del t2[index]
                         break
-        print("\n\n FOR LOOP EXECUTED\n\n")
         # Debug matches
         for fnc in match:
             for var, m in list(match[fnc].items()):
@@ -186,23 +154,9 @@ class Matching(object):
         return (sm, newmatch)
 
     def match_struct(self, P, Q, entryfnc):
-        # fncs1 = P.getfncnames()
-        # fncs2 = Q.getfncnames()
         fnc1 = entryfnc
         # Go through all functions
         sm = {}
-        
-        # for fnc2 in fncs2:
-        #     if fnc2 not in fncs1:
-        #         self.debug("Function '%s' not found in P", fnc2)
-        #         return
-            
-        # for fnc1 in fncs1:
-
-            # if fnc1 not in fncs2:
-            #     self.debug("Function '%s' not found in Q", fnc1)
-            #     return
-
         f1 = P.getfnc(fnc1)
         f2 = Q.getfnc(fnc1)
 
@@ -290,14 +244,10 @@ class Matching(object):
             t2 = I.run(Q, ins=i, args=a)
 
             T1.append(t1)
-            # self.debug("P1: %s", t1)
             T2.append(t2)
-            # self.debug("P1: %s", t2)
         self.debug("Programs executed, matching traces")
 
         # Match traces
         V1 = P.getfnc(entryfnc).getvars()
         V2 = Q.getfnc(entryfnc).getvars()
-        # V1 = {f: P.getfnc(f).getvars() for f in P.getfncnames()}
-        # V2 = {f: Q.getfnc(f).getvars() for f in Q.getfncnames()}
         return self.match_traces(T1, T2, sm, V1, V2, entryfnc)
