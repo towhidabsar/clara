@@ -147,10 +147,6 @@ class Repair(object):
         # (3) Repair each fnc sepearately
         self.inter = inter()
         results = {}
-        # for fnc1 in P.getfncs():
-        #     fnc2 = Q.getfnc(fnc1.name)
-        #     results[fnc1.name] = (self.repair_fnc(fnc1, fnc2) +
-        #                           (self.sm[fnc1.name],))
         fnc1 = P.getfnc(entryfnc)
         fnc2 = Q.getfnc(entryfnc)
         results[fnc1.name] = (self.repair_fnc(fnc1, fnc2, Q) +
@@ -558,6 +554,9 @@ class Repair(object):
 
         retFncP = P.getfnc(entryfnc).retlocs
         retFncQ = Q.getfnc(entryfnc).retlocs
+        
+        if(len(retFncP) == 0): retFncP = [list(traceP.keys())[-1]]
+        if(len(retFncQ) == 0): retFncQ = [list(traceQ.keys())[-1]]
         
         dictP = self.findDictFromTrace(traceP, retFncP)
         dictQ = self.findDictFromTrace(traceQ, retFncQ)
