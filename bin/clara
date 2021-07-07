@@ -294,7 +294,8 @@ Options are:
         r = R.repair(self.models[0], self.models[1], self.inter,
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                      ignoreret=self.ignoreret, entryfnc=self.entryfnc)
-        if r:
+        _, repairs, _ = r[self.entryfnc]
+        if repairs:
             txt = RepairFeedback(self.models[1], self.models[0], r)
             txt.genfeedback()
             print('Repairs:')
