@@ -2,7 +2,6 @@
 Common parser stuff
 '''
 
-import re
 
 # clara lib imports
 from .common import UnknownLanguage
@@ -116,7 +115,7 @@ class Parser(object):
             m = {}
             exprs = []
             for i, (var, expr) in enumerate(fnc.exprs(loc)):
-                
+
                 for v1, v2 in list(m.items()):
                     expr = expr.replace(v1, Var(v2))
 

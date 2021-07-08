@@ -302,6 +302,21 @@ Options are:
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
         else:
             print('No repair!')
+        
+        R.applyRepairs(self.models[0], self.models[1], r)
+
+        r = R.repair(self.models[0], self.models[1], self.inter,
+                     ins=self.ins, args=self.args, ignoreio=self.ignoreio,
+                     ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
+        
+        _, repairs, _ = r[self.entryfnc]
+        if repairs:
+            txt = RepairFeedback(self.models[1], self.models[0], r)
+            txt.genfeedback()
+            print('Old Repairs were incomplete, apply these repairs too:')
+            print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
+        else:
+            print('No further repair needed after completeing the previous ones!')
 
     def feedback(self):
 

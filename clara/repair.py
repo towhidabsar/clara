@@ -128,8 +128,10 @@ class Repair(object):
         return T
     
     def repair(self, P, Q, inter, ins=None, args=None, entryfnc=None,
-               ignoreio=False, ignoreret=False):
-
+               ignoreio=False, ignoreret=False, suppressPrints=False):
+        if (suppressPrints):
+            self.verbose = False
+            self.solver.verbose = False
         self.starttime = time.time()
 
         self.vignore = set()
@@ -581,7 +583,6 @@ class Repair(object):
                       repairs.remove(r)
         return repairs
 
-
     def findDictFromTrace(self, trace, retArr):
         # find trace for location containing returns
         dict_ = []
@@ -593,4 +594,36 @@ class Repair(object):
                 retArr.remove(max_)
             assert (retArr), 'Return location not in Trace!'
         return dict_[0]
-        
+
+    def applyRepairs(self, P, Q, result):
+        for fname, (mapping, repairs, sm) in list(result.items()):
+            # Copy mapping with converting '*' into a 'new_' variable
+            nmapping = {k: '$new_%s' % (k,)
+                        if v == '*' else v for (k, v) in list(mapping.items())}
+
+            # Go through all repairs
+            # loc1 - location from the correct program.
+            # var2 - variable from the incorrect program.
+            for rep in repairs:
+
+                loc1 = rep.loc1
+                var2 = rep.var2
+                expr1 = rep.expr1
+
+                # Get loc2
+                loc2 = sm[loc1]
+
+                # remove old definition of variable that we want to change
+                self.removeValFromResult(Q, var2, fname, loc2)
+                
+                # Rewrite expr1 (from spec.) with variables of impl.
+                expr1 = expr1.replace_vars(nmapping)
+
+                Q.getfnc(fname).locexprs[loc2].append((var2, expr1))
+    
+    def removeValFromResult(self, Q, var, fname, loc2):
+        for idx, (k, _) in enumerate(Q.getfnc(fname).locexprs[loc2]):
+            if k == var:
+                i = idx
+                del Q.getfnc(fname).locexprs[loc2][i]
+                break
