@@ -72,11 +72,12 @@ class RepairResult(object):
 class Repair(object):
 
     def __init__(self, timeout=60, verbose=False, solver=None,
-                 allowsuboptimal=True, cleanstrings=False):
+                 allowsuboptimal=True, cleanstrings=False, printloc=False):
         self.starttime = None
         self.timeout = timeout
         self.verbose = verbose
         self.cleanstrings = cleanstrings
+        self.printloc = printloc
 
         if solver is None:
             from .ilp import Solver
@@ -151,6 +152,7 @@ class Repair(object):
         results = {}
         fnc1 = P.getfnc(entryfnc)
         fnc2 = Q.getfnc(entryfnc)
+
         results[fnc1.name] = (self.repair_fnc(fnc1, fnc2, Q) +
                                 (self.sm[fnc1.name],))
 
@@ -554,14 +556,21 @@ class Repair(object):
         traceP = self.gettrace(P, inter, ins, args, entryfnc)[entryfnc]
         traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
 
-        retFncP = P.getfnc(entryfnc).retlocs
-        retFncQ = Q.getfnc(entryfnc).retlocs
+        fnc1 = P.getfnc(entryfnc)
+        fnc2 = Q.getfnc(entryfnc)
         
-        if(len(retFncP) == 0): retFncP = [list(traceP.keys())[-1]]
-        if(len(retFncQ) == 0): retFncQ = [list(traceQ.keys())[-1]]
+        locs1 = fnc1.retlocs
+        locs2 = fnc2.retlocs
+
+        if (self.printloc):
+            locs1 = fnc1.printlocs
+            locs2 = fnc2.printlocs
+
+        if(len(locs1) == 0): locs1 = [list(traceP.keys())[-1]]
+        if(len(locs2) == 0): locs2 = [list(traceQ.keys())[-1]]
         
-        dictP = self.findDictFromTrace(traceP, retFncP)
-        dictQ = self.findDictFromTrace(traceQ, retFncQ)
+        dictP = self.findDictFromTrace(traceP, locs1)
+        dictQ = self.findDictFromTrace(traceQ, locs2)
         results = results[entryfnc]
         matching, repairs, _ = results
 
@@ -583,16 +592,16 @@ class Repair(object):
                       repairs.remove(r)
         return repairs
 
-    def findDictFromTrace(self, trace, retArr):
+    def findDictFromTrace(self, trace, arr):
         # find trace for location containing returns
         dict_ = []
         while(not dict_):
-            max_ = max(retArr)
+            max_ = max(arr)
             if (max_ in trace):
                 dict_ = trace[max_]
             else:
-                retArr.remove(max_)
-            assert (retArr), 'Return location not in Trace!'
+                arr.remove(max_)
+            assert (arr), 'Location not in Trace!'
         return dict_[0]
 
     def applyRepairs(self, P, Q, result):

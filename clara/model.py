@@ -412,6 +412,7 @@ class Function(object):
         self.locdescs = {}  # Location -> Str (description)
         self.types = {}  # Var -> Type
         self.retlocs = []
+        self.printlocs = []
 
     def addloc(self, loc=None, desc=None):
         '''
@@ -458,6 +459,22 @@ class Function(object):
             'Location %d already exists' % (loc,)
 
         self.retlocs += [loc]
+        return loc
+
+    def add_print_loc(self, loc=None):
+        '''
+        Adds a new return location to a function.
+        loc - loc number (None for automatic generation)
+        desc - description of a location
+        '''   
+
+        # Check that location is a new integer
+        assert isinstance(loc, int), \
+            "Location should be 'int', got '%s'" % (loc,)
+        assert loc in list(self.loctrans.keys()), \
+            'Location %d already exists' % (loc,)
+
+        self.printlocs += [loc]
         return loc
 
     def locs(self):

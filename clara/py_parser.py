@@ -157,6 +157,10 @@ class PyParser(Parser):
                 values_model = list(map(self.visit_expr, node.value.args))
                 expr = Op('StrAppend', Var(VAR_OUT), *values_model, line=node.lineno)
                 self.addexpr(VAR_OUT, expr)
+
+                # Adding the location of the print statements
+                self.add_print_loc(printloc)
+
                 # Add exit loc
                 exitloc = self.addloc("*after* the print function starting at line %d" % (
                     self.getline(node)))

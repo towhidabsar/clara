@@ -71,6 +71,7 @@ Options are:
                      than N, an error occurs
                      (default is 0, which means that there is no limit)
   --clusterdir DIR   directory to write/read clustering results
+  --printloc  [0|1]  check final traces during repair at the print location
 '''
 
     def __init__(self):
@@ -131,6 +132,7 @@ Options are:
         self.suboptimal = int(self.opts.pop('suboptimal', 1))
         self.maxfeedcost = int(self.opts.pop('maxfeedcost', 0))
         self.clusterdir = self.opts.pop('clusterdir', 'clusters')
+        self.printloc = int(self.opts.pop('printloc', 0))
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -289,7 +291,7 @@ Options are:
 
         R = Repair(timeout=self.timeout, verbose=self.verbose,
                    allowsuboptimal=self.suboptimal,
-                   cleanstrings=self.cleanstrings)
+                   cleanstrings=self.cleanstrings, printloc=self.printloc)
 
         r = R.repair(self.models[0], self.models[1], self.inter,
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
