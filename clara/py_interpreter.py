@@ -27,7 +27,6 @@ def eargs(fun):
             if isinstance(a, UndefValue):
                 raise RuntimeErr('undefined value')
         return fun(self, *args)
-
     return wrap
 
 DEFAULT = object()
@@ -97,59 +96,29 @@ class PyInterpreter(Interpreter):
 
         assert False, 'unknown constant: %s' % (c,)
 
-    @eargs
-    def execute_int(self, x):
-        return int(x)
-
-    @eargs
-    def execute_float(self, x):
-        return float(x)
-
-    @eargs
-    def execute_bool(self, x):
-        return bool(x)
-
-    @eargs
-    def execute_str(self, x):
-        return str(x)
+    def execute_builtin_fnc(self, fnc, args, mem):
+        args = [self.execute(x, mem) for x in args]
+        for a in args:
+            if isinstance(a, UndefValue):
+                raise RuntimeErr('undefined value')
+        return fnc(*args)
 
     @eargs
     def execute_ListInit(self, *a):
         return list(a)
 
     @eargs
-    def execute_list(self, a=DEFAULT):
-        if a is DEFAULT:
-            return list()
-        else:
-            return list(a)
-
-    @eargs
     def execute_DictInit(self, *d):
         return {k: v for (k, v) in zip(d[0::2], d[1::2])}
 
-    @eargs
-    def execute_dict(self, *d):
-        return dict(*d)
 
     @eargs
     def execute_SetInit(self, *s):
         return set(s)
 
     @eargs
-    def execute_set(self, *s):
-        return set(*s)
-
-    @eargs
     def execute_TupleInit(self, *t):
         return tuple(t)
-
-    @eargs
-    def execute_tuple(self, t=DEFAULT):
-        if t is DEFAULT:
-            return tuple()
-        else:
-            return tuple(t)
 
     @eargs
     def execute_Not(self, x):
@@ -181,20 +150,8 @@ class PyInterpreter(Interpreter):
         return getattr(self.execute(g.args[0], mem), name)
 
     @eargs
-    def execute_abs(self, x):
-        return abs(x)
-
-    @eargs
-    def execute_round(self, *a):
-        return round(*a)
-
-    @eargs
     def execute_Pow(self, x, y):
         return x ** y
-
-    @eargs
-    def execute_pow(self, *a):
-        return pow(*a)
 
     @eargs
     def execute_math_pow(self, *a):
@@ -205,12 +162,8 @@ class PyInterpreter(Interpreter):
         return math.ceil(*a)
     
     @eargs
-    def execute_sum(self, *x):
-        return sum(*x)
-
-    @eargs
-    def execute_max(self, *x):
-        return max(*x)
+    def execute_math_log(self, x, y):
+        return math.log(x,y)
 
     @eargs
     def execute_Invert(self, x):
@@ -328,10 +281,6 @@ class PyInterpreter(Interpreter):
         return slice(a, b, c)
 
     @eargs
-    def execute_len(self, x):
-        return len(x)
-
-    @eargs
     def execute_AssignElement(self, l, i, v):
         l = deepcopy(l)
         l[i] = v
@@ -348,17 +297,13 @@ class PyInterpreter(Interpreter):
         l = deepcopy(l)
         l.sort(*a)
         return l
-
+    
     @eargs
-    def execute_range(self, *a):
-        return list(range(*a))
+    def execute_values(self, *a):
+        return a.values()
 
     def execute_xrange(self, e, mem):
         return self.execute_range(e, mem)
-
-    @eargs
-    def execute_zip(self, s1, s2):
-        return list(zip(s1, s2))
 
     @eargs
     def execute_extend(self, l, i):
@@ -411,24 +356,8 @@ class PyInterpreter(Interpreter):
         return nl
 
     @eargs
-    def execute_isinstance(self, a, b):
-        return isinstance(a, b)
-
-    @eargs
     def execute_reverse(self, l):
         return list(reversed(l))
-
-    @eargs
-    def execute_enumerate(self, *a):
-        return list(enumerate(*a))
-
-    @eargs
-    def execute_format(self, s, *a):
-        return s.format(*a)
-
-    @eargs
-    def execute_type(self, s):
-        return type(s)
 
     @eargs
     def execute_ignore_none(self, s):

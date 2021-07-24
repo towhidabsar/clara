@@ -4,6 +4,7 @@ Common interpreter stuff
 
 # Python imports
 import time
+import builtins
 
 from copy import deepcopy
 
@@ -197,7 +198,11 @@ class Interpreter(object):
 
         if op.name == '[]':
             return self.execute_ArrayIndex(op, mem)
-                
+        
+        fnc = getattr(builtins, op.name, None)
+        if (fnc):
+            return self.execute_builtin_fnc(fnc, op.args, mem)
+        
         meth = getattr(self, 'execute_%s' % (op.name,))
         return meth(op, mem)
 
