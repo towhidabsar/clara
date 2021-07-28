@@ -454,6 +454,12 @@ class Parser(object):
 
         self.loc = exitloc
 
+    def add_import(self, key, val):
+        self.prog.add_import(key, val)
+
+    def add_from_import(self, module, key, val):
+        self.prog.add_from_import(module, key, val)
+
     def addfnc(self, name, params, rettype):
         if self.fnc:
             self.fncsl.append((self.fnc, self.loc))

@@ -3,6 +3,7 @@ Python interpreter
 '''
 
 # Python imports
+import importlib
 import math
 import string
 
@@ -102,6 +103,15 @@ class PyInterpreter(Interpreter):
             if isinstance(a, UndefValue):
                 raise RuntimeErr('undefined value')
         return fnc(*args)
+    
+    def execute_lib_fnc(self, lib, fnc, args, mem):
+        lib = importlib.import_module(lib)
+        args = [self.execute(x, mem) for x in args]
+        for a in args:
+            if isinstance(a, UndefValue):
+                raise RuntimeErr('undefined value')
+        f = getattr(lib, fnc)
+        return f(*args)
 
     @eargs
     def execute_ListInit(self, *a):

@@ -306,6 +306,14 @@ class Program(object):
         self.fncs = {}
         self.meta = {}
         self.warns = []
+        self.imports = {}
+        self.from_imports = {}
+
+    def add_import(self, key, val):
+        self.imports[val] = key
+    
+    def add_from_import(self, module, key, val):
+        self.from_imports[val] = [key, module]
 
     def addfnc(self, fnc):
         self.fncs[fnc.name] = fnc

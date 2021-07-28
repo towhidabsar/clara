@@ -450,6 +450,7 @@ class Repair(object):
                 exp_name = expr2.__class__.__name__
                 temp_loc = loc2
                 temp_expr = expr2
+                QLocs = list(f2.locexprs.keys())
                 while(exp_name == "Var" and temp_loc > 0 and (not isprimed(temp_expr))):
                     temp_expr = self.E2[temp_loc][temp_expr.tostr()]
 
@@ -457,7 +458,11 @@ class Repair(object):
                     if ((not isundef(temp_expr)) and temp_expr != expr2):
                         expr2 = temp_expr
                         exp_name = expr2.__class__.__name__
-                    temp_loc -= 1
+                    ind = QLocs.index(temp_loc)
+                    ind -= 1
+                    if (ind < 0):
+                        break
+                    temp_loc = QLocs[ind]
 
                 vars2 += list(set(map(unprimes, expr2.vars())) | set([var2]))
                 vars2 = list(set(vars2))
@@ -561,7 +566,7 @@ class Repair(object):
         
         locs1 = fnc1.retlocs
         locs2 = fnc2.retlocs
-
+        print(locs1," ", fnc1.printlocs, " ", locs2, " ", fnc2.printlocs, " ", self.printloc)
         if (self.printloc):
             locs1 = fnc1.printlocs
             locs2 = fnc2.printlocs
@@ -572,7 +577,7 @@ class Repair(object):
         dictP = self.findDictFromTrace(traceP, locs1)
         dictQ = self.findDictFromTrace(traceQ, locs2)
         results = results[entryfnc]
-        matching, repairs, _ = results
+        matching, repairs, sm = results
 
         for key in matching:
             if key not in dictP:
@@ -588,6 +593,11 @@ class Repair(object):
                 for r in repairs[:]:
                     m1 = r.var1
                     m2 = r.var2
+                    loc1 = r.loc1
+                    loc2 = sm[loc1]
+                    e2 = fnc2.getexpr(loc2, m2)
+                    if isinstance(e2, Var):
+                        if (m2 == e2.tostr()): continue
                     if (m1 == key and m2 == val):
                       repairs.remove(r)
         return repairs
@@ -595,6 +605,15 @@ class Repair(object):
     def findDictFromTrace(self, trace, arr):
         # find trace for location containing returns
         dict_ = []
+        flag = False
+
+        for x in arr:
+            if (x in trace):
+                flag = True
+        
+        if (not flag):
+            arr = [list(trace.keys())[-1]]
+
         while(not dict_):
             max_ = max(arr)
             if (max_ in trace):
@@ -604,7 +623,7 @@ class Repair(object):
             assert (arr), 'Location not in Trace!'
         return dict_[0]
 
-    def applyRepairs(self, P, Q, result):
+    def applyRepairs(self, Q, result):
         for fname, (mapping, repairs, sm) in list(result.items()):
             # Copy mapping with converting '*' into a 'new_' variable
             nmapping = {k: '$new_%s' % (k,)
@@ -618,16 +637,17 @@ class Repair(object):
                 loc1 = rep.loc1
                 var2 = rep.var2
                 expr1 = rep.expr1
+                var1 = rep.var1
 
                 # Get loc2
                 loc2 = sm[loc1]
 
                 # remove old definition of variable that we want to change
                 self.removeValFromResult(Q, var2, fname, loc2)
-                
+                if (var1 == "-"): continue
                 # Rewrite expr1 (from spec.) with variables of impl.
                 expr1 = expr1.replace_vars(nmapping)
-
+                if (var2 == '*'): var2 = '$new_' + var1
                 Q.getfnc(fname).locexprs[loc2].append((var2, expr1))
     
     def removeValFromResult(self, Q, var, fname, loc2):

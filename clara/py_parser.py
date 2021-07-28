@@ -4,6 +4,7 @@ Python parser
 
 # Python imports
 import ast
+import importlib
 
 from itertools import chain
 
@@ -19,12 +20,12 @@ class PyParser(Parser):
     # During parsing, we currently can't check for types,
     # so this is done in the interpreter.
     ATTR_FNCS = ['append', 'extend', 'insert', 'remove', 'pop', 'sort',
-                 'reverse', 'clear', 'popitem', 'update']
+                 'reverse', 'clear', 'popitem', 'update', 'values']
     BUILTIN_FNCS = [
         'input', 'float', 'int', 'bool', 'str', 'list', 'dict',
         'set', 'tuple', 'round', 'pow', 'sum', 'range', 'xrange', 'len',
         'reversed', 'enumerate', 'abs', 'max', 'min', 'type', 'zip', 'map',
-        'isinstance']
+        'isinstance', 'sorted']
     UNSUPPORTED_BUILTIN_FNCS = ['eval', 'iter']
     CONSTS = ['True', 'False', 'None', 'list', 'tuple', 'int', 'dict',
               'float', 'bool']
@@ -52,6 +53,15 @@ class PyParser(Parser):
         
 
     def visit_Module(self, node):
+        # adds imports to the module
+        imports = list([x.names[0] for x in node.body if isinstance(x, ast.Import)])
+        for i in imports:
+            self.visit_Import(i)
+        
+        imports = list([x for x in node.body if isinstance(x, ast.ImportFrom)])
+        for i in imports:
+            self.visit_ImportFrom(i)
+
         '''
         Creates functions from a module
         '''
@@ -78,8 +88,10 @@ class PyParser(Parser):
     def visit_NameConstant(self, node):
         if isinstance(node.value, bool):
             return Const(str(node.value), line=node.lineno)
+        elif isinstance(node.value, type(None)):
+            return Const('None', line=node.lineno)
         else:
-            raise NotSupported("Unimplemented Constant visitor for '%s'" % (node.value,))
+            raise NotSupported("Unimplemented NameConstant visitor for '%s'" % (node.value,))
 
     def visit_Constant(self, node):
         if isinstance(node.value, str):
@@ -152,8 +164,9 @@ class PyParser(Parser):
             if (hasattr(node.value.func, "id") and (node.value.func.id == "print")):
                 # add new loc for print
                 preloc = self.loc
+                printLine = self.getline(node)
                 printloc = self.addloc("the print function at line %s" % (
-                    self.getline(node)))
+                    printLine))
                 values_model = list(map(self.visit_expr, node.value.args))
                 expr = Op('StrAppend', Var(VAR_OUT), *values_model, line=node.lineno)
                 self.addexpr(VAR_OUT, expr)
@@ -161,12 +174,17 @@ class PyParser(Parser):
                 # Adding the location of the print statements
                 self.add_print_loc(printloc)
 
-                # Add exit loc
-                exitloc = self.addloc("*after* the print function starting at line %d" % (
-                    self.getline(node)))
                 self.addtrans(preloc, True, printloc)
-                self.addtrans(printloc, True, exitloc)
-                self.loc = exitloc
+                # Add exit loc
+                exitLine = self.getline(node)
+                if (printLine != exitLine):
+                    exitloc = self.addloc("*after* the print function starting at line %d" % (
+                        exitLine))
+                    self.addtrans(printloc, True, exitloc)
+                    self.loc = exitloc
+                else:
+                    self.loc = printloc
+
             elif isinstance(node.value.func, ast.Name):
                 self.warns.append('Ignored call to {} at line {}'.format(
                     node.value.func.id, node.lineno))
@@ -336,51 +354,51 @@ class PyParser(Parser):
             raise NotSupported('Delete target: %s' % (target.__class__,))
     
     def visit_Assign(self, node):
-        if len(node.targets) != 1:
-            raise NotSupported('Only single assignments allowed')
         
-        target = node.targets[0]
+        # target = node.targets
+        for target in node.targets:
+            right = self.visit_expr(node.value)
 
-        right = self.visit_expr(node.value)
+            # Assignment to a variable
+            if isinstance(target, ast.Name):
+                self.addtype(target.id, '*')
+                self.addexpr(target.id, right)
 
-        # Assignment to a variable
-        if isinstance(target, ast.Name):
-            self.addtype(target.id, '*')
-            self.addexpr(target.id, right)
+            # Assignment to indexed element
+            elif isinstance(target, ast.Subscript):
+                if isinstance(target.slice, ast.Index):
+                    if (not hasattr(target.value, 'id')):
+                        target = target.value
+                    var = Var(target.value.id)
+                    self.addtype(target.value.id, '*')
+                    index = self.visit_expr(target.slice.value)
+                    
+                    self.addexpr(target.value.id,
+                                Op('AssignElement', var, index, right,
+                                    line=right.line))
+                    
+                else:
+                    raise NotSupported(
+                        'Subscript assignments only allowed to Indices',
+                        line=node.lineno)
 
-        # Assignment to indexed element
-        elif isinstance(target, ast.Subscript):
-            if isinstance(target.slice, ast.Index):
-                var = Var(target.value.id)
-                self.addtype(target.value.id, '*')
-                index = self.visit_expr(target.slice.value)
-                
-                self.addexpr(target.value.id,
-                             Op('AssignElement', var, index, right,
-                                line=right.line))
-                
+            # Assignment to a tuple
+            elif isinstance(target, ast.Tuple):
+                targets = list(map(self.visit_expr, target.elts))
+                for i, target in enumerate(targets):
+                    expr = Op('GetElement', right.copy(), Const(str(i)),
+                            line=right.line)
+                    if isinstance(target, Var):
+                        self.addexpr(target.name, expr)
+                    else:
+                        raise NotSupported("Tuple non-var assignment",
+                                        line=target.line)
+                    
             else:
                 raise NotSupported(
-                    'Subscript assignments only allowed to Indices',
+                    'Assignments to {} not supported'.format(
+                        target.__class__.__name__),
                     line=node.lineno)
-
-        # Assignment to a tuple
-        elif isinstance(target, ast.Tuple):
-            targets = list(map(self.visit_expr, target.elts))
-            for i, target in enumerate(targets):
-                expr = Op('GetElement', right.copy(), Const(str(i)),
-                          line=right.line)
-                if isinstance(target, Var):
-                    self.addexpr(target.name, expr)
-                else:
-                    raise NotSupported("Tuple non-var assignment",
-                                       line=target.line)
-                
-        else:
-            raise NotSupported(
-                'Assignments to {} not supported'.format(
-                    target.__class__.__name__),
-                line=node.lineno)
 
     def visit_AugAssign(self, node):
 
@@ -449,9 +467,12 @@ class PyParser(Parser):
             attr = node.func.attr
             val = self.visit_expr(node.func.value)
             args = list(map(self.visit_expr, node.args))
+            lib = importlib.util.find_spec(val.name)
+            
+            if (lib):
+                return Op('%s.%s' % (val, attr), *args, line=node.lineno)
             if (isinstance(val, Var) and val.name in self.MODULE_NAMES
                 and not self.hasvar(val.name)):
-
                 # A bit of hack...
                 if val.name == 'm':
                     val.name = 'math'
@@ -494,15 +515,23 @@ class PyParser(Parser):
 
     def visit_Import(self, node):
         '''
-        Imports are ignored
+        Imports are added into imports dictionary in the Program model
         '''
-        self.addwarn('Import at line {} ignored'.format(node.lineno))
+        val = node.name
+        if (node.asname):
+            node.name = node.asname
+        self.add_import(node.name, val)
 
     def visit_ImportFrom(self, node):
         '''
-        Imports are ignored
+        From Imports are added into from_imports dictionary in the Program model
         '''
-        self.addwarn('ImportFrom at line {} ignored'.format(node.lineno))
+        module = node.module
+        node = node.names[0]
+        val = node.name
+        if (node.asname):
+            node.name = node.asname
+        self.add_from_import(module, node.name, val)
 
     def visit_If(self, node):
         self.visit_if(node, node.test, node.body, node.orelse)

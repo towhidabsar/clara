@@ -117,11 +117,9 @@ class Matching(object):
         match = {}
         for t1, t2 in zip(T1, T2):
             for (fnc1, loc1, mem1) in t1:
-                print("fnc1 ", fnc1)
                 if (fnc1 != entryfnc):
                     continue
                 for index, (fnc2, loc2, mem2) in enumerate(t2):
-                    print(fnc2)
                     if (fnc2 != entryfnc):
                         continue
                     # Check if valid with struct match
