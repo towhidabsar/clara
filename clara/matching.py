@@ -203,14 +203,6 @@ class Matching(object):
         
     def match_programs(self, P, Q, inter, ins=None, args=None,
                        entryfnc=None, timeout=5):
-
-        # Check inputs and arguments
-        assert ins or args, "Inputs or argument required"
-        if ins:
-            assert isinstance(ins, list), "List of inputs expected"
-        if args:
-            assert isinstance(args, list), "List of arguments expected"
-
         if ins and args:
             assert len(ins) == len(args), \
                 "Equal number of inputs and arguments expected"
@@ -222,9 +214,9 @@ class Matching(object):
             return
 
         # Populate ins or args (whichever may be missing)
-        if not ins:
+        if not ins and args:
             ins = [None for _ in range(len(args))]
-        if not args:
+        if not args and ins:
             args = [None for _ in range(len(ins))]
 
         # Create interpreter
@@ -234,16 +226,24 @@ class Matching(object):
         T1 = []
         T2 = []
 
+        if ins or args:
         # Go through inputs and arguments
-        for i, a in zip(ins, args):
+            for i, a in zip(ins, args):
 
-            # Run both programs on each input and arg
-            t1 = I.run(P, ins=i, args=a)
-            t2 = I.run(Q, ins=i, args=a)
+                # Run both programs on each input and arg
+                t1 = I.run(P, ins=i, args=a)
+                t2 = I.run(Q, ins=i, args=a)
+
+                T1.append(t1)
+                T2.append(t2)
+            self.debug("Programs executed, matching traces")
+        else:
+            # no inputs and arguments provided
+            t1 = I.run(P)
+            t2 = I.run(Q)
 
             T1.append(t1)
             T2.append(t2)
-        self.debug("Programs executed, matching traces")
 
         # Match traces
         V1 = P.getfnc(entryfnc).getvars()
