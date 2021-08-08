@@ -13,7 +13,7 @@ import shutil
 import sys
 import traceback
 
-from ast import literal_eval
+from ast import literal_eval, parse
 
 # clara imports
 from clara.common import parseargs, debug
@@ -167,7 +167,9 @@ Options are:
                 self.ins = literal_eval(f.read())
         if self.argsfile is not None:
             with open(self.argsfile, 'r') as f:
-                self.args = literal_eval(f.read())
+                args = f.read()
+                args = args.split(" ")
+                self.args = [[literal_eval(a) for a in args]]
 
         if self.lang is None:
             self.guess_lang()
@@ -175,7 +177,7 @@ Options are:
         self.parser = getlangparser(self.lang)
         self.inter = getlanginter(self.lang)
 
-        self.process_sources()
+        self.process_sources(entryfnc=self.entryfnc)
 
         if self.cmd == 'match':
             self.match()
@@ -302,23 +304,26 @@ Options are:
             txt.genfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
+            R.applyRepairs(self.models, r, self.inter,
+                        ins=self.ins, args=self.args, entryfnc=self.entryfnc)
+            try:
+                r = R.repair(self.models[0], self.models[1], self.inter,
+                            ins=self.ins, args=self.args, ignoreio=self.ignoreio,
+                            ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
+                
+                _, repairs, _ = r[self.entryfnc]
+                if repairs:
+                    txt = RepairFeedback(self.models[1], self.models[0], r)
+                    txt.genfeedback()
+                    print('Old Repairs were incomplete, apply these repairs too:')
+                    print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
+                else:
+                    print('No further repair needed after completeing the previous ones!')
+            except:
+                print("There are issues with the suggested repairs. The new program may not run.")
         else:
             print('No repair!')
         
-        R.applyRepairs(self.models[0], self.models[1], r)
-
-        r = R.repair(self.models[0], self.models[1], self.inter,
-                     ins=self.ins, args=self.args, ignoreio=self.ignoreio,
-                     ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
-        
-        _, repairs, _ = r[self.entryfnc]
-        if repairs:
-            txt = RepairFeedback(self.models[1], self.models[0], r)
-            txt.genfeedback()
-            print('Old Repairs were incomplete, apply these repairs too:')
-            print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
-        else:
-            print('No further repair needed after completeing the previous ones!')
 
     def feedback(self):
 
@@ -434,7 +439,7 @@ Options are:
 
             rex[loc][var].append(expr)
 
-    def process_source(self, src):
+    def process_source(self, src, entryfnc):
         '''
         Reads and parses a single source file `src` and stets model fields.
         '''
@@ -444,13 +449,13 @@ Options are:
         with open(src, 'r', encoding="utf-8") as f:
             code = f.read()
             
-        model = self.parser.parse_code(code)
+        model = self.parser.parse_code(code, entryfnc)
         model.name = src
         self.extract_exprs(model)
 
         return model
             
-    def process_sources(self):
+    def process_sources(self, entryfnc):
         '''
         Reads and parses source files (sets models field).
         '''
@@ -458,7 +463,7 @@ Options are:
         self.models = []
 
         for src in self.sources:
-            model = self.process_source(src)
+            model = self.process_source(src, entryfnc)
             self.models.append(model)
                 
 

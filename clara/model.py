@@ -41,6 +41,17 @@ def unprime(var):
     var.primed = False
     return var
 
+def getUnprimedVersion(var):
+    assert isprimed(var), 'Variable not primed!'
+    if isinstance(var, str):
+        return var[:-1]
+    return None
+
+def getPrimedVersion(var):
+    assert (not isprimed(var)), 'Variable is primed!'
+    if isinstance(var, str):
+        return (var + "'")
+    return None
 
 class Expr(object):
     '''

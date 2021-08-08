@@ -3,7 +3,6 @@ Repair algorithm
 '''
 
 # Python imports
-import sys
 import time
 
 # External libs
@@ -11,8 +10,8 @@ from zss import Node, simple_distance as tree_distance
 
 # clara imports
 from .common import debug, equals
-from .interpreter import RuntimeErr, isundef
-from .model import isprimed, unprime, prime
+from .interpreter import RuntimeErr, UndefValue, isundef
+from .model import isprimed, unprime, prime, getUnprimedVersion, getPrimedVersion
 from .model import SPECIAL_VARS, VAR_IN, VAR_OUT, VAR_RET
 from .model import Var, Const, Op
 from .matching import Matching
@@ -566,7 +565,6 @@ class Repair(object):
         
         locs1 = fnc1.retlocs
         locs2 = fnc2.retlocs
-        print(locs1," ", fnc1.printlocs, " ", locs2, " ", fnc2.printlocs, " ", self.printloc)
         if (self.printloc):
             locs1 = fnc1.printlocs
             locs2 = fnc2.printlocs
@@ -623,7 +621,10 @@ class Repair(object):
             assert (arr), 'Location not in Trace!'
         return dict_[0]
 
-    def applyRepairs(self, Q, result):
+    def applyRepairs(self, models, result, inter, ins, args, entryfnc):
+        Q = models[1]
+        traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
+
         for fname, (mapping, repairs, sm) in list(result.items()):
             # Copy mapping with converting '*' into a 'new_' variable
             nmapping = {k: '$new_%s' % (k,)
@@ -632,27 +633,127 @@ class Repair(object):
             # Go through all repairs
             # loc1 - location from the correct program.
             # var2 - variable from the incorrect program.
-            for rep in repairs:
+            repairs.sort(key=lambda x: ord(x.var2[0]))
+            while (len(repairs) > 0):
+                for rep in repairs[:]:
+                    loc1 = rep.loc1
+                    var2 = rep.var2
+                    expr1 = rep.expr1
+                    var1 = rep.var1
 
-                loc1 = rep.loc1
-                var2 = rep.var2
-                expr1 = rep.expr1
-                var1 = rep.var1
+                    # Get loc2
+                    loc2 = sm[loc1]
+                    
+                    # Rewrite expr1 (from spec) with variables of impl.
+                    expr1 = expr1.replace_vars(nmapping)
+                    if (var1 == "-" or (isinstance(expr1, Var) and (var2 == expr1.tostr()))): 
+                        # remove old definition of variable that we want to change
+                        self.removeValFromResult(Q, var2, fname, loc2)
+                        repairs.remove(rep)
+                        continue
+                    f2 = Q.getfnc(fname)
+                    trace = traceQ[loc2][0]
+                    # all_vars = expr1.vars()
+                    # flag = False
+                    # for a in all_vars:
+                    #     # if (isprimed(a)):
+                    #     #     a = getUnprimedVersion(a)
+                    #     if (a not in trace):
+                    #         flag = True
+                    # if (flag): continue
+                    # var2_ = var2
+                    # if (var2 == '*'): 
+                    #     var2 = '$new_' + var1
+                    #     Q.getfnc(fname).locexprs[loc2].append((var2, expr1))
+                    # else:
+                    # # print(Q.getfnc(fname).locexprs[loc2])
+                    # # Q.getfnc(fname).locexprs[loc2].append((var2, expr1))
+                    # # flag = self.findAndSub(Q, var2, fname, loc2, expr1)
+                    # # if (flag):
+                    #     self.substituteInFunc(Q, var2, fname, loc2, expr1)
+                    # repairs.remove(rep)
+                    # print(Q)
+                    # if (var2_ == '*'):
+                    #     traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
+                    # break
+                    var2_ = var2
+                    if (var2 == '*'): 
+                        var2 = '$new_' + var1
+                    trace = self.preprocessTrace(trace, f2.locexprs[loc2])
+                    flag = self.findAndSub(Q, var2, fname, loc2, expr1, trace)
+                    if (not flag): continue
+                    repairs.remove(rep)
+                    if (var2_ == '*'):
+                        f2.addtype(var2, '*', True)
+                        traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
+                    break
+                    
 
-                # Get loc2
-                loc2 = sm[loc1]
-
-                # remove old definition of variable that we want to change
-                self.removeValFromResult(Q, var2, fname, loc2)
-                if (var1 == "-"): continue
-                # Rewrite expr1 (from spec.) with variables of impl.
-                expr1 = expr1.replace_vars(nmapping)
-                if (var2 == '*'): var2 = '$new_' + var1
-                Q.getfnc(fname).locexprs[loc2].append((var2, expr1))
-    
     def removeValFromResult(self, Q, var, fname, loc2):
         for idx, (k, _) in enumerate(Q.getfnc(fname).locexprs[loc2]):
             if k == var:
                 i = idx
                 del Q.getfnc(fname).locexprs[loc2][i]
                 break
+    
+    # def substituteInFunc(self, Q, var, fname, loc2, exp):
+    #     for idx, (k, _) in enumerate(Q.getfnc(fname).locexprs[loc2]):
+    #         if k == var:
+    #             Q.getfnc(fname).locexprs[loc2][idx] = (var,exp)
+    #             return
+        
+    def findAndSub(self, Q, var, fname, loc2, exp, trace):
+        exp_vars = exp.vars()
+        locexprs = Q.getfnc(fname).locexprs[loc2]
+        loc_vars = [v[0] for v in locexprs]
+
+        if var in loc_vars:
+            self.removeValFromResult(Q, var, fname, loc2)
+            locexprs = Q.getfnc(fname).locexprs[loc2]
+        all_vars = set(trace.keys())
+
+        if (len(locexprs) == 0):
+            Q.getfnc(fname).locexprs[loc2].append((var,exp))
+            return False
+        for idx, (k, _) in enumerate(locexprs):
+            v_vars = set()
+            v_vars.add(k)
+            v_vars.add(getPrimedVersion(k))
+
+            all_vars = all_vars.union(v_vars)
+            temp = set(var)
+            temp = all_vars.union(temp)
+
+            if exp_vars.issubset(temp):
+                self.substituteInFunc(Q, var, fname, loc2, exp, idx)
+                return True
+        return False
+    
+    def substituteInFunc(self, Q, var, fname, loc2, exp, x):
+        s = len(Q.getfnc(fname).locexprs[loc2])
+        temp1 = (var,exp)
+        for i in range(x+1,s):
+            temp = Q.getfnc(fname).locexprs[loc2][i]
+            Q.getfnc(fname).locexprs[loc2][i] = temp1
+            temp1 = temp
+        Q.getfnc(fname).locexprs[loc2].append(temp1)
+
+    def preprocessTrace(self,trace, locexprs):
+        keys = list(trace.keys())
+        # removes all undefined values from trace
+        for k in keys:
+            if (isprimed(k)):
+                continue
+            k1 = getPrimedVersion(k)
+            if isinstance(trace[k], UndefValue) and isinstance(trace[k1], UndefValue):
+                del trace[k]
+                del trace[k1]
+        
+        # removes all location vars from trace
+        for (k, _) in locexprs:
+            if (k in trace):
+                del trace[k]
+            k1 = getPrimedVersion(k)
+            if (k1 in trace):
+                del trace[k1]
+        return trace
