@@ -36,14 +36,14 @@ class PyParser(Parser):
     ANDOP = 'And'
 
     BOUND_VARS = []
+    ENTRY_FNC = ""
 
     def __init__(self, *args, **kwargs):
         super(PyParser, self).__init__(*args, **kwargs)
-        
+        self.ENTRY_FNC = args[0]
         self.hiddenvarcnt = 0
 
     def parse(self, code):
-
         # Get AST
         try:
             pyast = ast.parse(code, mode='exec')
@@ -66,8 +66,23 @@ class PyParser(Parser):
         Creates functions from a module
         '''
         funcdefs = list([x for x in node.body if isinstance(x, ast.FunctionDef)])
-        for func in funcdefs:
-            self.visit_FunctionDef(func)
+        if (self.ENTRY_FNC in funcdefs):
+            for func in funcdefs:
+                self.visit_FunctionDef(func)
+        else:
+            body = list([x for x in node.body if not (isinstance(x, ast.ImportFrom) 
+            or isinstance(x, ast.Import))])
+            self.visit_Main(body)
+        
+    def visit_Main(self, node):
+        self.addfnc('main', [], '*')
+        self.addloc(
+            desc="around the beginning of function main")
+        
+        for b in node:
+            self.visit(b)
+
+        self.endfnc()
     
     def visit_FunctionDef(self, node):
         args = [(arg.arg, '*') for arg in node.args.args]
