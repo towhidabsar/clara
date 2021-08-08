@@ -95,28 +95,31 @@ class Repair(object):
 
     def gettrace(self, P, inter, ins, args, entryfnc):
 
-        # Check inputs and arguments
-        assert ins or args, "Inputs or argument required"
-        if ins:
-            assert isinstance(ins, list), "List of inputs expected"
-        if args:
-            assert isinstance(args, list), "List of arguments expected"
-
         if ins and args:
             assert len(ins) == len(args), \
                 "Equal number of inputs and arguments expected"
 
         # Populate ins or args (whichever may be missing)
-        if not ins:
+        if not ins and args:
             ins = [None for _ in range(len(args))]
-        if not args:
+        if not args and ins:
             args = [None for _ in range(len(ins))]
 
         I = inter(entryfnc=entryfnc)
         T = {}
-        for i, a in zip(ins, args):
-            t = I.run(P, ins=i, args=a)
+        if ins or args:
+            for i, a in zip(ins, args):
+                t = I.run(P, ins=i, args=a)
 
+                # Split trace w.r.t. fncs and locs
+                for (fnc, loc, mem) in t:
+                    if fnc not in T:
+                        T[fnc] = {}
+                    if loc not in T[fnc]:
+                        T[fnc][loc] = []
+                    T[fnc][loc].append(mem)
+        else:
+            t = I.run(P)
             # Split trace w.r.t. fncs and locs
             for (fnc, loc, mem) in t:
                 if fnc not in T:
