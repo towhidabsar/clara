@@ -44,6 +44,7 @@ class Interpreter(object):
         self.loc = None
         self.fncs = {}
         self.trace = []
+        self.args = None
 
         self.prog = None
 
@@ -86,9 +87,11 @@ class Interpreter(object):
         for (var, _) in list(fnc.types.items()):
             if var not in mem:
                 mem[var] = UndefValue()
+        if args:
+            self.args = args
 
         # Set args for the function
-        if args:
+        if args and fnc.params:
             if len(args) != len(fnc.params):
                 raise RuntimeErr(
                     "Wrong number of args: expected %s, got %s" % (
@@ -200,7 +203,11 @@ class Interpreter(object):
             return self.execute_ArrayIndex(op, mem)
         
         fnc = getattr(builtins, op.name, None)
-        if (fnc):
+        if (op.name == "input"):
+            ans = self.args[0]
+            self.args = self.args[1:]
+            return ans
+        elif (fnc):
             return self.execute_builtin_fnc(fnc, op.args, mem)
         
         if ('.' in op.name):

@@ -37,20 +37,33 @@ class PyParser(Parser):
 
     BOUND_VARS = []
     ENTRY_FNC = ""
+    ARGS = []
 
     def __init__(self, *args, **kwargs):
         super(PyParser, self).__init__(*args, **kwargs)
         self.ENTRY_FNC = args[0]
+        self.ARGS = args[1][0]
         self.hiddenvarcnt = 0
 
     def parse(self, code):
         # Get AST
+        code = self.addargs(code)
         try:
             pyast = ast.parse(code, mode='exec')
         except (SyntaxError, IndentationError) as e:
             raise ParseError(str(e))
         self.visit(pyast)
         
+    def addargs(self, code):
+        lines = code.split('\n')
+        new_lines = []
+        for c in lines:
+            while 'input()' in c:
+                c = c.replace('input()', self.ARGS[0], 1)
+                self.ARGS = self.ARGS[1:]
+            new_lines += [c]
+        code = '\n'.join(new_lines)
+        return code 
 
     def visit_Module(self, node):
         # adds imports to the module
@@ -482,7 +495,9 @@ class PyParser(Parser):
             attr = node.func.attr
             val = self.visit_expr(node.func.value)
             args = list(map(self.visit_expr, node.args))
-            lib = importlib.util.find_spec(val.name)
+            lib = None
+            if (hasattr(val, 'name')):
+                lib = importlib.util.find_spec(val.name)
             
             if (lib):
                 return Op('%s.%s' % (val, attr), *args, line=node.lineno)

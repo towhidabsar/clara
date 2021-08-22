@@ -167,9 +167,10 @@ Options are:
                 self.ins = literal_eval(f.read())
         if self.argsfile is not None:
             with open(self.argsfile, 'r') as f:
-                args = f.read()
-                args = args.split(" ")
-                self.args = [[literal_eval(a) for a in args]]
+                self.args = []
+                for line in f:
+                    self.args += [line.strip()]
+                self.args = [self.args]
 
         if self.lang is None:
             self.guess_lang()
@@ -177,7 +178,7 @@ Options are:
         self.parser = getlangparser(self.lang)
         self.inter = getlanginter(self.lang)
 
-        self.process_sources(entryfnc=self.entryfnc)
+        self.process_sources(entryfnc=self.entryfnc, args=self.args)
 
         if self.cmd == 'match':
             self.match()
@@ -294,7 +295,7 @@ Options are:
         R = Repair(timeout=self.timeout, verbose=self.verbose,
                    allowsuboptimal=self.suboptimal,
                    cleanstrings=self.cleanstrings, printloc=self.printloc)
-
+        print(self.models)
         r = R.repair(self.models[0], self.models[1], self.inter,
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                      ignoreret=self.ignoreret, entryfnc=self.entryfnc)
@@ -439,7 +440,7 @@ Options are:
 
             rex[loc][var].append(expr)
 
-    def process_source(self, src, entryfnc):
+    def process_source(self, src, entryfnc, args):
         '''
         Reads and parses a single source file `src` and stets model fields.
         '''
@@ -449,13 +450,13 @@ Options are:
         with open(src, 'r', encoding="utf-8") as f:
             code = f.read()
             
-        model = self.parser.parse_code(code, entryfnc)
+        model = self.parser.parse_code(code, entryfnc, args)
         model.name = src
         self.extract_exprs(model)
 
         return model
-            
-    def process_sources(self, entryfnc):
+
+    def process_sources(self, entryfnc, args):
         '''
         Reads and parses source files (sets models field).
         '''
@@ -463,7 +464,7 @@ Options are:
         self.models = []
 
         for src in self.sources:
-            model = self.process_source(src, entryfnc)
+            model = self.process_source(src, entryfnc, args)
             self.models.append(model)
                 
 

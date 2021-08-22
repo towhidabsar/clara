@@ -370,6 +370,14 @@ class PyInterpreter(Interpreter):
         return list(reversed(l))
 
     @eargs
+    def execute_split(self, l, m=" "):
+        return l.split(m)
+    
+    @eargs
+    def execute_lower(self, l):
+        return l.lower()
+
+    @eargs
     def execute_ignore_none(self, s):
         return
 

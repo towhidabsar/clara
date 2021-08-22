@@ -646,7 +646,7 @@ class Repair(object):
 
                     # Get loc2
                     loc2 = sm[loc1]
-                    
+
                     # Rewrite expr1 (from spec) with variables of impl.
                     expr1 = expr1.replace_vars(nmapping)
                     if (var1 == "-" or (isinstance(expr1, Var) and (var2 == expr1.tostr()))): 
@@ -698,13 +698,7 @@ class Repair(object):
                 i = idx
                 del Q.getfnc(fname).locexprs[loc2][i]
                 break
-    
-    # def substituteInFunc(self, Q, var, fname, loc2, exp):
-    #     for idx, (k, _) in enumerate(Q.getfnc(fname).locexprs[loc2]):
-    #         if k == var:
-    #             Q.getfnc(fname).locexprs[loc2][idx] = (var,exp)
-    #             return
-        
+
     def findAndSub(self, Q, var, fname, loc2, exp, trace):
         exp_vars = exp.vars()
         locexprs = Q.getfnc(fname).locexprs[loc2]
@@ -717,7 +711,7 @@ class Repair(object):
 
         if (len(locexprs) == 0):
             Q.getfnc(fname).locexprs[loc2].append((var,exp))
-            return False
+            return True
         for idx, (k, _) in enumerate(locexprs):
             v_vars = set()
             v_vars.add(k)
