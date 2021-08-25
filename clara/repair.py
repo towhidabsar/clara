@@ -94,9 +94,8 @@ class Repair(object):
         debug(msg, *args)
 
     def gettrace(self, P, inter, ins, args, entryfnc):
-
         if ins and args:
-            assert len(ins) == len(args), \
+            assert len(ins) == len(args),\
                 "Equal number of inputs and arguments expected"
 
         # Populate ins or args (whichever may be missing)
@@ -649,43 +648,26 @@ class Repair(object):
 
                     # Rewrite expr1 (from spec) with variables of impl.
                     expr1 = expr1.replace_vars(nmapping)
+
                     if (var1 == "-" or (isinstance(expr1, Var) and (var2 == expr1.tostr()))): 
                         # remove old definition of variable that we want to change
                         self.removeValFromResult(Q, var2, fname, loc2)
                         repairs.remove(rep)
                         continue
+                    
                     f2 = Q.getfnc(fname)
                     trace = traceQ[loc2][0]
-                    # all_vars = expr1.vars()
-                    # flag = False
-                    # for a in all_vars:
-                    #     # if (isprimed(a)):
-                    #     #     a = getUnprimedVersion(a)
-                    #     if (a not in trace):
-                    #         flag = True
-                    # if (flag): continue
-                    # var2_ = var2
-                    # if (var2 == '*'): 
-                    #     var2 = '$new_' + var1
-                    #     Q.getfnc(fname).locexprs[loc2].append((var2, expr1))
-                    # else:
-                    # # print(Q.getfnc(fname).locexprs[loc2])
-                    # # Q.getfnc(fname).locexprs[loc2].append((var2, expr1))
-                    # # flag = self.findAndSub(Q, var2, fname, loc2, expr1)
-                    # # if (flag):
-                    #     self.substituteInFunc(Q, var2, fname, loc2, expr1)
-                    # repairs.remove(rep)
-                    # print(Q)
-                    # if (var2_ == '*'):
-                    #     traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
-                    # break
                     var2_ = var2
                     if (var2 == '*'): 
                         var2 = '$new_' + var1
+                    
                     trace = self.preprocessTrace(trace, f2.locexprs[loc2])
+
                     flag = self.findAndSub(Q, var2, fname, loc2, expr1, trace)
                     if (not flag): continue
+                    
                     repairs.remove(rep)
+                    
                     if (var2_ == '*'):
                         f2.addtype(var2, '*', True)
                         traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
@@ -708,17 +690,19 @@ class Repair(object):
             self.removeValFromResult(Q, var, fname, loc2)
             locexprs = Q.getfnc(fname).locexprs[loc2]
         all_vars = set(trace.keys())
-
         if (len(locexprs) == 0):
-            Q.getfnc(fname).locexprs[loc2].append((var,exp))
-            return True
+            temp = {var}
+            temp = all_vars.union(temp)
+            if exp_vars.issubset(temp):
+                Q.getfnc(fname).locexprs[loc2].append((var,exp))
+                return True
         for idx, (k, _) in enumerate(locexprs):
             v_vars = set()
             v_vars.add(k)
             v_vars.add(getPrimedVersion(k))
 
             all_vars = all_vars.union(v_vars)
-            temp = set(var)
+            temp = {var}
             temp = all_vars.union(temp)
 
             if exp_vars.issubset(temp):

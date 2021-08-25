@@ -169,7 +169,13 @@ Options are:
             with open(self.argsfile, 'r') as f:
                 self.args = []
                 for line in f:
-                    self.args += [line.strip()]
+                    line = line.strip()
+                    size = len(line.split())
+                    if (size > 1):
+                        for i in range(0, size):
+                            self.args += [line]
+                    else:
+                        self.args += [line]
                 self.args = [self.args]
 
         if self.lang is None:
@@ -305,9 +311,9 @@ Options are:
             txt.genfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
-            R.applyRepairs(self.models, r, self.inter,
-                        ins=self.ins, args=self.args, entryfnc=self.entryfnc)
             try:
+                R.applyRepairs(self.models, r, self.inter,
+                            ins=self.ins, args=self.args, entryfnc=self.entryfnc)
                 r = R.repair(self.models[0], self.models[1], self.inter,
                             ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                             ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)

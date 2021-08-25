@@ -567,6 +567,8 @@ def addlangparser(lang, parser):
 
     
 def getlangparser(lang):
+    if lang == 'txt':
+        return PARSERS['py']
     if lang in PARSERS:
         return PARSERS[lang]
     raise UnknownLanguage("No parser for language: '%s'" % (lang,))

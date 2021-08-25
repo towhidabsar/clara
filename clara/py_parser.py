@@ -25,7 +25,7 @@ class PyParser(Parser):
         'input', 'float', 'int', 'bool', 'str', 'list', 'dict',
         'set', 'tuple', 'round', 'pow', 'sum', 'range', 'xrange', 'len',
         'reversed', 'enumerate', 'abs', 'max', 'min', 'type', 'zip', 'map',
-        'isinstance', 'sorted']
+        'isinstance', 'sorted', 'eval']
     UNSUPPORTED_BUILTIN_FNCS = ['eval', 'iter']
     CONSTS = ['True', 'False', 'None', 'list', 'tuple', 'int', 'dict',
               'float', 'bool']
@@ -47,7 +47,7 @@ class PyParser(Parser):
 
     def parse(self, code):
         # Get AST
-        code = self.addargs(code)
+        # code = self.addargs(code)
         try:
             pyast = ast.parse(code, mode='exec')
         except (SyntaxError, IndentationError) as e:
@@ -59,7 +59,10 @@ class PyParser(Parser):
         new_lines = []
         for c in lines:
             while 'input()' in c:
-                c = c.replace('input()', self.ARGS[0], 1)
+                args = self.ARGS[0]
+                if len(args.split()) > 1:
+                    args = '"' + args + '"'
+                c = c.replace('input()', args, 1)
                 self.ARGS = self.ARGS[1:]
             new_lines += [c]
         code = '\n'.join(new_lines)
@@ -382,8 +385,6 @@ class PyParser(Parser):
             raise NotSupported('Delete target: %s' % (target.__class__,))
     
     def visit_Assign(self, node):
-        
-        # target = node.targets
         for target in node.targets:
             right = self.visit_expr(node.value)
 
@@ -417,6 +418,7 @@ class PyParser(Parser):
                     expr = Op('GetElement', right.copy(), Const(str(i)),
                             line=right.line)
                     if isinstance(target, Var):
+                        self.addtype(target.name, '*')
                         self.addexpr(target.name, expr)
                     else:
                         raise NotSupported("Tuple non-var assignment",
@@ -476,6 +478,8 @@ class PyParser(Parser):
         if isinstance(node.func, ast.Name):
             if node.func.id in self.BUILTIN_FNCS:
                 fncname = node.func.id
+                if (fncname == 'input'):
+                    print('found input')
                 args = list(map(self.visit_expr, node.args))
                 return Op(fncname, *args, line=node.lineno)
             elif node.func.id in self.UNSUPPORTED_BUILTIN_FNCS:

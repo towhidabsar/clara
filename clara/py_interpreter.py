@@ -27,6 +27,7 @@ def eargs(fun):
         for a in args:
             if isinstance(a, UndefValue):
                 raise RuntimeErr('undefined value')
+        
         return fun(self, *args)
     return wrap
 
@@ -102,7 +103,10 @@ class PyInterpreter(Interpreter):
         for a in args:
             if isinstance(a, UndefValue):
                 raise RuntimeErr('undefined value')
-        return fnc(*args)
+        ans = fnc(*args)
+        if (fnc.__name__ == 'map'):
+            ans = list(ans)
+        return ans
     
     def execute_lib_fnc(self, lib, fnc, args, mem):
         lib = importlib.import_module(lib)
@@ -374,8 +378,16 @@ class PyInterpreter(Interpreter):
         return l.split(m)
     
     @eargs
+    def execute_replace(self, s, o, n):
+        return s.replace(o, n)
+
+    @eargs
     def execute_lower(self, l):
         return l.lower()
+
+    @eargs
+    def execute_upper(self, l):
+        return l.upper()
 
     @eargs
     def execute_ignore_none(self, s):

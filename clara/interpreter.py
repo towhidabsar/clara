@@ -116,7 +116,6 @@ class Interpreter(object):
         # Get name of the object to be executed
         name = obj.__class__.__name__
         meth = getattr(self, 'execute_%s' % (name,))
-    
         try:
             return meth(obj, mem)
         except (OverflowError, ZeroDivisionError, AttributeError,
@@ -185,7 +184,6 @@ class Interpreter(object):
         return newmem, mem
 
     def execute_Op(self, op, mem):
-        
         if op.name in self.UNARY_OPS:
             if len(op.args) != 1 and op.name not in self.BINARY_OPS:
                 raise RuntimeError(
@@ -205,7 +203,10 @@ class Interpreter(object):
         fnc = getattr(builtins, op.name, None)
         if (op.name == "input"):
             ans = self.args[0]
-            self.args = self.args[1:]
+            if (len(self.args) > 1):
+                self.args = self.args[1:]
+            else:
+                self.args = []
             return ans
         elif (fnc):
             return self.execute_builtin_fnc(fnc, op.args, mem)
@@ -214,7 +215,6 @@ class Interpreter(object):
             s2 = op.name.split('.')
             if (s2[0] in self.prog.imports):
                return self.execute_lib_fnc(s2[0], s2[1], op.args, mem)
-        
         meth = getattr(self, 'execute_%s' % (op.name,))
         return meth(op, mem)
 
@@ -306,6 +306,8 @@ def addlanginter(lang, inter):
 
 
 def getlanginter(lang):
+    if lang == 'txt':
+        return INTERPRETERS['py']
     if lang in INTERPRETERS:
         return INTERPRETERS[lang]
     raise UnknownLanguage("No interpreter for language: '%s'" % (lang,))
