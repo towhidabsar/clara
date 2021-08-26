@@ -390,6 +390,26 @@ class PyInterpreter(Interpreter):
         return l.upper()
 
     @eargs
+    def execute_startswith(self, s, elem):
+        return s.startswith(elem)
+    
+    @eargs
+    def execute_find(self, s, elem):
+        return s.find(elem)
+    
+    @eargs
+    def execute_capitalize(self, s):
+        return s.capitalize()
+    
+    @eargs
+    def execute_swapcase(self, s):
+        return s.swapcase()
+
+    @eargs
+    def execute_title(self, s):
+        return s.title()
+
+    @eargs
     def execute_ignore_none(self, s):
         return
 
