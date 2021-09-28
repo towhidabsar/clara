@@ -12,6 +12,7 @@ import pprint
 import shutil
 import sys
 import traceback
+import string
 
 from ast import literal_eval, parse
 
@@ -24,8 +25,8 @@ from clara.feedback_python import PythonFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
 from clara.clustering import Clustering
-from clara.model import expr_to_dict, dict_to_expr
-from clara.parser import getlangparser
+from clara.model import expr_to_dict, dict_to_expr, prime
+from clara.parser import ParseError, getlangparser
 from clara.repair import Repair
 
 VERBOSE=0
@@ -133,6 +134,8 @@ Options are:
         self.maxfeedcost = int(self.opts.pop('maxfeedcost', 0))
         self.clusterdir = self.opts.pop('clusterdir', 'clusters')
         self.printloc = int(self.opts.pop('printloc', 0))
+        self.testcase = '1.txt'
+        self.applyRep = True
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -152,6 +155,7 @@ Options are:
         self.args = self.opts.pop('args', None)
         self.insfile = self.opts.pop('insfile', None)
         self.argsfile = self.opts.pop('argsfile', None)
+        self.checkRep = 0
 
         if self.ins is not None and self.insfile is not None:
             self.error('Got both inputs and file with inputs: which to use?')
@@ -166,16 +170,20 @@ Options are:
             with open(self.insfile, 'r') as f:
                 self.ins = literal_eval(f.read())
         if self.argsfile is not None:
-            with open(self.argsfile, 'r') as f:
+            testcase = self.findTestCaseNo() + '.txt'
+            testcase_file = self.argsfile + '/' + testcase
+            folder = os.listdir(self.argsfile)
+            if (testcase not in folder):
+                print('Test Case Not Available')
+                return
+            print('Test Case Available')
+                # testcase_file = self.argsfile + '/' + folder[-1]
+            self.testcase = (testcase_file.split('/')[-1])
+            with open(testcase_file, 'r') as f:
                 self.args = []
                 for line in f:
                     line = line.strip()
-                    size = len(line.split())
-                    if (size > 1):
-                        for i in range(0, size):
-                            self.args += [line]
-                    else:
-                        self.args += [line]
+                    self.args += [line]
                 self.args = [self.args]
 
         if self.lang is None:
@@ -183,8 +191,11 @@ Options are:
 
         self.parser = getlangparser(self.lang)
         self.inter = getlanginter(self.lang)
-
-        self.process_sources(entryfnc=self.entryfnc, args=self.args)
+        try:
+            self.process_sources(entryfnc=self.entryfnc, args=self.args)
+        except Exception as e:
+            print("Parse Error!")
+            raise ParseError(str(e))
 
         if self.cmd == 'match':
             self.match()
@@ -311,24 +322,28 @@ Options are:
             txt.genfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
-            try:
-                R.applyRepairs(self.models, r, self.inter,
-                            ins=self.ins, args=self.args, entryfnc=self.entryfnc)
-                r = R.repair(self.models[0], self.models[1], self.inter,
-                            ins=self.ins, args=self.args, ignoreio=self.ignoreio,
-                            ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
-                
-                _, repairs, _ = r[self.entryfnc]
-                if repairs:
-                    txt = RepairFeedback(self.models[1], self.models[0], r)
-                    txt.genfeedback()
-                    print('Old Repairs were incomplete, apply these repairs too:')
-                    print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
-                else:
-                    print('No further repair needed after completeing the previous ones!')
-            except:
-                print("There are issues with the suggested repairs. The new program may not run.")
+            if (self.applyRep):
+                self.applyRep = False
+                try:
+                    R.applyRepairs(self.models, r, self.inter,
+                                ins=self.ins, args=self.args, entryfnc=self.entryfnc)
+                    r = R.repair(self.models[0], self.models[1], self.inter,
+                                ins=self.ins, args=self.args, ignoreio=self.ignoreio,
+                                ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
+                    
+                    _, repairs, _ = r[self.entryfnc]
+                    if repairs:
+                        txt = RepairFeedback(self.models[1], self.models[0], r)
+                        txt.genfeedback()
+                        print('Old Repairs were incomplete, apply these repairs too:')
+                        print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
+                    else:
+                        print('No further repair needed after completeing the previous ones!')
+                        self.checkRepairs()
+                except:
+                    print("There are issues with the suggested repairs. The new program may not run.")
         else:
+            self.checkRep = 2
             print('No repair!')
         
 
@@ -453,8 +468,9 @@ Options are:
 
         self.debug("Reading and parsing source file '%s'", src)
             
-        with open(src, 'r', encoding="utf-8") as f:
+        with open(src, 'r', encoding='utf-8', errors="ignore") as f:
             code = f.read()
+            code = "".join(x for x in code if x in string.printable)
             
         model = self.parser.parse_code(code, entryfnc, args)
         model.name = src
@@ -473,7 +489,39 @@ Options are:
             model = self.process_source(src, entryfnc, args)
             self.models.append(model)
                 
+    def findTestCaseNo(self):
+        file = self.sources[1]
+        with open(file) as f:
+            last_line = f.readlines()[-1].strip()
+            if '#' in last_line:
+                return last_line.split(" ")[-1]
+    
+    def checkRepairs(self):
+        folder = os.listdir(self.argsfile)
+        testcase = int(self.testcase.split('.')[0])
+        reps = 1
+        for file in folder:
+            if file == self.testcase:
+                continue
+            self.checkRep = 0
+            with open(self.argsfile + file, 'r') as f:
+                self.args = []
+                for line in f:
+                    line = line.strip()
+                    self.args += [line]
+                self.args = [self.args]
+            self.repair()
+            if (self.checkRep == 2):
+                reps += 1
+        if (reps == len(folder)):
+            print("All Repaired")
+        elif (reps > testcase):
+            print('Partial Repaired')
+        else:
+            print('Less Repaired')
 
+
+            
 if __name__ == '__main__':
     try:
         clara = Clara()

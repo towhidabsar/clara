@@ -245,6 +245,8 @@ class Parser(object):
             self.rmunreachlocs(fnc)
             self.ssa(fnc)
             self.rmtmp(fnc)
+            print(fnc.loctrans)
+            print(fnc.locdescs)
             # self.rmemptylocs(fnc)
     
     # def rmemptylocs(self, fnc):

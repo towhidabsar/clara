@@ -44,6 +44,7 @@ class PyParser(Parser):
         self.ENTRY_FNC = args[0]
         self.ARGS = args[1][0]
         self.hiddenvarcnt = 0
+        self.input_name = "input_val"
 
     def parse(self, code):
         # Get AST
@@ -51,6 +52,7 @@ class PyParser(Parser):
         try:
             pyast = ast.parse(code, mode='exec')
         except (SyntaxError, IndentationError) as e:
+            print("Parse Error!")
             raise ParseError(str(e))
         self.visit(pyast)
         
@@ -414,14 +416,24 @@ class PyParser(Parser):
             # Assignment to a tuple
             elif isinstance(target, ast.Tuple):
                 targets = list(map(self.visit_expr, target.elts))
-                for i, target in enumerate(targets):
+                for i, targ in enumerate(targets):
                     expr = Op('GetElement', right.copy(), Const(str(i)),
                             line=right.line)
-                    if isinstance(target, Var):
-                        self.addtype(target.name, '*')
-                        self.addexpr(target.name, expr)
+                    # assigning to a subscript
+                    if isinstance(target.elts[i], ast.Subscript):
+                        targ = target.elts[i]
+                        var = Var(targ.value.id)
+                        self.addtype(targ.value.id, '*')
+                        index = self.visit_expr(targ.slice.value)
+                        self.addexpr(targ.value.id,
+                                Op('AssignElement', var, index, expr,
+                                    line=right.line))
+                    # assigning to a variable
+                    elif isinstance(targ, Var):
+                        self.addtype(targ.name, '*')
+                        self.addexpr(targ.name, expr)
                     else:
-                        raise NotSupported("Tuple non-var assignment",
+                        raise NotSupported("Tuple non-var assignment or non-index assignment",
                                         line=target.line)
                     
             else:
@@ -448,16 +460,26 @@ class PyParser(Parser):
                      line=node.lineno)
             self.addexpr(target.name, rhs)
 
-        # Aug assign to a index
+        # Aug assign to a index 
         elif isinstance(node.target, ast.Subscript):
             if isinstance(node.target.slice, ast.Index):
-                var = Var(node.target.value.id)
                 right = self.visit_expr(node.value)
                 index = self.visit_expr(node.target.slice.value)
                 rhs = Op(op, self.visit(node.target),
                          right, line=node.lineno)
-                self.addexpr(var.name, Op('AssignElement', var, index, rhs,
+                
+                # assign to nested index
+                if isinstance(node.target.value, ast.Subscript):
+                    var = Var(node.target.value.value.id)
+                    index2 = self.visit_expr(node.target.value.slice.value)
+                    self.addexpr(var.name, Op('AssignElement', var, index, Op('AssignElement', var, index2, rhs,
+                                                                line=node.lineno),
                                           line=node.lineno))
+                # assign to 1-d index
+                else:
+                    var = Var(node.target.value.id)
+                    self.addexpr(var.name, Op('AssignElement', var, index, rhs,
+                                            line=node.lineno))
                 
             else:
                 raise NotSupported(
@@ -478,9 +500,14 @@ class PyParser(Parser):
         if isinstance(node.func, ast.Name):
             if node.func.id in self.BUILTIN_FNCS:
                 fncname = node.func.id
-                if (fncname == 'input'):
-                    print('found input')
                 args = list(map(self.visit_expr, node.args))
+                if (fncname == 'input'):
+                    name = self.input_name
+                    self.addexpr(name, Op(fncname, *args, line=node.lineno))
+                    self.addtype(name, '*')
+                    name = Var(name)
+                    self.input_name += "_"
+                    return name
                 return Op(fncname, *args, line=node.lineno)
             elif node.func.id in self.UNSUPPORTED_BUILTIN_FNCS:
                 raise NotSupported("builtin: '%s'" % (node.func.id,))

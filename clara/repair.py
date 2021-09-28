@@ -642,10 +642,11 @@ class Repair(object):
                     var2 = rep.var2
                     expr1 = rep.expr1
                     var1 = rep.var1
+                    f2 = Q.getfnc(fname)
 
                     # Get loc2
                     loc2 = sm[loc1]
-
+                    expr2 = f2.getexpr(loc2, var2)
                     # Rewrite expr1 (from spec) with variables of impl.
                     expr1 = expr1.replace_vars(nmapping)
 
@@ -655,7 +656,6 @@ class Repair(object):
                         repairs.remove(rep)
                         continue
                     
-                    f2 = Q.getfnc(fname)
                     trace = traceQ[loc2][0]
                     var2_ = var2
                     if (var2 == '*'): 
@@ -667,9 +667,10 @@ class Repair(object):
                     if (not flag): continue
                     
                     repairs.remove(rep)
-                    
-                    if (var2_ == '*'):
+                    if (var2 not in SPECIAL_VARS):
                         f2.addtype(var2, '*', True)
+
+                    if (var2_ == '*' or (isinstance(expr2, Var) and var2 == expr2.tostr())):
                         traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
                     break
                     
