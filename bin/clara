@@ -17,6 +17,7 @@ import string
 from ast import literal_eval, parse
 
 # clara imports
+from clara.graph_matching import makeGraph
 from clara.common import parseargs, debug
 from clara.feedback import Feedback, FeedGen
 from clara.feedback_repair import RepairFeedback
@@ -214,10 +215,18 @@ Options are:
 
         elif self.cmd == 'eval':
             self.eval()
+        
+        elif self.cmd == 'graph':
+            self.graph()
 
         else:
             self.usage()
             self.error("Unknown command: '%s'", self.cmd)
+
+    def graph(self):
+        for m in self.models:
+            for f in m.getfncs():
+                makeGraph(f)
 
     def model(self):
 
