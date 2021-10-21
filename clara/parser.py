@@ -245,26 +245,6 @@ class Parser(object):
             self.rmunreachlocs(fnc)
             self.ssa(fnc)
             self.rmtmp(fnc)
-            print(fnc.loctrans)
-            print(fnc.locdescs)
-            # self.rmemptylocs(fnc)
-    
-    # def rmemptylocs(self, fnc):
-    #     for l in fnc.locs():
-    #         exprs = fnc.exprs(l)
-    #         if len(exprs) == 0:
-    #             self.rmloctrans(fnc, l, fnc.loctrans[l][True])
-    #             del fnc.locexprs[l]
-    
-    # def rmloctrans(self, fnc, loc, val):
-    #     keys = list(fnc.loctrans.keys())
-    #     for k in keys:
-    #         v = fnc.loctrans[k]
-    #         if v[True] == loc:
-    #             fnc.loctrans[k][True] = val
-    #         if v[False] == loc:
-    #             fnc.loctrans[k][False] = val
-
 
     def visit(self, node, name=None):
         # Skip None-node
