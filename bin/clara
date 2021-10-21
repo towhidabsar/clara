@@ -15,6 +15,7 @@ import traceback
 import string
 
 from ast import literal_eval, parse
+from clara.convert_to_py import makefunc
 
 # clara imports
 from clara.graph_matching import makeGraph
@@ -137,6 +138,7 @@ Options are:
         self.printloc = int(self.opts.pop('printloc', 0))
         self.testcase = '1.txt'
         self.applyRep = True
+        self.shouldCheckRepair = bool(self.opts.pop('c', False))
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -178,7 +180,6 @@ Options are:
                 print('Test Case Not Available')
                 return
             print('Test Case Available')
-                # testcase_file = self.argsfile + '/' + folder[-1]
             self.testcase = (testcase_file.split('/')[-1])
             with open(testcase_file, 'r') as f:
                 self.args = []
@@ -219,6 +220,9 @@ Options are:
         elif self.cmd == 'graph':
             self.graph()
 
+        elif self.cmd == 'convert':
+            self.convertToPy()
+
         else:
             self.usage()
             self.error("Unknown command: '%s'", self.cmd)
@@ -228,12 +232,15 @@ Options are:
             for f in m.getfncs():
                 makeGraph(f)
 
+    def convertToPy(self):
+        for m in self.models:
+            makefunc(m)
+
     def model(self):
 
         if len(self.models) != 1:
             self.error('Model requires one program!')
 
-        print(self.models[0].tostring())
 
     def match(self):
 
@@ -302,9 +309,6 @@ Options are:
         if len(self.models) != 1:
             self.error('Eval requires exactly one program!')
 
-        print(self.models[0])
-        print()
-
         inter = self.inter(entryfnc=self.entryfnc)
         trace = inter.run(self.models[0], args=self.args, ins=self.ins)
 
@@ -321,7 +325,6 @@ Options are:
         R = Repair(timeout=self.timeout, verbose=self.verbose,
                    allowsuboptimal=self.suboptimal,
                    cleanstrings=self.cleanstrings, printloc=self.printloc)
-        print(self.models)
         r = R.repair(self.models[0], self.models[1], self.inter,
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                      ignoreret=self.ignoreret, entryfnc=self.entryfnc)
@@ -331,6 +334,7 @@ Options are:
             txt.genfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
+            self.saveRepairs(txt.feedback)
             if (self.applyRep):
                 self.applyRep = False
                 try:
@@ -348,7 +352,8 @@ Options are:
                         print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
                     else:
                         print('No further repair needed after completeing the previous ones!')
-                        self.checkRepairs()
+                        if self.shouldCheckRepair:
+                            self.checkRepairs()
                 except:
                     print("There are issues with the suggested repairs. The new program may not run.")
         else:
@@ -529,8 +534,15 @@ Options are:
         else:
             print('Less Repaired')
 
-
-            
+    def saveRepairs(self,feedback):
+        files = []
+        for s in self.sources:
+            s = s.split('/')[-1].split('.')[0]
+            files += [s]
+        name = '_'.join(files) + '.txt'
+        f = open('results/'+name,"w+")
+        f.write('\n'.join(['  * %s' % (x,) for x in feedback]))
+        f.close()
 if __name__ == '__main__':
     try:
         clara = Clara()
