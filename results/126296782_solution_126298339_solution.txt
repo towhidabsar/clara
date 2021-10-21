@@ -1,0 +1,4 @@
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(map(int, split(input_val_')), 1)' at line 3 (cost=1.0)
+  * Change '$new_dis := abs(Sub(a', b'))' to '$new_dis := ite(Gt(Add(b', $new_res'), $new_lkol'), Mod(Add(b', $new_res'), $new_lkol'), Add(b', $new_res'))' at line 11 (cost=14.0)
+  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
+  * Change '$new_res := ite(Gt(Add(c', $new_dis'), $new_lkol'), Mod(Add(c', $new_dis'), $new_lkol'), Add(c', $new_dis'))' to '$new_res := abs(Sub(a', c'))' inside the body of the 'for' loop beginning at line 3 (cost=14.0)

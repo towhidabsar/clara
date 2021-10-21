@@ -1,0 +1,5 @@
+  * Add assignment '$new_T := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := Sub(max($new_a', b'), min($new_a', b'))' at line 3 (cost=8.0)
+  * Add assignment '$new_a := GetElement(map(int, split(input_val_')), 0)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, Sub(c, a))' at line 7 (cost=4.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, a))' at line 9 (cost=3.0)

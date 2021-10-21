@@ -1,0 +1,5 @@
+  * Change 'b := b' to 'b := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'c := GetElement(l', 2)' to 'c := Sub(max(a', l'), min(a', l'))' at line 5 (cost=6.0)
+  * Change 'l := list(map(int, split(input_val_')))' to 'l := GetElement(map(int, split(input_val_')), 1)' at line 2 (cost=2.0)
+  * Change 'b := GetElement(l', 1)' to 'b := b' at line 4 (cost=3.0)
+  * Change '$out := StrAppend($out, Add(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Add(num, c))' at line 11 (cost=3.0)

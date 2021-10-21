@@ -1,0 +1,5 @@
+  * Change 'n := n' to 'n := Sub(n, 1)' inside the body of the 'for' loop beginning at line 3 (cost=2.0)
+  * Add assignment '$new_inp := input_val_'' inside the body of the 'for' loop beginning at line 3 (cost=2.0)
+  * Change '_ := GetElement(iter#0, ind#0)' to '_ := abs(Sub(a', b'))' at line 2 (cost=4.0)
+  * Change '$out := StrAppend($out, Sub(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Add(c, _))' at line 9 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Mod(Add(c, _), l))' at line 11 (cost=5.0)

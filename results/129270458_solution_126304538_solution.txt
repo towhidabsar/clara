@@ -1,0 +1,2 @@
+  * Change '_ := GetElement(iter#0, ind#0)' to '_ := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 0)' at line 2 (cost=9.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(iter#0, ind#0)' at line 3 (cost=5.0)

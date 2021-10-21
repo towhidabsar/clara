@@ -1,0 +1,2 @@
+  * Delete 'htotal := abs(Sub(a', b'))' at line 4 (cost=4.0)
+  * Delete 'total := Mult(abs(Sub(a', b')), 2)' at line 5 (cost=6.0)

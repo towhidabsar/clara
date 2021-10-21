@@ -1,0 +1,7 @@
+  * Add assignment '$new_c := GetElement(map(int, split(n')), 2)' inside the body of the 'for' loop beginning at line 19 (cost=7.0)
+  * Change 'n := n' to 'n := input()' inside the body of the 'for' loop beginning at line 19 (cost=1.0)
+  * Add assignment '$new_a := GetElement(map(int, split(n')), 0)' inside the body of the 'for' loop beginning at line 19 (cost=7.0)
+  * Change 'input_val_ := input_val_' to 'input_val_ := GetElement(map(int, split(n')), 1)' inside the body of the 'for' loop beginning at line 19 (cost=6.0)
+  * Add assignment '$new_z := abs(Sub(input_val_', $new_a'))' inside the body of the 'for' loop beginning at line 19 (cost=5.0)
+  * Change 'input_val_ := input("")' to 'input_val_ := input_val_' at line 19 (cost=2.0)
+  * Change '$out := StrAppend($out, FuncCall(returnPos, split(input_val_')))' to '$out := StrAppend($out, ite(Or(Lt($new_z, min($new_a, input_val_)), Gt($new_c, Mult($new_z, 2))), USub(1), ite(Gt($new_c, $new_z), Sub($new_c, $new_z), Add($new_c, $new_z))))' at line 19 (cost=24.0)

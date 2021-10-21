@@ -1,0 +1,6 @@
+  * Delete 'a := int(GetElement(split(input_val_'), 0))' at line 13 (cost=5.0)
+  * Delete 'b := int(GetElement(split(input_val_'), 1))' at line 14 (cost=5.0)
+  * Change 'c := int(GetElement(split(input_val_'), 2))' to 'c := list(map(int, split(input_val_')))' at line 15 (cost=4.0)
+  * Change 'dia := ite(GtE(a', b'), Sub(a', b'), Sub(b', a'))' to 'dia := Mult(abs(Sub(GetElement(c', 0), GetElement(c', 1))), 2)' inside the body of the 'for' loop beginning at line 12 (cost=12.0)
+  * Change '$out := StrAppend($out, Sub(c, dia))' to '$out := StrAppend($out, Add(GetElement(c, 2), FloorDiv(dia, 2)))' at line 25 (cost=5.0)
+  * Change '$out := StrAppend($out, Add(c, dia))' to '$out := StrAppend($out, Sub(GetElement(c, 2), FloorDiv(dia, 2)))' at line 27 (cost=5.0)

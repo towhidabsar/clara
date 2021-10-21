@@ -1,0 +1,6 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'a := list(map(int, split(input_val_', " ")))' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=3.0)
+  * Change 'y := max(GetElement(a', 0), GetElement(a', 1))' to 'y := Mult(2, abs(Sub($new_a', x')))' at line 4 (cost=8.0)
+  * Add assignment '$new_a := GetElement(map(int, split(input_val_')), 0)' inside the body of the 'for' loop beginning at line 2 (cost=7.0)
+  * Change '$out := StrAppend($out, "1")' to '$out := StrAppend($out, Add(a, int(Div(y, 2))))' at line 7 (cost=6.0)
+  * Change '$out := StrAppend($out, "-1")' to '$out := StrAppend($out, Sub(a, int(Div(y, 2))))' at line 9 (cost=6.0)

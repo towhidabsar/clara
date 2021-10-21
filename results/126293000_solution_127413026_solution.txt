@@ -1,0 +1,4 @@
+  * Change 'p := int(input_val')' to 'p := input()' at line 1 (cost=2.0)
+  * Delete 'input_val := input()' at line 1 (cost=1.0)
+  * Change 'd := abs(Sub(a', b'))' to 'd := FuncCall(fun, a', b', c')' at line 4 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, d)' at line 5 (cost=2.0)

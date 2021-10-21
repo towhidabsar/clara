@@ -1,0 +1,6 @@
+  * Change 'repeat := int(input_val')' to 'repeat := input()' at line 32 (cost=2.0)
+  * Add assignment '$new_b := GetElement(list(map(int, split(input_val_'))), 1)' inside the body of the 'for' loop beginning at line 35 (cost=8.0)
+  * Change 'input_val := input_val' to 'input_val := GetElement(list(map(int, split(input_val_'))), 2)' inside the body of the 'for' loop beginning at line 35 (cost=7.0)
+  * Change 'arr := split(line', " ")' to 'arr := Mult(abs(Sub(line', $new_b')), 2)' at line 36 (cost=5.0)
+  * Change 'line := input_val_'' to 'line := GetElement(list(map(int, split(input_val_'))), 0)' inside the body of the 'for' loop beginning at line 35 (cost=6.0)
+  * Change '$out := StrAppend($out, FuncCall(opposite, int(GetElement(arr, 0)), int(GetElement(arr, 1)), int(GetElement(arr, 2))))' to '$out := StrAppend($out, ite(Or(Or(Gt(line, arr), Gt($new_b, arr)), Gt(input_val, arr)), USub(1), Add(Mod(Add(Sub(input_val, 1), FloorDiv(arr, 2)), arr), 1)))' at line 38 (cost=24.0)

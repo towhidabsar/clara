@@ -1,0 +1,2 @@
+  * Change '$new_num := Mult(x', 2)' to '$new_num := abs(Sub(a', b'))' at line 16 (cost=4.0)
+  * Change 'x := abs(Sub(a', b'))' to 'x := Mult($new_num', 2)' at line 5 (cost=4.0)

@@ -1,0 +1,4 @@
+  * Add assignment '$new_input_val_ := input()' inside the body of the 'while' loop beginning at line 3 (cost=2.0)
+  * Change 'num3 := GetElement(split(input_val_'), 2)' to 'num3 := int(GetElement(split(input_val_'), 2))' at line 4 (cost=1.0)
+  * Change 'num1 := GetElement(split(input_val_'), 0)' to 'num1 := int(GetElement(split(input_val_'), 0))' at line 4 (cost=1.0)
+  * Change 'num2 := GetElement(split(input_val_'), 1)' to 'num2 := int(GetElement(split(input_val_'), 1))' at line 4 (cost=1.0)

@@ -1,0 +1,4 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'g := abs(Sub(a', b'))' to 'g := abs(Mult(Sub(a', b'), 2))' at line 3 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(g, c))' to '$out := StrAppend($out, Add(c, FloorDiv(g, 2)))' at line 7 (cost=3.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, FloorDiv(g, 2)))' at line 9 (cost=5.0)

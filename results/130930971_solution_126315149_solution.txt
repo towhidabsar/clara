@@ -1,0 +1,4 @@
+  * Change 'c := c' to 'c := ListInit()' around the beginning of function main (cost=1.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := append(c, ListComp(1, int(BoundVar(0)), split(input_val_'), True))' at line 14 (cost=9.0)
+  * Delete 'a := GetElement(map(int, split(input_val_')), 0)' at line 14 (cost=6.0)
+  * Delete 'b := GetElement(map(int, split(input_val_')), 1)' at line 14 (cost=6.0)

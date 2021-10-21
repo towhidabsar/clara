@@ -1,0 +1,6 @@
+  * Change 'c := c' to 'c := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'c := GetElement(arr', 2)' to 'c := c' at line 15 (cost=3.0)
+  * Change 'a := GetElement(arr', 0)' to 'a := min(GetElement(arr', 0), GetElement(arr', 1))' at line 13 (cost=4.0)
+  * Change 'b := GetElement(arr', 1)' to 'b := max(GetElement(arr', 0), GetElement(arr', 1))' at line 14 (cost=4.0)
+  * Change 'm := abs(Sub(a', b'))' to 'm := ite(Or(Lt(b', Mult(2, a')), Gt(GetElement(arr', 2), Mult(2, Sub(b', a')))), USub(1), ite(Gt(GetElement(arr', 2), b'), Sub(Add(a', GetElement(arr', 2)), b'), ite(And(Gt(GetElement(arr', 2), a'), Lt(GetElement(arr', 2), b')), ite(Lt(GetElement(arr', 2), Add(Sub(b', a'), 1)), Add(b', Sub(GetElement(arr', 2), a')), ite(Eq(GetElement(arr', 2), Add(Sub(b', a'), 1)), 1, ite(Gt(GetElement(arr', 2), Add(Sub(b', a'), 1)), Sub(a', Sub(b', GetElement(arr', 2))), ite(Lt(GetElement(arr', 2), a'), Sub(b', Sub(a', GetElement(arr', 2))), m)))), ite(Lt(GetElement(arr', 2), a'), Sub(b', Sub(a', GetElement(arr', 2))), m))))' at line 16 (cost=113.0)
+  * Change '$out := StrAppend($out, FuncCall(checking, arr, m, c))' to '$out := StrAppend($out, m)' at line 17 (cost=4.0)

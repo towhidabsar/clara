@@ -1,0 +1,3 @@
+  * Add assignment '$new_m := Mult($new_diff', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Add assignment '$new_diff := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, $new_diff))' at line 9 (cost=3.0)

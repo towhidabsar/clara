@@ -1,0 +1,4 @@
+  * Add assignment '$new_n := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Add assignment '$new_x := Add(c, FloorDiv($new_n, 2))' inside the else-branch starting at line 6 (cost=5.0)
+  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, Sub($new_x, $new_n))' at line 7 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_x)' at line 9 (cost=2.0)

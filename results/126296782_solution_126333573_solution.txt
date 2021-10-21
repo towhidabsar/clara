@@ -1,0 +1,2 @@
+  * Change 'c := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' to 'c := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=10.0)
+  * Change 'n := Mult(abs(Sub(a', b')), 2)' to 'n := GetElement(map(int, split(input_val_')), 2)' at line 4 (cost=6.0)

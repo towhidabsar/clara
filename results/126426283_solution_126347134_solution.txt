@@ -1,0 +1,3 @@
+  * Add assignment '$new_x := Mult(2, abs(Sub(a', b')))' inside the body of the 'while' loop beginning at line 3 (cost=7.0)
+  * Change '$out := StrAppend($out, Add(abs(Sub(a, b)), c))' to '$out := StrAppend($out, Sub(c, int(Div($new_x, 2))))' at line 7 (cost=7.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, int(Div($new_x, 2))))' at line 9 (cost=6.0)

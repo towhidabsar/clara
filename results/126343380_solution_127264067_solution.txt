@@ -1,0 +1,7 @@
+  * Change 'repeat := int(input_val')' to 'repeat := input()' at line 32 (cost=2.0)
+  * Change 'line := input_val_'' to 'line := GetElement(map(int, split(input_val_')), 0)' inside the body of the 'for' loop beginning at line 35 (cost=5.0)
+  * Add assignment '$new_c := GetElement(map(int, split(input_val_')), 2)' inside the body of the 'for' loop beginning at line 35 (cost=7.0)
+  * Change 'arr := split(line', " ")' to 'arr := ite(Or(Or(Gt(input_val', $new_m'), Gt(line', $new_m')), Gt($new_c', $new_m')), USub(1), ite(Gt(Add($new_c', Div($new_m', 2)), $new_m'), Sub($new_c', Div($new_m', 2)), Add($new_c', Div($new_m', 2))))' at line 36 (cost=31.0)
+  * Add assignment '$new_m := Mult(2, abs(Sub(input_val', line')))' inside the body of the 'for' loop beginning at line 35 (cost=7.0)
+  * Change 'input_val := input_val' to 'input_val := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 35 (cost=6.0)
+  * Change '$out := StrAppend($out, FuncCall(opposite, int(GetElement(arr, 0)), int(GetElement(arr, 1)), int(GetElement(arr, 2))))' to '$out := StrAppend($out, int(arr))' at line 38 (cost=12.0)

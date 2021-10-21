@@ -1,0 +1,4 @@
+  * Change 'c := int(GetElement(x', 2))' to 'c := GetElement(map(int, split(x')), 2)' at line 5 (cost=4.0)
+  * Change 'a := int(GetElement(x', 0))' to 'a := GetElement(map(int, split(x')), 0)' at line 3 (cost=4.0)
+  * Change 'n := GetElement(map(int, split(x')), 2)' to 'n := GetElement(map(int, split(x')), 1)' at line 2 (cost=1.0)
+  * Change '$out := StrAppend($out, Add(n, abs(Sub(a, c))))' to '$out := StrAppend($out, Add(c, abs(Sub(a, n))))' at line 9 (cost=2.0)

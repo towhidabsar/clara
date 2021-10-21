@@ -1,0 +1,1 @@
+  * Change 'c := GetElement(map(int, split(input_val_', " ")), 2)' to 'c := GetElement(iter#0, ind#0)' at line 3 (cost=6.0)

@@ -1,0 +1,4 @@
+  * Change 'arr := list(map(int, split(input_val_')))' to 'arr := GetElement(list(map(int, split(input_val_'))), 2)' at line 12 (cost=2.0)
+  * Delete 'c := GetElement(arr', 2)' at line 15 (cost=3.0)
+  * Change 'm := abs(Sub(a', b'))' to 'm := Mult(abs(Sub(a', b')), 2)' at line 16 (cost=2.0)
+  * Change '$out := StrAppend($out, FuncCall(checking, arr, m, c))' to '$out := StrAppend($out, ite(Or(Or(Gt(a, m), Gt(b, m)), Gt(arr, m)), USub(1), Add(Mod(Add(Sub(arr, 1), FloorDiv(m, 2)), m), 1)))' at line 17 (cost=23.0)

@@ -1,0 +1,4 @@
+  * Change 'number := Add(c', abs(Sub(a', b')))' to 'number := number' at line 4 (cost=6.0)
+  * Change '$out := StrAppend($out, number)' to '$out := StrAppend($out, USub(1))' at line 6 (cost=2.0)
+  * Change 'number := number' to 'number := Add(Mod(Add(Sub(c, 1), FloorDiv(vert, 2)), vert), 1)' inside the else-branch starting at line 8 (cost=11.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, number)' at line 8 (cost=2.0)

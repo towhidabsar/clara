@@ -1,0 +1,5 @@
+  * Change 'T := T' to 'T := list(map(int, split(input_val_')))' inside the body of the 'for' loop beginning at line 4 (cost=5.0)
+  * Change 'input_val_ := input_val_' to 'input_val_ := input()' inside the body of the 'for' loop beginning at line 4 (cost=1.0)
+  * Change 'd := abs(Sub(GetElement(GetElement(T, i'), 1), GetElement(GetElement(T, i'), 0)))' to 'd := abs(Sub(GetElement(T', 0), GetElement(T', 1)))' at line 4 (cost=8.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(GetElement(T, 2), d))' at line 8 (cost=5.0)
+  * Change '$out := StrAppend($out, Sub(GetElement(GetElement(T, i), 2), d))' to '$out := StrAppend($out, Sub(GetElement(T, 2), d))' at line 11 (cost=2.0)

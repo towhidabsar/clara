@@ -1,0 +1,7 @@
+  * Change 't := t' to 't := Sub(t, 1)' inside the body of the 'while' loop beginning at line 3 (cost=2.0)
+  * Add assignment '$new_larger := ite(Lt(a, b), b, a)' inside the else-branch starting at line 8 (cost=7.0)
+  * Add assignment '$new_result := Add($new_larger', $new_diff')' inside the else-branch starting at line 8 (cost=4.0)
+  * Add assignment '$new_diff := Sub(c, $new_smaller')' inside the else-branch starting at line 8 (cost=4.0)
+  * Add assignment '$new_smaller := ite(Lt(a, b), a, b)' inside the else-branch starting at line 8 (cost=7.0)
+  * Change '$out := StrAppend($out, n)' to '$out := StrAppend($out, Sub($new_result, n))' at line 9 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(c, abs(Add(a, b))))' to '$out := StrAppend($out, $new_result)' at line 13 (cost=6.0)

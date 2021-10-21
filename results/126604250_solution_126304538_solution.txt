@@ -1,0 +1,6 @@
+  * Change 'c := GetElement(map(int, split(input_val_')), 1)' to 'c := GetElement(map(int, split(input_val_')), 0)' at line 3 (cost=1.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
+  * Change 'b := GetElement(map(int, split(input_val_')), 2)' to 'b := GetElement(map(int, split(input_val_')), 1)' at line 3 (cost=1.0)
+  * Change 'c := abs(Sub(a, c))' to 'c := c' at line 7 (cost=3.0)
+  * Change 'b := b' to 'b := abs(Sub(c, b))' inside the else-branch starting at line 6 (cost=3.0)
+  * Change '$out := StrAppend($out, Add(b, c))' to '$out := StrAppend($out, Add(a, b))' at line 11 (cost=2.0)

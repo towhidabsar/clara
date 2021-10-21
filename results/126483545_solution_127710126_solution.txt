@@ -1,0 +1,6 @@
+  * Delete 'c := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=6.0)
+  * Delete 'd2 := Add(c', Div(n', 2))' at line 5 (cost=5.0)
+  * Change 'n := Mult(2, abs(Sub(a', b')))' to 'n := abs(Sub(a', b'))' at line 3 (cost=2.0)
+  * Change 'd1 := Sub(c', Div(n', 2))' to 'd1 := GetElement(map(int, split(input_val_')), 2)' at line 4 (cost=6.0)
+  * Change '$out := StrAppend($out, int(d1))' to '$out := StrAppend($out, Add(d1, n))' at line 9 (cost=2.0)
+  * Change '$out := StrAppend($out, int(d2))' to '$out := StrAppend($out, Sub(d1, n))' at line 11 (cost=3.0)

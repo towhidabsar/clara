@@ -1,0 +1,3 @@
+  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
+  * Delete 'input_val := input()' at line 1 (cost=1.0)
+  * Change 'k := Mult(abs(Sub(a', b')), 2)' to 'k := abs(Sub(a', b'))' at line 4 (cost=2.0)

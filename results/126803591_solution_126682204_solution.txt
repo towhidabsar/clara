@@ -1,0 +1,2 @@
+  * Delete 'ch := abs(Sub(a', b'))' at line 4 (cost=4.0)
+  * Change 'ans := ite(LtE(Sub(c, ch), 0), AssAdd(Sub(c, ch), cir), Sub(c, ch))' to 'ans := Add(Mod(Add(Sub(c, 1), FloorDiv(cir, 2)), cir), 1)' inside the else-branch starting at line 8 (cost=13.0)

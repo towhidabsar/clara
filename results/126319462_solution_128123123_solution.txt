@@ -1,0 +1,5 @@
+  * Change 'd := d' to 'd := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'd := ite(Gt(c, n), Sub(c, n), Add(Add(c, 1), n))' to 'd := d' inside the if-branch starting at line 6 (cost=12.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, "-1")' at line 10 (cost=1.0)
+  * Add assignment '$new_d := ite(Eq(Mod(Add(c, n), t), 0), t, Mod(Add(c, n), t))' inside the else-branch starting at line 12 (cost=15.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_d)' at line 12 (cost=2.0)

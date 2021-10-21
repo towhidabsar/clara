@@ -1,0 +1,3 @@
+  * Change 'r := abs(Sub(a', b'))' to 'r := Mult(2, abs(Sub(a', b')))' at line 5 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(c, r))' to '$out := StrAppend($out, Add(c, int(Div(r, 2))))' at line 9 (cost=3.0)
+  * Change '$out := StrAppend($out, Sub(c, r))' to '$out := StrAppend($out, Sub(c, int(Div(r, 2))))' at line 11 (cost=3.0)

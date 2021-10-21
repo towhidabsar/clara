@@ -1,0 +1,4 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'front := front' to 'front := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
+  * Change 'front := Add(c, abs(Sub(a, b)))' to 'front := front' at line 7 (cost=6.0)
+  * Change '$out := StrAppend($out, front)' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(n, 2)), Add(c, front), Sub(c, front)))' at line 8 (cost=11.0)

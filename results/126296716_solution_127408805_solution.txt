@@ -1,0 +1,5 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'b := ListComp(1, int(BoundVar(0)), split(input_val_'), True)' to 'b := GetElement(map(int, split(input_val_')), 0)' inside the body of the 'for' loop beginning at line 2 (cost=7.0)
+  * Change 'diff := abs(Sub(GetElement(b', 0), GetElement(b', 1)))' to 'diff := GetElement(map(int, split(input_val_')), 1)' at line 4 (cost=8.0)
+  * Change 'val := abs(Sub(GetElement(b', 2), diff'))' to 'val := Mult(abs(Sub(b', diff')), 2)' at line 6 (cost=4.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(max, FloorDiv(val, 2)))' at line 9 (cost=5.0)

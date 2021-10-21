@@ -1,0 +1,12 @@
+  * Change 'f := f' to 'f := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'e := e' to 'e := GetElement(map(int, split(input_val_')), 2)' inside the body of the 'for' loop beginning at line 2 (cost=6.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := Lt(Mult(abs(Sub(a', b')), 2), e')' at line 2 (cost=8.0)
+  * Change 'size := Mult(abs(Sub(a', b')), 2)' to 'size := Lt(Mult(abs(Sub(a', b')), 2), max(a', b'))' at line 3 (cost=4.0)
+  * Change '$out := StrAppend($out, "-1", "
+")' to '$out := StrAppend($out, USub(1))' at line 5 (cost=3.0)
+  * Delete 'd := Add(abs(Sub(a, b)), 1)' at line 7 (cost=6.0)
+  * Change '$out := StrAppend($out, e, "
+")' to '$out := StrAppend($out, Add(e, abs(Sub(a, b))))' at line 10 (cost=5.0)
+  * Change 'f := Sub(c, abs(Sub(a, b)))' to 'f := f' at line 12 (cost=6.0)
+  * Change '$out := StrAppend($out, f, "
+")' to '$out := StrAppend($out, Sub(e, abs(Sub(a, b))))' at line 13 (cost=6.0)

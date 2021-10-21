@@ -1,0 +1,9 @@
+  * Change '$out := StrAppend($out, "-1", "
+")' to '$out := StrAppend($out, "-1")' at line 5 (cost=1.0)
+  * Change 'e := e' to 'e := Add(c, FloorDiv(size, 2))' inside the else-branch starting at line 7 (cost=5.0)
+  * Delete 'd := Add(abs(Sub(a, b)), 1)' at line 7 (cost=6.0)
+  * Change '$out := StrAppend($out, e, "
+")' to '$out := StrAppend($out, Sub(e, size))' at line 10 (cost=2.0)
+  * Delete 'f := Sub(c, abs(Sub(a, b)))' at line 12 (cost=6.0)
+  * Change '$out := StrAppend($out, f, "
+")' to '$out := StrAppend($out, e)' at line 13 (cost=2.0)

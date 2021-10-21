@@ -1,0 +1,1 @@
+  * Delete 'input_val_ := input()' at line 3 (cost=1.0)

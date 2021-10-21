@@ -1,0 +1,7 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(iter#0, ind#0)' at line 2 (cost=5.0)
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := GetElement(TupleInit(int(a'), int(GetElement(split(input_val_'), 1)), int(GetElement(split(input_val_'), 2))), 1)' at line 1 (cost=14.0)
+  * Add assignment '$new_n := Mult(2, abs(Sub(a', i')))' inside the body of the 'for' loop beginning at line 2 (cost=7.0)
+  * Add assignment '$new_d := Sub(c, FloorDiv($new_n, 2))' inside the if-branch starting at line 5 (cost=5.0)
+  * Add assignment '$new_d := Add(c, FloorDiv($new_n, 2))' inside the else-branch starting at line 7 (cost=5.0)
+  * Change '$out := StrAppend($out, Add(Sub(b, a), c))' to '$out := StrAppend($out, $new_d)' at line 7 (cost=5.0)

@@ -1,0 +1,6 @@
+  * Change 'x := x' to 'x := Mult(abs(Sub(w', y')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
+  * Change 'y := abs(Sub(w, y))' to 'y := y' at line 7 (cost=3.0)
+  * Add assignment '$new_y := Sub(z, abs(Sub(w, y)))' inside the else-branch starting at line 7 (cost=7.0)
+  * Add assignment '$new_x := Add(z, abs(Sub(w, y)))' inside the else-branch starting at line 7 (cost=7.0)
+  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, $new_x)' at line 9 (cost=3.0)
+  * Change '$out := StrAppend($out, Add(z, y))' to '$out := StrAppend($out, $new_y)' at line 11 (cost=3.0)

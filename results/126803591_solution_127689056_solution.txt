@@ -1,0 +1,1 @@
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := Mult(abs(Sub(t', b')), 2)' at line 3 (cost=7.0)

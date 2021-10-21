@@ -1,0 +1,8 @@
+  * Add assignment '$new_input_val := input()' around the beginning of function main (cost=2.0)
+  * Change 'input_val := input()' to 'input_val := int($new_input_val')' at line 1 (cost=2.0)
+  * Change '_ := GetElement(iter#0, ind#0)' to '_ := max(a', b')' at line 1 (cost=3.0)
+  * Add assignment '$new_tot := Mult(2, d')' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
+  * Add assignment '$new_l := min(a', b')' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
+  * Change 'input_val := input_val' to 'input_val := Sub(input_val, 1)' inside the body of the 'for' loop beginning at line 2 (cost=2.0)
+  * Add assignment '$new_ans := ite(Eq(Mod(Add(c, d), $new_tot), 0), $new_tot, Mod(Add(c, d), $new_tot))' inside the if-branch starting at line 5 (cost=14.0)
+  * Change '$out := StrAppend($out, Mult(2, d))' to '$out := StrAppend($out, $new_ans)' at line 5 (cost=3.0)

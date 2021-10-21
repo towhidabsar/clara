@@ -1,0 +1,2 @@
+  * Change 't := t' to 't := Sub(t, 1)' inside the body of the 'while' loop beginning at line 8 (cost=2.0)
+  * Add assignment '$new_inp := input_val_'' inside the body of the 'while' loop beginning at line 8 (cost=2.0)

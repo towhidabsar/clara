@@ -1,0 +1,2 @@
+  * Change '$out := StrAppend($out, Mod(Add(abs(Sub(b, a)), c), x))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=8.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(Gt(c, Div(x, 2)), Sub(c, abs(Sub(a, b))), Add(c, abs(Sub(a, b)))))' at line 7 (cost=18.0)

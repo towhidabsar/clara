@@ -1,0 +1,4 @@
+  * Change 't := t' to 't := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 't := Mult(2, n')' to 't := t' at line 7 (cost=3.0)
+  * Change 'd := d' to 'd := Mult(n', 2)' inside the body of the 'for' loop beginning at line 2 (cost=3.0)
+  * Change '$out := StrAppend($out, ite(LtE(c, FloorDiv(t, 2)), Add(c, n), Sub(c, n)))' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(d, 2)), Add(c, n), Sub(c, n)))' at line 20 (cost=1.0)

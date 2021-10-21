@@ -1,0 +1,2 @@
+  * Change 'z := Mult(Sub(y', $new_a'), 2)' to 'z := GetElement(iter#0, ind#0)' at line 7 (cost=5.0)
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := Mult(Sub(y', $new_a'), 2)' at line 2 (cost=5.0)

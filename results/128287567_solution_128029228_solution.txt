@@ -1,0 +1,2 @@
+  * Change 'c := GetElement(list(map(int, split(input_val_'))), 2)' to 'c := Mult(i', 2)' at line 3 (cost=6.0)
+  * Change 'i := Mult(d', 2)' to 'i := abs(Sub(a', b'))' at line 13 (cost=4.0)

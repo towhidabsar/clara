@@ -1,0 +1,6 @@
+  * Change 'z := GetElement(map(int, split(input_val_')), 2)' to 'z := GetElement(map(int, split(input_val_')), 0)' at line 3 (cost=1.0)
+  * Add assignment '$new_c := GetElement(map(int, split(input_val_')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Add assignment '$new_b := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Change 'w := GetElement(map(int, split(input_val_')), 0)' to 'w := Lt(Mult(abs(Sub(z', $new_b')), 2), $new_c')' at line 3 (cost=9.0)
+  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Add($new_c, abs(Sub(z, $new_b))))' at line 9 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(z, y))' to '$out := StrAppend($out, Sub($new_c, abs(Sub(z, $new_b))))' at line 11 (cost=5.0)

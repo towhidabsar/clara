@@ -1,0 +1,5 @@
+  * Change 'z := GetElement(map(int, split(input_val_')), 2)' to 'z := GetElement(map(int, split(input_val_')), 0)' at line 3 (cost=1.0)
+  * Change 'w := GetElement(map(int, split(input_val_')), 0)' to 'w := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := Mult(2, abs(Sub(z', y')))' at line 2 (cost=6.0)
+  * Change 'x := x' to 'x := Sub(x, 1)' after the if-statement beginning at line 4 (cost=2.0)
+  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Sub(w, int(Div(i, 2))))' at line 9 (cost=5.0)

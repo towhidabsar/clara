@@ -1,0 +1,4 @@
+  * Add assignment '$new_good := 0' inside the body of the 'for' loop beginning at line 3 (cost=2.0)
+  * Change 't := t' to 't := max(a', b', c')' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Change 'x := ite(Or(Eq(Add(c', abs(Sub(b', a'))), a'), Eq(Add(c', abs(Sub(b', a'))), b')), USub(1), ite(Or(Eq(Sub(c', abs(Sub(b', a'))), a'), And(Eq(Sub(c', abs(Sub(b', a'))), b'), Gt(Sub(c', abs(Sub(b', a'))), 0))), USub(1), Sub(c', Add(Add(a', b'), Sub(a', b')))))' to 'x := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=56.0)
+  * Change '$out := StrAppend($out, x)' to '$out := StrAppend($out, FuncCall(func, x, t, c))' at line 16 (cost=4.0)

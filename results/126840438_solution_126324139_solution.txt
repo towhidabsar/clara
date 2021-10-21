@@ -1,0 +1,2 @@
+  * Change '$out := StrAppend($out, max_value)' to '$out := StrAppend($out, USub(1))' at line 7 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(max_value, 2)), Add(c, diff), Sub(c, diff)))' at line 9 (cost=12.0)

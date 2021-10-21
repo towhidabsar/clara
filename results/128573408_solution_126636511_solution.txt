@@ -1,0 +1,2 @@
+  * Change '$out := StrAppend($out, Sub(c, dia))' to '$out := StrAppend($out, Add(c, dia))' at line 25 (cost=1.0)
+  * Change '$out := StrAppend($out, Add(c, dia))' to '$out := StrAppend($out, Sub(c, dia))' at line 27 (cost=1.0)

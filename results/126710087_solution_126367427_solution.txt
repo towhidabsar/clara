@@ -1,0 +1,6 @@
+  * Delete 'input_val := input()' at line 9 (cost=1.0)
+  * Change 't := int(input_val')' to 't := input()' at line 9 (cost=2.0)
+  * Change 'b := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 1)' to 'b := GetElement(split(input_val_'), 1)' inside the body of the 'for' loop beginning at line 11 (cost=6.0)
+  * Change 'c := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' to 'c := GetElement(split(input_val_'), 2)' inside the body of the 'for' loop beginning at line 11 (cost=6.0)
+  * Change 'a := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 0)' to 'a := GetElement(split(input_val_'), 0)' inside the body of the 'for' loop beginning at line 11 (cost=6.0)
+  * Change '$out := StrAppend($out, FuncCall(circle, a, b, c))' to '$out := StrAppend($out, FuncCall(f_b, int(a), int(b), int(c)))' at line 12 (cost=4.0)

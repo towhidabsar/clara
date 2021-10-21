@@ -1,0 +1,2 @@
+  * Add assignment '$new_front := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, ite(LtE(c, $new_front), Add(c, $new_front), Sub(c, $new_front)))' at line 7 (cost=9.0)

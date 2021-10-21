@@ -1,0 +1,4 @@
+  * Change 'x := x' to 'x := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'n := n' to 'n := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Change 'x := abs(Sub(a', b'))' to 'x := x' at line 5 (cost=4.0)
+  * Change '$out := StrAppend($out, ite(LtE(c, FloorDiv($new_num, 2)), Add(c, x), Sub(c, x)))' to '$out := StrAppend($out, ite(LtE(c, FloorDiv($new_num, 2)), Add(c, n), Sub(c, n)))' at line 20 (cost=2.0)

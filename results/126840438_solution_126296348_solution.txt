@@ -1,0 +1,4 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Add assignment '$new_dif := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=5.0)
+  * Change '$out := StrAppend($out, Mod(Add(abs(Sub(b, a)), c), x))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=8.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(x, 2)), Add(c, $new_dif), Sub(c, $new_dif)))' at line 7 (cost=12.0)

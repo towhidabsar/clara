@@ -1,0 +1,3 @@
+  * Change 'x := x' to 'x := Mult(abs(Sub(w', y')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
+  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Sub(z, int(Div(x, 2))))' at line 9 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(z, y))' to '$out := StrAppend($out, Add(z, int(Div(x, 2))))' at line 11 (cost=4.0)

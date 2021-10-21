@@ -1,0 +1,3 @@
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(map(int, split(input_val_')), 1)' at line 2 (cost=1.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=1.0)
+  * Change '$new_lkol := Mult(z', 2)' to '$new_lkol := abs(Sub(z', c'))' at line 12 (cost=3.0)

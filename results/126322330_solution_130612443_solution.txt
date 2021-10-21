@@ -1,0 +1,4 @@
+  * Change 'l := Mult(2, Sub(max(a', b'), min(a', b')))' to 'l := Lt(Mult(abs(Sub(a', b')), 2), max(a', b'))' at line 4 (cost=8.0)
+  * Add assignment '$new_u1 := Lt(Mult(abs(Sub(a', b')), 2), c')' inside the body of the 'for' loop beginning at line 3 (cost=9.0)
+  * Change '$out := StrAppend($out, Sub(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 9 (cost=5.0)
+  * Change '$out := StrAppend($out, Add(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 11 (cost=5.0)

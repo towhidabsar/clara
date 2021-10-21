@@ -1,0 +1,3 @@
+  * Change 'res := ite(Gt(Add(c', Div(max_p', 2)), max_p'), Sub(c', Div(max_p', 2)), Add(c', Div(max_p', 2)))' to 'res := FuncCall(fun, a', b', c')' at line 4 (cost=17.0)
+  * Delete 'max_p := Mult(2, abs(Sub(a', b')))' at line 3 (cost=6.0)
+  * Change '$out := StrAppend($out, ite(And(And(GtE(res, 1), LtE(a, max_p)), LtE(b, max_p)), res, USub(1)))' to '$out := StrAppend($out, res)' at line 5 (cost=14.0)

@@ -1,0 +1,2 @@
+  * Change 'n := n' to 'n := Mult(k', 2)' inside the body of the 'for' loop beginning at line 3 (cost=3.0)
+  * Change 'k := Mult(2, abs(Sub(a', b')))' to 'k := abs(Sub(a', b'))' at line 4 (cost=2.0)

@@ -1,0 +1,3 @@
+  * Change 'z := abs(Sub(b', a'))' to 'z := Mult(abs(Sub(a', b')), 2)' at line 3 (cost=4.0)
+  * Add assignment '$new_p := Add(Mod(Add(Sub(c, 1), FloorDiv(z, 2)), z), 1)' inside the else-branch starting at line 5 (cost=12.0)
+  * Change '$out := StrAppend($out, ite(Gt(c, z), Sub(c, z), Add(c, z)))' to '$out := StrAppend($out, $new_p)' at line 5 (cost=10.0)

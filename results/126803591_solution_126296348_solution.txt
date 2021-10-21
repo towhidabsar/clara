@@ -1,0 +1,3 @@
+  * Change '$out := StrAppend($out, Mod(Add(abs(Sub(b, a)), c), x))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=8.0)
+  * Add assignment '$new_p := Add(Mod(Add(Sub(c, 1), FloorDiv(x, 2)), x), 1)' inside the else-branch starting at line 7 (cost=12.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_p)' at line 7 (cost=2.0)

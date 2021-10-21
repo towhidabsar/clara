@@ -1,0 +1,2 @@
+  * Change 't := t' to 't := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(Or(Or(Gt(a, t), Gt(b, t)), Gt(c, t)), USub(1), Add(Mod(Add(Sub(c, 1), FloorDiv(t, 2)), t), 1)))' at line 4 (cost=23.0)

@@ -1,0 +1,4 @@
+  * Change 'c := c' to 'c := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'm := abs(Sub(a', b'))' to 'm := ite(Or(Lt(a', Mult(2, b')), Gt(GetElement(arr', 2), Mult(2, Sub(a', b')))), USub(1), ite(Gt(GetElement(arr', 2), a'), Sub(Add(b', GetElement(arr', 2)), a'), ite(And(Gt(GetElement(arr', 2), b'), Lt(GetElement(arr', 2), a')), ite(Lt(GetElement(arr', 2), Add(Sub(a', b'), 1)), Add(a', Sub(GetElement(arr', 2), b')), ite(Eq(GetElement(arr', 2), Add(Sub(a', b'), 1)), 1, ite(Gt(GetElement(arr', 2), Add(Sub(a', b'), 1)), Sub(b', Sub(a', GetElement(arr', 2))), ite(Lt(GetElement(arr', 2), b'), Sub(a', Sub(b', GetElement(arr', 2))), m)))), ite(Lt(GetElement(arr', 2), b'), Sub(a', Sub(b', GetElement(arr', 2))), m))))' at line 12 (cost=113.0)
+  * Change 'c := GetElement(arr', 2)' to 'c := c' at line 11 (cost=3.0)
+  * Change '$out := StrAppend($out, FuncCall(checking, arr, m, c))' to '$out := StrAppend($out, m)' at line 13 (cost=4.0)

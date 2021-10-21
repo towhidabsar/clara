@@ -1,0 +1,5 @@
+  * Add assignment '$new_inp := input_val_'' inside the body of the 'while' loop beginning at line 3 (cost=2.0)
+  * Add assignment '$new_half := abs(Sub(a', b'))' inside the body of the 'while' loop beginning at line 3 (cost=5.0)
+  * Add assignment '$new_total := Mult($new_half', 2)' inside the body of the 'while' loop beginning at line 3 (cost=4.0)
+  * Change 't := t' to 't := Sub(t, 1)' inside the body of the 'while' loop beginning at line 3 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Mod(Add(c, $new_half), $new_total))' at line 9 (cost=5.0)

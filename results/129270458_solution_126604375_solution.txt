@@ -1,0 +1,4 @@
+  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
+  * Delete 'input_val := input()' at line 1 (cost=1.0)
+  * Delete 'input_val_ := input()' at line 3 (cost=1.0)
+  * Delete 'total_num := Mult(2, a_minus_b')' at line 8 (cost=3.0)

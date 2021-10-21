@@ -1,0 +1,5 @@
+  * Delete 'a := GetElement(map(int, split(input_val_', " ")), 0)' at line 3 (cost=7.0)
+  * Delete 'b := GetElement(map(int, split(input_val_', " ")), 1)' at line 3 (cost=7.0)
+  * Change 'c := GetElement(map(int, split(input_val_', " ")), 2)' to 'c := list(map(int, split(input_val_')))' at line 3 (cost=3.0)
+  * Change '$out := StrAppend($out, Sub(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Add(GetElement(c, 2), FloorDiv(l, 2)))' at line 9 (cost=3.0)
+  * Change '$out := StrAppend($out, Add(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Sub(GetElement(c, 2), FloorDiv(l, 2)))' at line 11 (cost=3.0)

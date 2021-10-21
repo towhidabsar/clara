@@ -1,0 +1,2 @@
+  * Change 'a := Sub(GetElement(map(int, split(input_val_')), 0), 1)' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 5 (cost=3.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(TupleInit(min(b', GetElement(map(int, split(input_val_')), 1)), max(b', GetElement(map(int, split(input_val_')), 1))), 1)' at line 4 (cost=14.0)

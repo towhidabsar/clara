@@ -1,0 +1,2 @@
+  * Change 'n := Mult(2, diff')' to 'n := GetElement(map(int, split(input_val_')), 2)' at line 5 (cost=6.0)
+  * Change 'c := GetElement(list(map(int, split(input_val_'))), 2)' to 'c := abs(Sub(a', b'))' at line 3 (cost=7.0)

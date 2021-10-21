@@ -1,0 +1,1 @@
+  * Change 'd := d' to 'd := Sub(max(a', b'), min(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=7.0)

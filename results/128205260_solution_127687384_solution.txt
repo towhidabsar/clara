@@ -1,0 +1,3 @@
+  * Change 'htotal := abs(Sub(a', b'))' to 'htotal := max(a', b', c')' at line 4 (cost=3.0)
+  * Change 't := t' to 't := 0' inside the body of the 'for' loop beginning at line 3 (cost=1.0)
+  * Change '$out := StrAppend($out, Mod(Add(c, htotal), total))' to '$out := StrAppend($out, FuncCall(func, total, htotal, c))' at line 6 (cost=5.0)

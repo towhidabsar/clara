@@ -1,0 +1,4 @@
+  * Delete 'input_val := input()' at line 1 (cost=1.0)
+  * Change 'p := int(input_val')' to 'p := input()' at line 1 (cost=2.0)
+  * Change 'd := abs(Sub(a', b'))' to 'd := Mult(abs(Sub(a', b')), 2)' at line 4 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, ite(Or(Or(Gt(a, d), Gt(b, d)), Gt(c, d)), USub(1), Add(Mod(Add(Sub(c, 1), FloorDiv(d, 2)), d), 1)))' at line 5 (cost=22.0)

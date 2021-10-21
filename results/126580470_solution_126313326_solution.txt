@@ -1,0 +1,1 @@
+  * Add assignment '$new_t := int(input_val_')' around the beginning of function 'main' (cost=3.0)

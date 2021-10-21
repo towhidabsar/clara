@@ -1,0 +1,5 @@
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(sorted(ListInit(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 3 (cost=10.0)
+  * Change 'd := d' to 'd := Mult(Sub(b', a'), 2)' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Change 'd := abs(Sub(a, b))' to 'd := d' at line 7 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, Sub(c, FloorDiv(d, 2)))' at line 9 (cost=3.0)
+  * Change '$out := StrAppend($out, abs(Sub(c, d)))' to '$out := StrAppend($out, Add(c, FloorDiv(d, 2)))' at line 11 (cost=4.0)

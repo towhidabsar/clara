@@ -1,0 +1,2 @@
+  * Change 'n := Mult(diff', 2)' to 'n := GetElement(iter#0, ind#0)' at line 5 (cost=3.0)
+  * Change '_ := GetElement(iter#0, ind#0)' to '_ := Mult(c', 2)' at line 2 (cost=3.0)

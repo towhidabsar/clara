@@ -1,0 +1,6 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := Mult(2, abs(Sub(a', b')))' at line 1 (cost=6.0)
+  * Add assignment '$new_d1 := GetElement(TupleInit(min(GetElement(TupleInit(Add(c, FloorDiv(i, 2)), Sub(c, FloorDiv(i, 2))), 0), GetElement(TupleInit(Add(c, FloorDiv(i, 2)), Sub(c, FloorDiv(i, 2))), 1)), max(GetElement(TupleInit(Add(c, FloorDiv(i, 2)), Sub(c, FloorDiv(i, 2))), 0), GetElement(TupleInit(Add(c, FloorDiv(i, 2)), Sub(c, FloorDiv(i, 2))), 1))), 0)' inside the if-branch starting at line 4 (cost=58.0)
+  * Add assignment '$new_d2 := GetElement(TupleInit(min($new_d1', GetElement(TupleInit(Add(c, FloorDiv(i, 2)), Sub(c, FloorDiv(i, 2))), 1)), max($new_d1', GetElement(TupleInit(Add(c, FloorDiv(i, 2)), Sub(c, FloorDiv(i, 2))), 1))), 1)' inside the if-branch starting at line 4 (cost=34.0)
+  * Change '$out := StrAppend($out, Add(Sub(b, a), c))' to '$out := StrAppend($out, $new_d2)' at line 7 (cost=5.0)
+  * Add assignment '$new_t := Sub($new_t, 1)' after the if-statement beginning at line 3 (cost=3.0)

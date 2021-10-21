@@ -1,0 +1,2 @@
+  * Change 'cases := cases' to 'cases := abs(Sub(b', a'))' inside the body of the 'for' loop beginning at line 15 (cost=4.0)
+  * Change '$out := StrAppend($out, FuncCall(circlenator, a, b, c))' to '$out := StrAppend($out, ite(Or(Lt(cases, min(a, b)), Gt(c, Mult(cases, 2))), USub(1), ite(Gt(c, cases), Sub(c, cases), Add(c, cases))))' at line 16 (cost=21.0)

@@ -1,0 +1,2 @@
+  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(sorted(ListInit(a', GetElement(map(int, split(input_val_')), 1))), 1)' at line 3 (cost=6.0)

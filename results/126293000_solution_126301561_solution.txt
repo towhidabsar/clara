@@ -1,0 +1,2 @@
+  * Change 't := t' to 't := FuncCall(fun, a', b', c')' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, t)' at line 4 (cost=2.0)

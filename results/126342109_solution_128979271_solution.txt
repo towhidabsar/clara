@@ -1,0 +1,8 @@
+  * Add assignment '$new_b := GetElement(split(input_val_'), 1)' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Change 'a := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 0)' to 'a := GetElement(split(input_val_'), 0)' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
+  * Add assignment '$new_f := max(int(a'), int($new_b'))' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
+  * Change 'r := abs(Sub(a', b'))' to 'r := Mult(Sub($new_f', b'), 2)' at line 5 (cost=3.0)
+  * Change 'c := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' to 'c := GetElement(split(input_val_'), 2)' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
+  * Add assignment '$new_k := Sub($new_f', b')' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(c, r))' to '$out := StrAppend($out, Add($new_k, int(c)))' at line 9 (cost=3.0)
+  * Change '$out := StrAppend($out, Sub(c, r))' to '$out := StrAppend($out, Sub(int(c), $new_k))' at line 11 (cost=2.0)

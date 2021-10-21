@@ -1,0 +1,5 @@
+  * Change 'd := d' to 'd := GetElement(iter#0, ind#0)' inside the body of the 'for' loop beginning at line 3 (cost=3.0)
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := Lt(Mult(abs(Sub(a', b')), 2), max(a', b'))' at line 2 (cost=10.0)
+  * Add assignment '$new_u1 := Lt(Mult(abs(Sub(a', b')), 2), c')' inside the body of the 'for' loop beginning at line 3 (cost=9.0)
+  * Change 'd := abs(Sub(a, b))' to 'd := d' at line 7 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 9 (cost=4.0)

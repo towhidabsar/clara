@@ -1,0 +1,2 @@
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := abs(Sub(a', b'))' at line 11 (cost=4.0)
+  * Change 'dia := ite(GtE(a', b'), Sub(a', b'), Sub(b', a'))' to 'dia := GetElement(iter#0, ind#0)' inside the body of the 'for' loop beginning at line 12 (cost=10.0)

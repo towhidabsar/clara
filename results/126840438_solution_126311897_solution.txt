@@ -1,0 +1,7 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Add assignment '$new_dif := abs(Sub(a', c'))' inside the body of the 'for' loop beginning at line 2 (cost=5.0)
+  * Change 'cnt := 0' to 'cnt := Mult($new_dif', 2)' at line 3 (cost=3.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(map(int, split(input_val_')), 1)' at line 2 (cost=1.0)
+  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=1.0)
+  * Change '$out := StrAppend($out, Mult(abs(Sub(a, b)), 2))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=6.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(b, FloorDiv(cnt, 2)), Add(b, $new_dif), Sub(b, $new_dif)))' at line 7 (cost=12.0)

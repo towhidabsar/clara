@@ -1,0 +1,5 @@
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := Mult(2, abs(Sub(a', b')))' at line 2 (cost=6.0)
+  * Change 't := t' to 't := Sub(t, 1)' after the if-statement beginning at line 4 (cost=2.0)
+  * Delete 'd := abs(Sub(a, b))' at line 7 (cost=4.0)
+  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, Sub(c, int(Div(i, 2))))' at line 9 (cost=5.0)
+  * Change '$out := StrAppend($out, abs(Sub(c, d)))' to '$out := StrAppend($out, Add(c, int(Div(i, 2))))' at line 11 (cost=6.0)

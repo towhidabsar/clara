@@ -1,0 +1,4 @@
+  * Add assignment '$new_inp5 := int(input_val')' around the beginning of function main (cost=3.0)
+  * Add assignment '$new_inp := split(input_val_')' inside the body of the 'for' loop beginning at line 2 (cost=3.0)
+  * Add assignment '$new_R := Mult(g', 2)' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Mod(Add(c, g), $new_R))' at line 9 (cost=5.0)

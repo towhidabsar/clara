@@ -1,0 +1,3 @@
+  * Change 'c := int(GetElement(triples', 4))' to 'c := int(GetElement(split(triples'), 2))' at line 6 (cost=2.0)
+  * Change 'a := int(GetElement(triples', 0))' to 'a := int(GetElement(split(triples'), 0))' at line 4 (cost=1.0)
+  * Change 'b := int(GetElement(triples', 2))' to 'b := int(GetElement(split(triples'), 1))' at line 5 (cost=2.0)

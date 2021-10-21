@@ -1,0 +1,7 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Add assignment '$new_num := Mult(Sub($new_m1', $new_m2'), 2)' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
+  * Add assignment '$new_m2 := min(a', b')' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Add assignment '$new_m1 := max(a', b')' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Add assignment '$new_x1 := Add(c, Sub($new_m1, $new_m2))' inside the else-branch starting at line 6 (cost=5.0)
+  * Add assignment '$new_x2 := Sub(c, Sub($new_m1, $new_m2))' inside the else-branch starting at line 6 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_x2)' at line 9 (cost=2.0)

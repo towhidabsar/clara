@@ -1,0 +1,5 @@
+  * Change 's := s' to 's := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := abs(Sub(a', b'))' at line 2 (cost=6.0)
+  * Change 's := abs(Sub(a', b'))' to 's := s' at line 3 (cost=4.0)
+  * Change 'get := Mult(2, Add(s', 1))' to 'get := Mult(c', 2)' at line 4 (cost=4.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(mid, c))' at line 9 (cost=3.0)

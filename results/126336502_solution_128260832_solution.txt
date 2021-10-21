@@ -1,0 +1,7 @@
+  * Change 'a := list(map(int, split(input_val_')))' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 4 (cost=2.0)
+  * Change 'n := n' to 'n := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 4 (cost=6.0)
+  * Add assignment '$new_m := Mult(d', 2)' inside the body of the 'for' loop beginning at line 4 (cost=4.0)
+  * Add assignment '$new_a := GetElement(map(int, split(input_val_')), 0)' inside the body of the 'for' loop beginning at line 4 (cost=7.0)
+  * Change '$out := StrAppend($out, Sub(GetElement(a, 2), d))' to '$out := StrAppend($out, USub(1))' at line 9 (cost=5.0)
+  * Change '$out := StrAppend($out, Add(GetElement(a, 2), d))' to '$out := StrAppend($out, Add(a, d))' at line 11 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(a, d))' at line 13 (cost=3.0)

@@ -1,0 +1,6 @@
+  * Change 'e := Mult(r', 2)' to 'e := ite(Gt(c', ite(Gt(b', a'), b', a')), c', ite(Gt(b', a'), b', a'))' at line 7 (cost=16.0)
+  * Change 'b := GetElement(split(inp'), 1)' to 'b := GetElement(ListComp(1, int(BoundVar(0)), split(inp'), True), 1)' at line 5 (cost=6.0)
+  * Change 'c := GetElement(split(inp'), 2)' to 'c := GetElement(ListComp(1, int(BoundVar(0)), split(inp'), True), 2)' at line 5 (cost=6.0)
+  * Change 'a := GetElement(split(inp'), 0)' to 'a := GetElement(ListComp(1, int(BoundVar(0)), split(inp'), True), 0)' at line 5 (cost=6.0)
+  * Delete 'input_val_ := input()' at line 4 (cost=1.0)
+  * Change '$out := StrAppend($out, Mod(Add(int(c), int(r)), e))' to '$out := StrAppend($out, Sub(c, r))' at line 12 (cost=5.0)

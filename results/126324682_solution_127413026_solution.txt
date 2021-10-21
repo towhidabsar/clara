@@ -1,0 +1,5 @@
+  * Change 'd := abs(Sub(a', b'))' to 'd := ite(Or(Lt(b', Mult(2, a')), Gt(GetElement(c', 2), Mult(2, Sub(b', a')))), USub(1), ite(Gt(GetElement(c', 2), b'), Sub(Add(a', GetElement(c', 2)), b'), ite(And(Gt(GetElement(c', 2), a'), Lt(GetElement(c', 2), b')), ite(Lt(GetElement(c', 2), Add(Sub(b', a'), 1)), Add(b', Sub(GetElement(c', 2), a')), ite(Eq(GetElement(c', 2), Add(Sub(b', a'), 1)), 1, ite(Gt(GetElement(c', 2), Add(Sub(b', a'), 1)), Sub(a', Sub(b', GetElement(c', 2))), ite(Lt(GetElement(c', 2), a'), Sub(b', Sub(a', GetElement(c', 2))), d)))), ite(Lt(GetElement(c', 2), a'), Sub(b', Sub(a', GetElement(c', 2))), d))))' at line 4 (cost=113.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := min(GetElement(c', 0), GetElement(c', 1))' at line 3 (cost=8.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := list(map(int, split(input_val_')))' at line 3 (cost=2.0)
+  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := max(GetElement(c', 0), GetElement(c', 1))' at line 3 (cost=7.0)
+  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, d)' at line 5 (cost=2.0)

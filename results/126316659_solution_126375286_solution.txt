@@ -1,0 +1,2 @@
+  * Change 'z := abs(Sub(b', a'))' to 'z := Mult(abs(Sub(a', b')), 2)' at line 3 (cost=4.0)
+  * Change '$out := StrAppend($out, ite(Gt(c, z), Sub(c, z), Add(c, z)))' to '$out := StrAppend($out, ite(Gt(c, Div(z, 2)), Sub(c, abs(Sub(a, b))), Add(c, abs(Sub(a, b)))))' at line 5 (cost=10.0)

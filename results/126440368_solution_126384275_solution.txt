@@ -1,0 +1,6 @@
+  * Change 'n := Mult(2, dif')' to 'n := Add(Mult(2, Sub(Sub(b', a'), 1)), 2)' at line 10 (cost=7.0)
+  * Delete 'dif := FuncCall(mod, a', b')' at line 9 (cost=4.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 8 (cost=23.0)
+  * Change 't := t' to 't := Sub(t, 1)' inside the body of the 'while' loop beginning at line 8 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(c, dif))' to '$out := StrAppend($out, Sub(c, Sub(b, a)))' at line 15 (cost=4.0)
+  * Change '$out := StrAppend($out, Sub(c, dif))' to '$out := StrAppend($out, Add(c, Sub(b, a)))' at line 17 (cost=4.0)

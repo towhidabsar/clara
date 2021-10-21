@@ -1,0 +1,3 @@
+  * Delete 'n := int(input_val')' at line 1 (cost=2.0)
+  * Delete 'd := Add(c', abs(Sub(a', b')))' at line 4 (cost=6.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, ite(Gt(c, Div(k, 2)), Sub(c, abs(Sub(a, b))), Add(c, abs(Sub(a, b)))))' at line 9 (cost=18.0)

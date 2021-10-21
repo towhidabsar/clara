@@ -1,0 +1,4 @@
+  * Delete 'd := Sub(c, FloorDiv(n, 2))' at line 9 (cost=5.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, Add(c, int(Div(n, 2))))' at line 10 (cost=6.0)
+  * Delete 'd := Add(c, FloorDiv(n, 2))' at line 12 (cost=5.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, Sub(c, int(Div(n, 2))))' at line 13 (cost=6.0)

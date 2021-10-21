@@ -1,0 +1,5 @@
+  * Add assignment '$new_l := Sub(max(a', b'), min(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=8.0)
+  * Add assignment '$new_end := Mult($new_l', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Add assignment '$new_d := ite(Gt(Add(c', $new_l'), $new_end'), Sub(Add(c', $new_l'), $new_end'), Add(c', $new_l'))' inside the body of the 'for' loop beginning at line 3 (cost=15.0)
+  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, USub(1))' at line 7 (cost=6.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_d)' at line 9 (cost=2.0)

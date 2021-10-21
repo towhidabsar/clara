@@ -1,0 +1,2 @@
+  * Change '$out := StrAppend($out, Mult(2, d))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=3.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, d), Add(c, d), Sub(c, d)))' at line 7 (cost=10.0)

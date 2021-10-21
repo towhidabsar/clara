@@ -1,0 +1,3 @@
+  * Change 'd := Add(c', abs(Sub(a', b')))' to 'd := Mult(abs(Sub(a', b')), 2)' at line 4 (cost=3.0)
+  * Change 'n := n' to 'n := Add(Mod(Add(Sub(c, 1), FloorDiv(d, 2)), d), 1)' inside the else-branch starting at line 8 (cost=11.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, n)' at line 8 (cost=1.0)

@@ -1,0 +1,8 @@
+  * Change 'i := i' to 'i := input()' around the beginning of function main (cost=1.0)
+  * Delete 'input_val := input()' at line 1 (cost=1.0)
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := i' at line 1 (cost=3.0)
+  * Delete 's := abs(Sub(a', b'))' at line 3 (cost=4.0)
+  * Change 'mid := FloorDiv(get', 2)' to 'mid := abs(Sub(a', get'))' at line 5 (cost=4.0)
+  * Change 'get := Mult(2, Add(s', 1))' to 'get := GetElement(map(int, split(input_val_')), 1)' at line 4 (cost=6.0)
+  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(iter#0, ind#0)' at line 2 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, mid))' at line 9 (cost=3.0)

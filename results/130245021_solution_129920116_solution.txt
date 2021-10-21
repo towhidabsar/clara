@@ -1,0 +1,7 @@
+  * Delete 'input_val := input()' at line 1 (cost=1.0)
+  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
+  * Delete 'dis := abs(Sub(a, b))' at line 9 (cost=4.0)
+  * Delete 'k := Add(c, dis')' at line 10 (cost=3.0)
+  * Change '$out := StrAppend($out, k)' to '$out := StrAppend($out, Sub(c, int(Div(total_ele, 2))))' at line 12 (cost=6.0)
+  * Delete 'k := Mod(k, total_ele)' at line 14 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(k, 1))' to '$out := StrAppend($out, Add(c, int(Div(total_ele, 2))))' at line 15 (cost=5.0)

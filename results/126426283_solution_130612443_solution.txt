@@ -1,0 +1,2 @@
+  * Delete '_ := GetElement(iter#0, ind#0)' at line 2 (cost=3.0)
+  * Change 'n := n' to 'n := Sub(n, 1)' after the if-statement beginning at line 5 (cost=2.0)

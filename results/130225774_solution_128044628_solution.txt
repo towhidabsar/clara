@@ -1,0 +1,4 @@
+  * Delete 'd := Add(c', n')' at line 8 (cost=3.0)
+  * Delete 't := Mult(2, n')' at line 7 (cost=3.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, USub(1))' at line 10 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, n), Add(c, n), Sub(c, n)))' at line 12 (cost=10.0)

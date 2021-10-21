@@ -1,0 +1,5 @@
+  * Delete 't := int(input_val')' at line 1 (cost=2.0)
+  * Change 'i := GetElement(iter#0, ind#0)' to 'i := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' at line 2 (cost=9.0)
+  * Change 'd := Mult(2, abs(Sub(a', b')))' to 'd := GetElement(iter#0, ind#0)' at line 4 (cost=6.0)
+  * Change '$out := StrAppend($out, c)' to '$out := StrAppend($out, USub(1))' at line 9 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(Gt(i, Div(c, 2)), Sub(i, abs(Sub(a, b))), Add(i, abs(Sub(a, b)))))' at line 11 (cost=18.0)

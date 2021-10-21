@@ -1,0 +1,5 @@
+  * Change 'c := GetElement(l', 2)' to 'c := Mult(a', 2)' at line 5 (cost=2.0)
+  * Change 'a := GetElement(l', 0)' to 'a := Sub(b', num')' at line 3 (cost=3.0)
+  * Change 'num := abs(Mult(Sub(b', a'), 2))' to 'num := GetElement(sorted(TupleInit(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 6 (cost=16.0)
+  * Change 'l := list(map(int, split(input_val_')))' to 'l := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Sub(l, a))' at line 11 (cost=5.0)

@@ -1,0 +1,2 @@
+  * Change 't := t' to 't := abs(Sub(b', a'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(Or(Lt(t, min(a, b)), Gt(c, Mult(t, 2))), USub(1), ite(Gt(c, t), Sub(c, t), Add(c, t))))' at line 4 (cost=22.0)

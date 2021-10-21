@@ -1,0 +1,6 @@
+  * Change '_ := _' to '_ := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'g := abs(Sub(a', b'))' to 'g := Add(Mult(2, Sub(Sub(b', a'), 1)), 2)' at line 3 (cost=7.0)
+  * Change '_ := GetElement(iter#0, ind#0)' to '_ := Sub(_, 1)' at line 1 (cost=3.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 2 (cost=23.0)
+  * Change '$out := StrAppend($out, Add(g, c))' to '$out := StrAppend($out, Sub(c, Sub(b, a)))' at line 7 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, Sub(b, a)))' at line 9 (cost=5.0)

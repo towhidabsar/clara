@@ -1,0 +1,3 @@
+  * Change 'd := Add(c', diff')' to 'd := split(input_val_')' at line 10 (cost=3.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, Add(c, diff))' at line 15 (cost=3.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Mod(Add(c, diff), max))' at line 17 (cost=5.0)

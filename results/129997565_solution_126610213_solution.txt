@@ -1,0 +1,2 @@
+  * Add assignment '$new_error := USub(1)' around the beginning of function main (cost=3.0)
+  * Change 'd := d' to 'd := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)

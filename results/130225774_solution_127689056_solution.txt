@@ -1,0 +1,5 @@
+  * Delete 't := int(input_val')' at line 1 (cost=2.0)
+  * Change 'htotal := htotal' to 'htotal := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Delete 'total := Mult(abs(Sub(a, b)), 2)' at line 6 (cost=6.0)
+  * Change '$out := StrAppend($out, Add(Mod(Sub(Add(c, htotal), 1), total), 1))' to '$out := StrAppend($out, USub(1))' at line 7 (cost=8.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, htotal), Add(c, htotal), Sub(c, htotal)))' at line 9 (cost=10.0)

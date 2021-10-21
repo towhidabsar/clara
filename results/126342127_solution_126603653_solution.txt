@@ -1,0 +1,5 @@
+  * Change 'z := GetElement(map(int, split(input_val_')), 1)' to 'z := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=1.0)
+  * Change 'w := GetElement(map(int, split(input_val_')), 0)' to 'w := min($new_y', y')' at line 3 (cost=6.0)
+  * Change 'y := GetElement(map(int, split(input_val_')), 2)' to 'y := GetElement(map(int, split(input_val_')), 1)' at line 2 (cost=1.0)
+  * Change '$new_y := min(w', z')' to '$new_y := GetElement(map(int, split(input_val_')), 0)' at line 4 (cost=6.0)
+  * Change '$out := StrAppend($out, int(Add(Div(x, 2), y)))' to '$out := StrAppend($out, int(Add(Div(x, 2), z)))' at line 11 (cost=1.0)

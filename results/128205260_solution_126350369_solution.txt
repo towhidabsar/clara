@@ -1,0 +1,7 @@
+  * Add assignment '$new_ind#0 := 0' around the beginning of function main (cost=2.0)
+  * Add assignment '$new_iter#0 := range(int(input_val'))' around the beginning of function main (cost=4.0)
+  * Add assignment '$new_ind#0 := Add($new_ind#0, 1)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
+  * Change 't := t' to 't := 0' inside the body of the 'while' loop beginning at line 3 (cost=1.0)
+  * Change 's := ite(Or(Or(Gt(a', l'), Gt(b', l')), Gt(c', l')), USub(1), ite(Gt(c', l'), Sub(c', Div(l', 2)), Add(c', Div(l', 2))))' to 's := max(a', b', c')' inside the body of the 'while' loop beginning at line 3 (cost=25.0)
+  * Add assignment '$new_i := GetElement($new_iter#0, $new_ind#0)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
+  * Change '$out := StrAppend($out, int(s))' to '$out := StrAppend($out, FuncCall(func, l, s, c))' at line 12 (cost=4.0)

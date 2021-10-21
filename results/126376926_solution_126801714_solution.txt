@@ -1,0 +1,4 @@
+  * Change 'a := list(map(int, split(input_val_', " ")))' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=3.0)
+  * Add assignment '$new_n := Mult(abs(Sub(y, x)), 2)' inside the if-branch starting at line 6 (cost=7.0)
+  * Change '$out := StrAppend($out, Mult(2, Sub(y, x)))' to '$out := StrAppend($out, Add(a, FloorDiv($new_n, 2)))' at line 7 (cost=5.0)
+  * Change '$out := StrAppend($out, "-1")' to '$out := StrAppend($out, Sub(a, FloorDiv($new_n, 2)))' at line 9 (cost=5.0)

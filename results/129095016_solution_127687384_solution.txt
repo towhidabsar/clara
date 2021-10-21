@@ -1,0 +1,3 @@
+  * Delete 't := int(input_val')' at line 1 (cost=2.0)
+  * Delete 'total := Mult(abs(Sub(a', b')), 2)' at line 5 (cost=6.0)
+  * Change '$out := StrAppend($out, Mod(Add(c, htotal), total))' to '$out := StrAppend($out, ite(Or(Lt(htotal, min(a, b)), Gt(c, Mult(htotal, 2))), USub(1), ite(Gt(c, htotal), Sub(c, htotal), Add(c, htotal))))' at line 6 (cost=22.0)

@@ -1,0 +1,3 @@
+  * Change 'g := g' to 'g := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'g := abs(Sub(a', b'))' to 'g := g' at line 3 (cost=4.0)
+  * Change '$new_numRep := $new_numRep' to '$new_numRep := Sub(max(a', b'), min(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=7.0)

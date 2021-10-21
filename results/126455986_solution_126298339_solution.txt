@@ -1,0 +1,5 @@
+  * Add assignment '$new_diff := int(Div($new_total_people', 2))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Add assignment '$new_d := ite(LtE(c', $new_diff'), Add(c', $new_diff'), ite(Gt(c', $new_diff'), Sub(c', $new_diff'), 0))' inside the body of the 'for' loop beginning at line 3 (cost=16.0)
+  * Add assignment '$new_total_people := Mult(2, abs(Sub(a', b')))' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Change '$out := StrAppend($out, "-1")' to '$out := StrAppend($out, $new_d)' at line 5 (cost=1.0)
+  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, USub(1))' at line 7 (cost=6.0)

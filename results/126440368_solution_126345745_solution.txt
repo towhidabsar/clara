@@ -1,0 +1,7 @@
+  * Change 'diff := Sub(b', a')' to 'diff := Add(Mult(2, Sub(Sub(b', a'), 1)), 2)' at line 4 (cost=6.0)
+  * Delete '_ := GetElement(iter#0, ind#0)' at line 2 (cost=3.0)
+  * Delete 'n := Mult(diff', 2)' at line 5 (cost=3.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 3 (cost=23.0)
+  * Change 'tc := tc' to 'tc := Sub(tc, 1)' inside the body of the 'for' loop beginning at line 3 (cost=2.0)
+  * Change '$out := StrAppend($out, Add(c, diff))' to '$out := StrAppend($out, Sub(c, Sub(b, a)))' at line 10 (cost=4.0)
+  * Change '$out := StrAppend($out, Sub(c, diff))' to '$out := StrAppend($out, Add(c, Sub(b, a)))' at line 12 (cost=4.0)

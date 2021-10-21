@@ -1,0 +1,6 @@
+  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
+  * Add assignment '$new_h := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=5.0)
+  * Change 'cnt := 0' to 'cnt := Mult(2, $new_h')' at line 3 (cost=3.0)
+  * Change '$out := StrAppend($out, Mult(abs(Sub(a, b)), 2))' to '$out := StrAppend($out, "-1")' at line 5 (cost=6.0)
+  * Add assignment '$new_d := ite(Eq(Mod(Add(c, $new_h), cnt), 0), cnt, Mod(Add(c, $new_h), cnt))' inside the else-branch starting at line 7 (cost=14.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_d)' at line 7 (cost=2.0)

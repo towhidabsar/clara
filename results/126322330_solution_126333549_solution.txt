@@ -1,0 +1,5 @@
+  * Add assignment '$new_cnt := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'g := abs(Sub(a', b'))' to 'g := Lt(Mult(abs(Sub(a', b')), 2), c')' at line 3 (cost=4.0)
+  * Add assignment '$new_u2 := Lt(Mult(abs(Sub(a', b')), 2), max(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=11.0)
+  * Change '$out := StrAppend($out, Add(g, c))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 7 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 9 (cost=6.0)

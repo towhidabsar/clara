@@ -1,0 +1,2 @@
+  * Change 'num3 := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' to 'num3 := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 1)' inside the body of the 'while' loop beginning at line 3 (cost=1.0)
+  * Change 'total := ite(Gt(num3', ite(Gt(num2', num1'), num2', num1')), num3', ite(Gt(num2', num1'), num2', num1'))' to 'total := abs(Sub(num1', num3'))' inside the body of the 'while' loop beginning at line 3 (cost=15.0)

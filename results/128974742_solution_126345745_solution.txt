@@ -1,0 +1,3 @@
+  * Change 'n := n' to 'n := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'n := Mult(diff', 2)' to 'n := Sub(n, 1)' at line 5 (cost=3.0)
+  * Change 'tc := Sub(tc, 1)' to 'tc := Mult(diff', 2)' at line 3 (cost=3.0)

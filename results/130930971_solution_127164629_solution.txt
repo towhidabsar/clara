@@ -1,0 +1,3 @@
+  * Add assignment '$new_arr := ListInit()' around the beginning of function main (cost=2.0)
+  * Add assignment '$new_input_val_ := input()' inside the body of the 'for' loop beginning at line 18 (cost=2.0)
+  * Add assignment '$new_arr := append($new_arr, ListComp(1, int(BoundVar(0)), split($new_input_val_'), True))' inside the body of the 'for' loop beginning at line 18 (cost=10.0)

@@ -1,0 +1,3 @@
+  * Delete 'n := Mult(2, abs(Sub(a', b')))' at line 3 (cost=6.0)
+  * Change 'res := ite(And(And(In(a', range(1, n')), In(b', range(1, n'))), In(c', range(1, n'))), Add(c', FloorDiv(n', 2)), USub(1))' to 'res := abs(Sub(b', a'))' inside the body of the 'for' loop beginning at line 2 (cost=24.0)
+  * Change '$out := StrAppend($out, res)' to '$out := StrAppend($out, ite(Or(Lt(res, min(a, b)), Gt(c, Mult(res, 2))), USub(1), ite(Gt(c, res), Sub(c, res), Add(c, res))))' at line 9 (cost=23.0)

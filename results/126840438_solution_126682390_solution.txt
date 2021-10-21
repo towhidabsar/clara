@@ -1,0 +1,3 @@
+  * Change 'ans := ans' to 'ans := int(input_val')' around the beginning of function main (cost=2.0)
+  * Change 'ans := ite(LtE(Sub(c, ch), 0), AssAdd(Sub(c, ch), cir), Sub(c, ch))' to 'ans := ans' inside the else-branch starting at line 8 (cost=14.0)
+  * Change '$out := StrAppend($out, ans)' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(cir, 2)), Add(c, ch), Sub(c, ch)))' at line 11 (cost=12.0)

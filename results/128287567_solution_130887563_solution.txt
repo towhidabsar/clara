@@ -1,0 +1,7 @@
+  * Change 'i := 0' to 'i := int(input_val')' at line 2 (cost=2.0)
+  * Change 'i := AssAdd(i, 1)' to 'i := Sub(i, 1)' at line 4 (cost=1.0)
+  * Delete 'd := Add(c', Sub(a', b'))' at line 6 (cost=5.0)
+  * Change 'x := x' to 'x := input_val_'' inside the body of the 'while' loop beginning at line 4 (cost=1.0)
+  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, USub(1))' at line 10 (cost=2.0)
+  * Change '$out := StrAppend($out, e)' to '$out := StrAppend($out, Add(c, e))' at line 12 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Mod(Add(c, e), n))' at line 14 (cost=5.0)

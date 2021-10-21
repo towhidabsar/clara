@@ -1,0 +1,8 @@
+  * Add assignment '$new_cnt := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'diff := abs(Sub(GetElement(b', 0), GetElement(b', 1)))' to 'diff := Lt(Mult(abs(Sub(val', b')), 2), $new_c')' at line 4 (cost=9.0)
+  * Change 'b := ListComp(1, int(BoundVar(0)), split(input_val_'), True)' to 'b := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 2 (cost=7.0)
+  * Change 'val := abs(Sub(GetElement(b', 2), diff'))' to 'val := GetElement(map(int, split(input_val_')), 0)' at line 6 (cost=7.0)
+  * Change 'max := Mult(diff', 2)' to 'max := Lt(Mult(abs(Sub(val', b')), 2), max(val', b'))' at line 5 (cost=8.0)
+  * Add assignment '$new_c := GetElement(map(int, split(input_val_')), 2)' inside the body of the 'for' loop beginning at line 2 (cost=7.0)
+  * Change '$out := StrAppend($out, val)' to '$out := StrAppend($out, Add($new_c, abs(Sub(val, b))))' at line 8 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub($new_c, abs(Sub(val, b))))' at line 9 (cost=6.0)

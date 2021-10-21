@@ -1,0 +1,3 @@
+  * Add assignment '$new_m := Mult(2, abs(Sub(b', a')))' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Change 't := t' to 't := ite(Or(Or(Gt(b', $new_m'), Gt(a', $new_m')), Gt(c', $new_m')), USub(1), ite(Gt(Add(c', Div($new_m', 2)), $new_m'), Sub(c', Div($new_m', 2)), Add(c', Div($new_m', 2))))' inside the body of the 'for' loop beginning at line 3 (cost=32.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, int(t))' at line 4 (cost=2.0)

@@ -1,0 +1,5 @@
+  * Add assignment '$new_inp5 := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'x := Mult(FloorDiv(y', 2), 2)' to 'x := Mult(y', 2)' at line 4 (cost=2.0)
+  * Add assignment '$new_inp := split(input_val_')' inside the body of the 'for' loop beginning at line 2 (cost=3.0)
+  * Change '$out := StrAppend($out, Sub(c, y))' to '$out := StrAppend($out, "-1")' at line 6 (cost=3.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Mod(Add(c, y), x))' at line 10 (cost=5.0)

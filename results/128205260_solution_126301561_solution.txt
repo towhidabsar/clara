@@ -1,0 +1,4 @@
+  * Change 't := t' to 't := 0' inside the body of the 'for' loop beginning at line 3 (cost=1.0)
+  * Add assignment '$new_maxi := max(a', b', c')' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Add assignment '$new_clock := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, FuncCall(func, $new_clock, $new_maxi, c))' at line 4 (cost=5.0)

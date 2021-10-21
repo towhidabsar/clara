@@ -1,0 +1,4 @@
+  * Delete 't := int(input_val')' at line 1 (cost=2.0)
+  * Change 'dia := ite(GtE(a', b'), Sub(a', b'), Sub(b', a'))' to 'dia := Mult(2, abs(Sub(b', a')))' inside the body of the 'for' loop beginning at line 3 (cost=8.0)
+  * Change '$out := StrAppend($out, Sub(c, dia))' to '$out := StrAppend($out, int(Sub(c, Div(dia, 2))))' at line 16 (cost=3.0)
+  * Change '$out := StrAppend($out, Add(c, dia))' to '$out := StrAppend($out, int(Add(c, Div(dia, 2))))' at line 18 (cost=3.0)

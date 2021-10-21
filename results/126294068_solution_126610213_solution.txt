@@ -1,0 +1,3 @@
+  * Change 'd := d' to 'd := Sub(max(a', b'), min(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, Sub(c, d))' at line 9 (cost=1.0)
+  * Change '$out := StrAppend($out, abs(Sub(c, d)))' to '$out := StrAppend($out, Add(c, d))' at line 11 (cost=2.0)

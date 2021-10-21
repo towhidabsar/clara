@@ -1,0 +1,5 @@
+  * Add assignment '$new_res := ite(Gt(Add(c', cnt'), $new_lkol'), Mod(Add(c', cnt'), $new_lkol'), Add(c', cnt'))' inside the body of the 'for' loop beginning at line 2 (cost=15.0)
+  * Add assignment '$new_lkol := Mult(cnt', 2)' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
+  * Change 'cnt := 0' to 'cnt := abs(Sub(a', b'))' at line 3 (cost=4.0)
+  * Change '$out := StrAppend($out, Mult(abs(Sub(a, b)), 2))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=6.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_res)' at line 7 (cost=2.0)

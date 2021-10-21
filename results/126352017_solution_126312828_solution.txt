@@ -1,0 +1,4 @@
+  * Change 'l := list(map(int, split(input_val_')))' to 'l := input()' at line 2 (cost=5.0)
+  * Change 'input_val_ := input()' to 'input_val_ := input_val_' at line 2 (cost=1.0)
+  * Add assignment '$new_y := Sub(c, abs(Sub(a, b)))' inside the else-branch starting at line 10 (cost=7.0)
+  * Change 'input_val_ := input_val_' to 'input_val_ := Add(c, abs(Sub(a, b)))' inside the else-branch starting at line 10 (cost=6.0)

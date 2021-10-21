@@ -1,0 +1,4 @@
+  * Change 'number := Add(c', abs(Sub(a', b')))' to 'number := abs(Sub(a', b'))' at line 4 (cost=2.0)
+  * Delete 'vert := Mult(abs(Sub(a', b')), 2)' at line 3 (cost=6.0)
+  * Change '$out := StrAppend($out, number)' to '$out := StrAppend($out, USub(1))' at line 6 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, number), Add(c, number), Sub(c, number)))' at line 8 (cost=10.0)

@@ -1,0 +1,8 @@
+  * Add assignment '$new_iter#0 := range(int(input_val'))' around the beginning of function main (cost=4.0)
+  * Add assignment '$new_ind#0 := 0' around the beginning of function main (cost=2.0)
+  * Change 'num3 := GetElement(split(input_val_'), 2)' to 'num3 := GetElement(map(int, split(input_val_')), 0)' at line 4 (cost=3.0)
+  * Change 'q := Sub(q, 1)' to 'q := min(num3', difference')' at line 3 (cost=3.0)
+  * Change 'num1 := GetElement(split(input_val_'), 0)' to 'num1 := GetElement(map(int, split(input_val_')), 2)' at line 4 (cost=3.0)
+  * Add assignment '$new_ind#0 := Add($new_ind#0, 1)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
+  * Change 'difference := abs(Sub(int(num2'), int(num1')))' to 'difference := GetElement(map(int, split(input_val_')), 1)' at line 5 (cost=7.0)
+  * Change 'num2 := GetElement(split(input_val_'), 1)' to 'num2 := GetElement($new_iter#0, $new_ind#0)' at line 4 (cost=3.0)

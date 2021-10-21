@@ -1,0 +1,4 @@
+  * Change 't := t' to 't := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Add assignment '$new_res := ite(Gt(Add(c', t'), n'), Mod(Add(c', t'), n'), Add(c', t'))' inside the body of the 'for' loop beginning at line 3 (cost=15.0)
+  * Change '$out := StrAppend($out, Add(c, FloorDiv(n, 2)))' to '$out := StrAppend($out, USub(1))' at line 6 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_res)' at line 8 (cost=2.0)

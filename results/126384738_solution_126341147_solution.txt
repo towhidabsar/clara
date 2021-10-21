@@ -1,0 +1,7 @@
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := list(map(int, split(input_val_')))' at line 7 (cost=2.0)
+  * Delete 'a := GetElement(map(int, split(input_val_')), 0)' at line 7 (cost=6.0)
+  * Delete 'b := GetElement(map(int, split(input_val_')), 1)' at line 7 (cost=6.0)
+  * Delete 'diff := abs(Sub(a', b'))' at line 8 (cost=4.0)
+  * Delete 'max := Mult(2, diff')' at line 9 (cost=3.0)
+  * Change 'd := Add(c', diff')' to 'd := Mult(abs(Sub(GetElement(c', 0), GetElement(c', 1))), 2)' at line 10 (cost=9.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(GetElement(c, 2), FloorDiv(d, 2)))' at line 17 (cost=7.0)

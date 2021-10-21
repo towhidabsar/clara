@@ -1,0 +1,7 @@
+  * Add assignment '$new_test := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := c' at line 2 (cost=6.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := list(map(int, split(input_val_')))' at line 2 (cost=2.0)
+  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := abs(Sub(GetElement(a', 0), GetElement(a', 1)))' at line 2 (cost=8.0)
+  * Change 'c := c' to 'c := Add(GetElement(a, 2), b)' inside the else-branch starting at line 6 (cost=5.0)
+  * Change 'k := k' to 'k := Sub(GetElement(a, 2), b)' inside the else-branch starting at line 6 (cost=5.0)
+  * Change '$out := StrAppend($out, int(Add(c, k)))' to '$out := StrAppend($out, k)' at line 9 (cost=3.0)

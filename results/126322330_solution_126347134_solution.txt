@@ -1,0 +1,8 @@
+  * Add assignment '$new_iter#0 := range(t')' around the beginning of function main (cost=3.0)
+  * Add assignment '$new_ind#0 := 0' around the beginning of function main (cost=2.0)
+  * Add assignment '$new_u2 := Lt(Mult(abs(Sub(a', b')), 2), max(a', b'))' inside the body of the 'while' loop beginning at line 3 (cost=11.0)
+  * Add assignment '$new_item := GetElement($new_iter#0, $new_ind#0)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
+  * Add assignment '$new_ind#0 := Add($new_ind#0, 1)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
+  * Add assignment '$new_u1 := Lt(Mult(abs(Sub(a', b')), 2), c')' inside the body of the 'while' loop beginning at line 3 (cost=9.0)
+  * Change 't := Sub(t, 1)' to 't := t' at line 10 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 9 (cost=6.0)

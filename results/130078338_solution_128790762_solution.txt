@@ -1,0 +1,2 @@
+  * Change 'a := int(GetElement(x', 0))' to 'a := int(GetElement(x', 2))' at line 3 (cost=1.0)
+  * Change 'c := int(GetElement(x', 2))' to 'c := int(GetElement(x', 0))' at line 5 (cost=1.0)

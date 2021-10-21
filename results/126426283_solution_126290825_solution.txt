@@ -1,0 +1,6 @@
+  * Change 'c := Sub(GetElement(map(int, split(input_val_')), 2), 1)' to 'c := GetElement(map(int, split(input_val_')), 2)' at line 7 (cost=2.0)
+  * Change 'dist := abs(Sub(b', a'))' to 'dist := Mult(2, abs(Sub(a', b')))' at line 8 (cost=4.0)
+  * Change 'a := Sub(GetElement(map(int, split(input_val_')), 0), 1)' to 'a := GetElement(map(int, split(input_val_')), 0)' at line 5 (cost=2.0)
+  * Change 'b := Sub(GetElement(map(int, split(input_val_')), 1), 1)' to 'b := GetElement(map(int, split(input_val_')), 1)' at line 6 (cost=2.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, int(Div(dist, 2))))' at line 12 (cost=6.0)
+  * Change '$out := StrAppend($out, Add(Mod(Add(c, dist), Mult(2, dist)), 1))' to '$out := StrAppend($out, Add(c, int(Div(dist, 2))))' at line 14 (cost=7.0)

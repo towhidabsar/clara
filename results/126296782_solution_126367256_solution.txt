@@ -1,0 +1,5 @@
+  * Change 't := t' to 't := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Change 'maxim := Mult(2, FloorDiv(Add(a', b'), 2))' to 'maxim := ite(Gt(Add(c', t'), $new_lkol'), Mod(Add(c', t'), $new_lkol'), Add(c', t'))' at line 5 (cost=13.0)
+  * Add assignment '$new_lkol := Mult(t', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
+  * Change '$out := StrAppend($out, Sub(maxim, min(a, b)))' to '$out := StrAppend($out, USub(1))' at line 8 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, maxim)' at line 10 (cost=2.0)

@@ -1,0 +1,2 @@
+  * Change 'd := GetElement(map(int, split(input_val_', " ")), 2)' to 'd := int(GetElement(split(input_val_', " "), 0))' at line 3 (cost=4.0)
+  * Change 'b := GetElement(map(int, split(input_val_', " ")), 0)' to 'b := int(GetElement(split(input_val_', " "), 2))' at line 3 (cost=4.0)

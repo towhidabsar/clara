@@ -1,0 +1,5 @@
+  * Change 'z := GetElement(map(int, split(input_val_')), 2)' to 'z := GetElement(map(int, split(input_val_')), 0)' at line 3 (cost=1.0)
+  * Add assignment '$new_n := Mult(abs(Sub(z', y')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
+  * Change 'w := GetElement(map(int, split(input_val_')), 0)' to 'w := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
+  * Change 'x := x' to 'x := Add(w, FloorDiv($new_n, 2))' inside the else-branch starting at line 7 (cost=5.0)
+  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Sub(x, $new_n))' at line 9 (cost=2.0)

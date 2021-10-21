@@ -1,0 +1,5 @@
+  * Add assignment '$new_k := Add(Mult(2, Sub(Sub(b', a'), 1)), 2)' inside the body of the 'while' loop beginning at line 3 (cost=10.0)
+  * Change 't := t' to 't := Sub(t, 1)' inside the body of the 'while' loop beginning at line 3 (cost=2.0)
+  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 3 (cost=23.0)
+  * Change '$out := StrAppend($out, Add(abs(Sub(a, b)), c))' to '$out := StrAppend($out, Sub(c, Sub(b, a)))' at line 7 (cost=6.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, Sub(b, a)))' at line 9 (cost=5.0)

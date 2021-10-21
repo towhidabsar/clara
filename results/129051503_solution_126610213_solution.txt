@@ -1,0 +1,3 @@
+  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
+  * Delete 'input_val := input()' at line 1 (cost=1.0)
+  * Change 'd := d' to 'd := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)

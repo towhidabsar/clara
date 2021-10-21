@@ -1,0 +1,4 @@
+  * Change 'dif := FuncCall(mod, a', b')' to 'dif := Mult(2, abs(Sub(a', b')))' at line 9 (cost=4.0)
+  * Delete 'n := Mult(2, dif')' at line 10 (cost=3.0)
+  * Change '$out := StrAppend($out, Add(c, dif))' to '$out := StrAppend($out, Sub(c, int(Div(dif, 2))))' at line 15 (cost=4.0)
+  * Change '$out := StrAppend($out, Sub(c, dif))' to '$out := StrAppend($out, Add(c, int(Div(dif, 2))))' at line 17 (cost=4.0)

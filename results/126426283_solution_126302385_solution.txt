@@ -1,0 +1,5 @@
+  * Add assignment '$new_n := int(input_val')' around the beginning of function main (cost=3.0)
+  * Change '_ := GetElement(iter#0, ind#0)' to '_ := Mult(2, abs(Sub(a', b')))' at line 2 (cost=6.0)
+  * Add assignment '$new_n := Sub($new_n, 1)' after the if-statement beginning at line 4 (cost=3.0)
+  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, Sub(c, int(Div(_, 2))))' at line 7 (cost=5.0)
+  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, int(Div(_, 2))))' at line 9 (cost=6.0)

@@ -1,0 +1,3 @@
+  * Add assignment '$new_dis := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
+  * Change 'd := Add(c', abs(Sub(a', b')))' to 'd := ite(Gt(Add(c', $new_dis'), n'), Mod(Add(c', $new_dis'), n'), Add(c', $new_dis'))' at line 4 (cost=13.0)
+  * Change 'n := n' to 'n := Mult($new_dis', 2)' inside the body of the 'for' loop beginning at line 3 (cost=3.0)

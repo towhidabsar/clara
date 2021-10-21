@@ -1,0 +1,2 @@
+  * Change 'cases := cases' to 'cases := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 15 (cost=6.0)
+  * Change '$out := StrAppend($out, FuncCall(circlenator, a, b, c))' to '$out := StrAppend($out, ite(Or(Or(Gt(a, cases), Gt(b, cases)), Gt(c, cases)), USub(1), Add(Mod(Add(Sub(c, 1), FloorDiv(cases, 2)), cases), 1)))' at line 16 (cost=23.0)

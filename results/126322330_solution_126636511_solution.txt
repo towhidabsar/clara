@@ -1,0 +1,1 @@
+  * Change 'dia := ite(GtE(a', b'), Sub(a', b'), Sub(b', a'))' to 'dia := Lt(Mult(abs(Sub(a', b')), 2), c')' inside the body of the 'for' loop beginning at line 12 (cost=9.0)
