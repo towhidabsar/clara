@@ -2,25 +2,59 @@ import networkx as nx
 import matplotlib
 import matplotlib.pyplot as plt
 
-G = nx.Graph()
+from clara.model import SPECIAL_VARS, Const, Var
 
-def connect(locs, trans):
+G =nx.DiGraph()
+
+
+def connect(locs, trans, labels):
     edges = []
-    for l in locs:
+    for i, l in enumerate(locs):
         t = trans[l]
         true = t[True]
         false = t[False]
-
-        loc = str(l)
+        label = labels[l]
+        if not label:
+            print(l)
         if true:
-            edges += [(loc, str(true), True)]
+            edges += [(label, labels[true], True)]
         else:
-            edges += [(loc,'None', True)]
+            edges += [(label, 'None', True)]
         if false:
-            edges += [(loc, str(false), False)]
+            edges += [(label, labels[false], False)]
         else:
-            edges += [(loc,'None', False)]
+            edges += [(label, 'None', False)]
     G.add_weighted_edges_from(edges)
+
+
+def getLableValue(exp):
+    if isinstance(exp, Var):
+        e = exp.name.strip()
+        if 'ind#' in e or 'iter#' in e or 'cond' in e:
+            return [e]
+        return []
+    if isinstance(exp, Const):
+        value = exp.value
+        if '"' in value:
+            value = value.replace("'", '').strip()
+        return [value]
+    name = exp.name
+    args = exp.args
+    a = []
+    for arg in args:
+        a += getLableValue(arg)
+    return [name] + a
+
+
+def makeLabel(exp):
+    label = set()
+    for var, e in exp:
+        var = str(var)
+        if var in SPECIAL_VARS or 'ind#' in var or 'iter#' in var or 'cond' in var:
+            label.add(str(var))
+        label = label.union(set(getLableValue(e)))
+    return label
+
 
 def makeGraph(fnc):
     G.add_node('None')
@@ -28,7 +62,7 @@ def makeGraph(fnc):
     trans = fnc.loctrans
     exprs = fnc.locexprs
     loc = list(desc.keys())
-    
+    allLabels = {}
     for l in loc:
         des = desc[l].split(" ")
         lno = des[-1]
@@ -54,12 +88,31 @@ def makeGraph(fnc):
             d += ['print']
         d = ' '.join(d)
         exp = exprs[l]
-        G.add_node(str(l), desc=d, lno=lno, exprs=exp)
+        label = makeLabel(exp)
+        label = ','.join(list(label))
+        if not label:
+            label = 'EMPTY'
+        allLabels[l] = label
+        
+        G.add_node(label, loc=l, desc=d, lno=lno, exprs=exp)
 
-    connect(loc,trans)
-    
-    pos=nx.spring_layout(G)
+
+    connect(loc, trans, allLabels)
+
+    for name, attr in list(G.nodes(data=True)):
+        print(name)
+        
+        if len(attr):
+            print('loc : ', attr['loc'])
+        
+        edges = list(G.edges(name, data=True))
+        for e in edges:
+            _, to, trans = e
+            print(trans['weight'],' : ', to)
+        print('\n')
+
+    pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels=True, font_weight='bold')
-    edge_weight = nx.get_edge_attributes(G,'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels = edge_weight)
+    edge_weight = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_weight)
     plt.savefig('1.png')
