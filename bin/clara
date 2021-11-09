@@ -139,6 +139,7 @@ Options are:
         self.testcase = '1.txt'
         self.applyRep = True
         self.shouldCheckRepair = bool(self.opts.pop('c', False))
+        self.feedback = []
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -331,10 +332,11 @@ Options are:
         _, repairs, _ = r[self.entryfnc]
         if repairs:
             txt = RepairFeedback(self.models[1], self.models[0], r)
-            txt.genfeedback()
+            # txt.genfeedback()
+            txt.genConvertedfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
-            self.saveRepairs(txt.feedback)
+            self.feedback = txt.feedback
             if (self.applyRep):
                 self.applyRep = False
                 try:
@@ -529,18 +531,20 @@ Options are:
                 reps += 1
         if (reps == len(folder)):
             print("All Repaired")
+            self.saveRepairs()
         elif (reps > testcase):
             print('Partial Repaired')
         else:
             print('Less Repaired')
 
-    def saveRepairs(self,feedback):
+    def saveRepairs(self):
+        feedback = self.feedback
         files = []
         for s in self.sources:
             s = s.split('/')[-1].split('.')[0]
             files += [s]
         name = '_'.join(files) + '.txt'
-        f = open('results/'+name,"w+")
+        f = open('results/2/'+name,"w+")
         f.write('\n'.join(['  * %s' % (x,) for x in feedback]))
         f.close()
 if __name__ == '__main__':

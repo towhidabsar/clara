@@ -3,6 +3,9 @@ Generating (simple, raw) textual feedback from repair
 '''
 
 
+from clara.convert_to_py import convertExp
+
+
 class RepairFeedback(object):
 
     def __init__(self, impl, spec, result, cleanstrings=None):
@@ -77,3 +80,78 @@ class RepairFeedback(object):
                 self.add(
                     "Change '%s := %s' to '%s := %s' %s (cost=%s)",
                     var2, expr2, var2, expr1, locdesc, cost)
+
+    def genConvertedfeedback(self):
+        # Iterate all functions
+        # fname - function name
+        # mapping - one-to-one mapping of variables
+        # repairs - list of repairs
+        # sm - structural matching betweeb locations of programs
+        for fname, (mapping, repairs, sm) in list(self.result.items()):
+
+            nmapping = {k: '$new_%s' % (k,)
+                        if v == '*' else v for (k, v) in list(mapping.items())}
+
+            for rep in repairs:
+
+                loc1 = rep.loc1
+                var1 = rep.var1
+                var2 = rep.var2
+                cost = rep.cost
+                expr1 = rep.expr1
+
+                fnc1 = self.spec.getfnc(fname)
+                fnc2 = self.impl.getfnc(fname)
+                loc2 = sm[loc1]
+
+                expr2 = fnc2.getexpr(loc2, var2)
+
+                if expr2.line:
+                    locdesc = 'at line %s' % (expr2.line,)
+                else:
+                    locdesc = fnc2.getlocdesc(loc2)
+                
+                if expr1.line:
+                    locdesc1 = 'at line %s' % (expr1.line,)
+                else:
+                    locdesc1 = fnc1.getlocdesc(loc1)
+
+                allExprs2 = convertExp(var2, expr2)
+
+                if var1 == '-':
+                    for line in allExprs2:
+                        self.add("Delete '%s' around line %s (cost=%s)",
+                                line, expr2.line, cost)
+                    continue
+
+                expr1 = expr1.replace_vars(nmapping)
+
+                if var2 == '*':
+                    allExprs1 = convertExp('$new_'+var1, expr1)
+                    for line in allExprs1:
+                        self.add("Add assignment '%s' %s (cost=%s)",
+                                line, locdesc, cost)
+                    continue
+                allExprs1 = convertExp(var1, expr1)
+                if len(allExprs2) > 1 and len(allExprs1) > 1:
+                    self.add('Change')
+                    for line in allExprs2:
+                        self.add(line)
+                    self.add('to')
+                    for line in allExprs1:
+                        self.add(line)
+                    self.add("%s of the incorrect program and %s of the correct program (cost=%s)", locdesc, locdesc1, cost)
+                elif len(allExprs2) > 1:
+                    self.add('Change')
+                    for line in allExprs2:
+                        self.add(line)
+                    self.add("to '%s' %s of the incorrect program and %s of the correct program (cost=%s)", allExprs1[0], locdesc, locdesc1, cost)
+                elif len(allExprs1) > 1:
+                    self.add("Change '%s' to ", allExprs2[0])
+                    for line in allExprs1:
+                        self.add(line)
+                    self.add("%s of the incorrect program and %s of the correct program (cost=%s)", locdesc, locdesc1, cost)
+                else:
+                    self.add(
+                        "Change '%s' to '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
+                        allExprs2[0], allExprs1[0], locdesc, locdesc1, cost)
