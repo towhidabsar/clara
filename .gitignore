@@ -11,3 +11,6 @@ __pycache__/
 .env
 .vscode/*
 clara.egg-info/SOURCES.txt
+batch_tests/
+results/
+tests/
