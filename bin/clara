@@ -18,7 +18,7 @@ from ast import literal_eval, parse
 from clara.convert_to_py import makefunc
 
 # clara imports
-from clara.graph_matching import GraphMatching, makeGraph
+from clara.graph_matching import GraphMatching
 from clara.common import parseargs, debug
 from clara.feedback import Feedback, FeedGen
 from clara.feedback_repair import RepairFeedback
@@ -27,7 +27,7 @@ from clara.feedback_python import PythonFeedback
 from clara.interpreter import getlanginter
 from clara.matching import Matching
 from clara.clustering import Clustering
-from clara.model import expr_to_dict, dict_to_expr, prime
+from clara.model import expr_to_dict, dict_to_expr
 from clara.parser import ParseError, getlangparser
 from clara.repair import Repair
 
@@ -229,10 +229,13 @@ Options are:
             self.error("Unknown command: '%s'", self.cmd)
 
     def graph(self):
-        fnc1 = self.model[0].getfnc(self.entryfnc)
-        fnc2 = self.model[1].getfnc(self.entryfnc)
+        fnc1 = self.models[0].getfnc(self.entryfnc)
+        fnc2 = self.models[1].getfnc(self.entryfnc)
         G = GraphMatching(fnc1, fnc2)
         G.createGraphs()
+        G.matchLabels()
+        G.matchEdges()
+        G.createFinalSimilarity()
 
     def convertToPy(self):
         for m in self.models:
