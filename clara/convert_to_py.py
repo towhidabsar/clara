@@ -119,7 +119,7 @@ def getExprs(exp):
             return ['AssignElement', str(getExprs(args[0])), str(getExprs(args[1])), str(getExprs(args[2]))]
 
         elif name in BINARY_OPS:
-            return str(getExprs(args[0])) + ' '+ BINARY_OPS[name] + ' ' +str(getExprs(args[1]))
+            return '(' + str(getExprs(args[0])) + ' '+ BINARY_OPS[name] + ' ' +str(getExprs(args[1])) + ')'
 
         elif name in UNARY_OPS:
             return '(' + UNARY_OPS[name] + str(getExprs(args[0])) + ')'
@@ -156,7 +156,7 @@ def getExprs(exp):
         elif name == 'AssAdd':
             e1 = str(getExprs(args[0]))
             e2 = str(getExprs(args[1]))
-            return e1 + '+' + e2
+            return '(' + e1 + '+' + e2 + ')'
 
         else:
             vals = [str(getExprs(i)) for i in args]

@@ -76,10 +76,41 @@ class RepairFeedback(object):
                              '$new_%s' % (var1,), expr1, locdesc, cost)
                     continue
 
+                if (str(var2) == expr2):
+                    self.add("Add assignment '%s := %s' %s (cost=%s)",
+                             var2, expr1, locdesc, cost)
+                    continue
+
                 # Output original and new (rewriten) expression for var2
                 self.add(
                     "Change '%s := %s' to '%s := %s' %s (cost=%s)",
                     var2, expr2, var2, expr1, locdesc, cost)
+    
+    def genRemovedLocFeedback(self, exps):
+        for l in exps:
+            (exp, d) = exps[l]
+            for v, e in exp:
+                if e.line:
+                    locdesc = 'at line %s' % (e.line,)
+                else:
+                    locdesc = d
+
+                allExprs2 = convertExp(v, e)
+                if len(allExprs2) > 1:
+                    self.add('Delete ')
+                    for line in allExprs2:
+                        self.add(line)
+                    self.add(
+                        "%s of the incorrect program (cost=2.0)", locdesc)
+                else:
+                    ee = allExprs2[0].split(' = ')
+                    if (len(ee) == 2 and str(ee[0]) == str(ee[1])):
+                        continue
+                    else:
+                        self.add(
+                            "Delete '%s' %s of the incorrect program  (cost=2)",
+                            allExprs2[0], locdesc)
+
 
     def genConvertedfeedback(self):
         # Iterate all functions
@@ -110,7 +141,7 @@ class RepairFeedback(object):
                     locdesc = 'at line %s' % (expr2.line,)
                 else:
                     locdesc = fnc2.getlocdesc(loc2)
-                
+
                 if expr1.line:
                     locdesc1 = 'at line %s' % (expr1.line,)
                 else:
@@ -121,7 +152,7 @@ class RepairFeedback(object):
                 if var1 == '-':
                     for line in allExprs2:
                         self.add("Delete '%s' around line %s (cost=%s)",
-                                line, expr2.line, cost)
+                                 line, expr2.line, cost)
                     continue
 
                 expr1 = expr1.replace_vars(nmapping)
@@ -130,7 +161,7 @@ class RepairFeedback(object):
                     allExprs1 = convertExp('$new_'+var1, expr1)
                     for line in allExprs1:
                         self.add("Add assignment '%s' %s (cost=%s)",
-                                line, locdesc, cost)
+                                 line, locdesc, cost)
                     continue
                 allExprs1 = convertExp(var1, expr1)
                 if len(allExprs2) > 1 and len(allExprs1) > 1:
@@ -140,18 +171,26 @@ class RepairFeedback(object):
                     self.add('to')
                     for line in allExprs1:
                         self.add(line)
-                    self.add("%s of the incorrect program and %s of the correct program (cost=%s)", locdesc, locdesc1, cost)
+                    self.add(
+                        "%s of the incorrect program and %s of the correct program (cost=%s)", locdesc, locdesc1, cost)
                 elif len(allExprs2) > 1:
                     self.add('Change')
                     for line in allExprs2:
                         self.add(line)
-                    self.add("to '%s' %s of the incorrect program and %s of the correct program (cost=%s)", allExprs1[0], locdesc, locdesc1, cost)
+                    self.add("to '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
+                             allExprs1[0], locdesc, locdesc1, cost)
                 elif len(allExprs1) > 1:
                     self.add("Change '%s' to ", allExprs2[0])
                     for line in allExprs1:
                         self.add(line)
-                    self.add("%s of the incorrect program and %s of the correct program (cost=%s)", locdesc, locdesc1, cost)
-                else:
                     self.add(
-                        "Change '%s' to '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
-                        allExprs2[0], allExprs1[0], locdesc, locdesc1, cost)
+                        "%s of the incorrect program and %s of the correct program (cost=%s)", locdesc, locdesc1, cost)
+                else:
+                    exps = allExprs2[0].split(' = ')
+                    if (len(exps) == 2 and str(exps[0]) == str(exps[1])):
+                        self.add("Add assignment '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
+                                allExprs1[0], locdesc, locdesc1, cost)
+                    else:
+                        self.add(
+                            "Change '%s' to '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
+                            allExprs2[0], allExprs1[0], locdesc, locdesc1, cost)

@@ -13,6 +13,7 @@ import shutil
 import sys
 import traceback
 import string
+import time
 
 from ast import literal_eval, parse
 from clara.convert_to_py import makefunc
@@ -140,6 +141,7 @@ Options are:
         self.applyRep = True
         self.shouldCheckRepair = bool(self.opts.pop('c', False))
         self.feedback = []
+        self.removedLocs = {}
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -233,9 +235,26 @@ Options are:
         fnc2 = self.models[1].getfnc(self.entryfnc)
         G = GraphMatching(fnc1, fnc2)
         G.createGraphs()
-        G.matchLabels()
-        G.matchEdges()
-        G.createFinalSimilarity()
+        # s = time.time()
+        # G.matchLabels()
+        # G.matchEdges()
+        # G.createFinalSimilarity()
+        # e = time.time()
+        # print(e-s)
+        print('\n')
+        s = time.time()
+        G.allNodeCombinations()
+        e = time.time()
+        print(e-s)
+
+        self.models[0].rmfnc(self.entryfnc)
+        self.models[1].rmfnc(self.entryfnc)
+
+        self.models[0].addfnc(G.CF)
+        self.models[1].addfnc(G.ICF)
+        self.removedLocs = G.removedLocs
+        self.repair()
+
 
     def convertToPy(self):
         for m in self.models:
@@ -336,6 +355,8 @@ Options are:
         _, repairs, _ = r[self.entryfnc]
         if repairs:
             txt = RepairFeedback(self.models[1], self.models[0], r)
+            if len(self.removedLocs):
+                txt.genRemovedLocFeedback(self.removedLocs)
             # txt.genfeedback()
             txt.genConvertedfeedback()
             print('Repairs:')
@@ -548,7 +569,7 @@ Options are:
             s = s.split('/')[-1].split('.')[0]
             files += [s]
         name = '_'.join(files) + '.txt'
-        f = open('results/2/'+name,"w+")
+        f = open('results/3/'+name,"w+")
         f.write('\n'.join(['  * %s' % (x,) for x in feedback]))
         f.close()
 if __name__ == '__main__':
