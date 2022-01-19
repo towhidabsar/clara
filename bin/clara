@@ -13,9 +13,8 @@ import shutil
 import sys
 import traceback
 import string
-import time
 
-from ast import literal_eval, parse
+from ast import literal_eval
 from clara.convert_to_py import makefunc
 
 # clara imports
@@ -142,6 +141,7 @@ Options are:
         self.shouldCheckRepair = bool(self.opts.pop('c', False))
         self.feedback = []
         self.removedLocs = {}
+        self.graphMatchingType = int(self.opts.pop('matchOp', 1))
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -231,21 +231,14 @@ Options are:
             self.error("Unknown command: '%s'", self.cmd)
 
     def graph(self):
+        # self.graphMatchingType -> 1 -> labels + edges + correct program's edges
+        # self.graphMatchingType -> 2 -> labels + edges + incorrect program's edges
+        # self.graphMatchingType -> 3 -> labels + correct program's edges
         fnc1 = self.models[0].getfnc(self.entryfnc)
         fnc2 = self.models[1].getfnc(self.entryfnc)
-        G = GraphMatching(fnc1, fnc2)
+        G = GraphMatching(fnc1, fnc2, self.graphMatchingType)
         G.createGraphs()
-        # s = time.time()
-        # G.matchLabels()
-        # G.matchEdges()
-        # G.createFinalSimilarity()
-        # e = time.time()
-        # print(e-s)
-        print('\n')
-        s = time.time()
         G.allNodeCombinations()
-        e = time.time()
-        print(e-s)
 
         self.models[0].rmfnc(self.entryfnc)
         self.models[1].rmfnc(self.entryfnc)
