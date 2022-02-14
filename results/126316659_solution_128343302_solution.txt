@@ -1,3 +1,0 @@
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(c, FloorDiv(n, 2)))' to '$out := StrAppend($out, ite(Gt(c, Div(n, 2)), Sub(c, abs(Sub(a, b))), Add(c, abs(Sub(a, b)))))' at line 8 (cost=15.0)

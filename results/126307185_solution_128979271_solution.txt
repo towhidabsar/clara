@@ -1,2 +1,0 @@
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Change 'T := int(input_val')' to 'T := input()' at line 1 (cost=2.0)

@@ -1,4 +1,0 @@
-  * Add assignment '$new_h := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
-  * Change '$out := StrAppend($out, Mod(Add(c, FloorDiv(n, 2)), n))' to '$out := StrAppend($out, "-1")' at line 6 (cost=7.0)
-  * Add assignment '$new_d := ite(Eq(Mod(Add(c, $new_h), n), 0), n, Mod(Add(c, $new_h), n))' inside the else-branch starting at line 8 (cost=14.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_d)' at line 8 (cost=2.0)

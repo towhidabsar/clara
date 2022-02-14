@@ -1,4 +1,0 @@
-  * Add assignment '$new_y := min(a', b')' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
-  * Add assignment '$new_x := Mult(2, Sub(max(a', b'), $new_y'))' inside the body of the 'for' loop beginning at line 3 (cost=8.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, int(Sub(c, Div($new_x, 2))))' at line 7 (cost=6.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, int(Add(Div($new_x, 2), c)))' at line 9 (cost=6.0)

@@ -1,4 +1,0 @@
-  * Change 'M := M' to 'M := max(lst', B')' inside the body of the 'for' loop beginning at line 3 (cost=3.0)
-  * Change 'B := GetElement(lst', 1)' to 'B := int(GetElement(split(input_val_'), 1))' at line 7 (cost=3.0)
-  * Change 'lst := sort(ListInit(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)))' to 'lst := int(GetElement(split(input_val_'), 0))' at line 5 (cost=10.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(C, S))' at line 15 (cost=3.0)

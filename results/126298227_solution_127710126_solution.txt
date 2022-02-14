@@ -1,2 +1,0 @@
-  * Add assignment '$new_val := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=5.0)
-  * Change 'd2 := Add(c', Div(n', 2))' to 'd2 := d2' at line 5 (cost=5.0)

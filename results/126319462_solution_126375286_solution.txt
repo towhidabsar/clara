@@ -1,3 +1,0 @@
-  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
-  * Add assignment '$new_tot := Mult(2, z')' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Add assignment '$new_d := ite(Eq(Mod(Add(c, z), $new_tot), 0), $new_tot, Mod(Add(c, z), $new_tot))' inside the else-branch starting at line 5 (cost=14.0)

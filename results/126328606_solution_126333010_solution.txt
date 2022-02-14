@@ -1,2 +1,0 @@
-  * Add assignment '$new_max := Mult(di', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(c, Mod(Add(c, di), Mult(2, di))))' to '$out := StrAppend($out, Sub(c, di))' at line 13 (cost=7.0)

@@ -1,2 +1,0 @@
-  * Change '$new_x := Mult(d', 2)' to '$new_x := abs(Sub(a', b'))' at line 5 (cost=4.0)
-  * Change 'c := GetElement(list(map(int, split(input_val_'))), 2)' to 'c := Mult($new_x', 2)' at line 3 (cost=6.0)

@@ -1,5 +1,0 @@
-  * Change 'htotal := htotal' to 'htotal := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
-  * Change 't := t' to 't := ite(Gt(Add(c', htotal'), total'), Mod(Add(c', htotal'), total'), Add(c', htotal'))' inside the body of the 'for' loop beginning at line 3 (cost=14.0)
-  * Change 'total := total' to 'total := Mult(htotal', 2)' inside the body of the 'for' loop beginning at line 3 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(Mod(Sub(Add(c, htotal), 1), total), 1))' to '$out := StrAppend($out, USub(1))' at line 7 (cost=8.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, t)' at line 9 (cost=2.0)

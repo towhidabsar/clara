@@ -29,7 +29,7 @@ from clara.matching import Matching
 from clara.clustering import Clustering
 from clara.model import expr_to_dict, dict_to_expr
 from clara.parser import ParseError, getlangparser
-from clara.repair import Repair
+from clara.repair import Repair, Timeout
 
 VERBOSE=0
 
@@ -126,7 +126,7 @@ Options are:
         VERBOSE = self.verbose
         
         self.lang = self.opts.pop('lang', None)
-        self.timeout = int(self.opts.pop('timeout', 60))
+        self.timeout = int(self.opts.pop('timeout', 300))
         self.ignoreio = int(self.opts.pop('ignoreio', 0))
         self.ignoreret = int(self.opts.pop('ignoreret', 0))
         self.bijective = int(self.opts.pop('bijective', 1))
@@ -142,6 +142,7 @@ Options are:
         self.feedback = []
         self.removedLocs = {}
         self.graphMatchingType = int(self.opts.pop('matchOp', 1))
+        self.graphResult = []
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -239,6 +240,7 @@ Options are:
         G = GraphMatching(fnc1, fnc2, self.graphMatchingType)
         G.createGraphs()
         G.allNodeCombinations()
+        self.graphResult = G.result
 
         self.models[0].rmfnc(self.entryfnc)
         self.models[1].rmfnc(self.entryfnc)
@@ -339,6 +341,14 @@ Options are:
         elif len(self.models) > 2:
             self.debug('Repair requires two programs, ignoring the rest!')
 
+        if (len(self.graphResult)):
+            if self.graphResult[0] == 'DEL':
+                print('Locs Deleted:', self.graphResult[1])
+            else:
+                print('Locs Added:', self.graphResult[1])
+        else:
+            print('Locs Same')
+        
         R = Repair(timeout=self.timeout, verbose=self.verbose,
                    allowsuboptimal=self.suboptimal,
                    cleanstrings=self.cleanstrings, printloc=self.printloc)
@@ -346,7 +356,9 @@ Options are:
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                      ignoreret=self.ignoreret, entryfnc=self.entryfnc)
         _, repairs, _ = r[self.entryfnc]
+
         if repairs:
+            print("Cost:", R.total_cost)
             txt = RepairFeedback(self.models[1], self.models[0], r)
             if len(self.removedLocs):
                 txt.genRemovedLocFeedback(self.removedLocs)
@@ -360,10 +372,10 @@ Options are:
                 try:
                     R.applyRepairs(self.models, r, self.inter,
                                 ins=self.ins, args=self.args, entryfnc=self.entryfnc)
+
                     r = R.repair(self.models[0], self.models[1], self.inter,
                                 ins=self.ins, args=self.args, ignoreio=self.ignoreio,
-                                ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
-                    
+                                ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=False)
                     _, repairs, _ = r[self.entryfnc]
                     if repairs:
                         txt = RepairFeedback(self.models[1], self.models[0], r)
@@ -374,6 +386,8 @@ Options are:
                         print('No further repair needed after completeing the previous ones!')
                         if self.shouldCheckRepair:
                             self.checkRepairs()
+                except Timeout:
+                    print('TIMEOUT')
                 except:
                     print("There are issues with the suggested repairs. The new program may not run.")
         else:
@@ -562,7 +576,7 @@ Options are:
             s = s.split('/')[-1].split('.')[0]
             files += [s]
         name = '_'.join(files) + '.txt'
-        f = open('results/3/'+name,"w+")
+        f = open('results/GM1/'+name,"w+")
         f.write('\n'.join(['  * %s' % (x,) for x in feedback]))
         f.close()
 if __name__ == '__main__':

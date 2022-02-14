@@ -1,8 +1,0 @@
-  * Change 'i := GetElement(iter#0, ind#0)' to 'i := int(GetElement(split($new_input_val_', " "), 2))' at line 3 (cost=5.0)
-  * Change 'T := T' to 'T := abs(Sub(d', $new_b'))' inside the body of the 'for' loop beginning at line 4 (cost=4.0)
-  * Add assignment '$new_i := GetElement(iter#0, ind#0)' inside the body of the 'for' loop beginning at line 4 (cost=4.0)
-  * Add assignment '$new_input_val_ := input()' inside the body of the 'for' loop beginning at line 4 (cost=2.0)
-  * Add assignment '$new_b := int(GetElement(split($new_input_val_', " "), 1))' inside the body of the 'for' loop beginning at line 4 (cost=7.0)
-  * Change 'input_val_ := input_val_' to 'input_val_ := Mult(T', 2)' inside the body of the 'for' loop beginning at line 4 (cost=3.0)
-  * Change '$out := StrAppend($out, Sub(GetElement(GetElement(T, i), 2), d))' to '$out := StrAppend($out, Add(T, i))' at line 11 (cost=5.0)
-  * Change '$out := StrAppend($out, Add(GetElement(GetElement(T, i), 2), d))' to '$out := StrAppend($out, Sub(i, T))' at line 12 (cost=6.0)

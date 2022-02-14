@@ -1,4 +1,0 @@
-  * Change '$new_b := GetElement(map(int, split(input_val_')), 1)' to '$new_b := GetElement(map(int, split(input_val_')), 0)' at line 3 (cost=1.0)
-  * Change 'b := GetElement(map(int, split(input_val_')), 2)' to 'b := GetElement(map(int, split(input_val_')), 1)' at line 3 (cost=1.0)
-  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
-  * Change '$out := StrAppend($out, Add(b, c))' to '$out := StrAppend($out, Add(a, c))' at line 12 (cost=1.0)

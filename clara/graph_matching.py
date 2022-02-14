@@ -1,4 +1,5 @@
 from os import system
+import sys
 import networkx as nx
 import matplotlib
 import matplotlib.pyplot as plt
@@ -30,6 +31,7 @@ class GraphMatching():
         self.longer = 0
         self.removedLocs = {}
         self.option = option
+        self.result = []
 
     def createGraphs(self):
         self.ICG = self.makeGraph(self.ICF)
@@ -157,13 +159,17 @@ class GraphMatching():
         l1 = list(G1.nodes())
         l2 = list(G2.nodes())
         rev = False
-        if len(l1) < len(l2):
+        len_l1 = len(l1)
+        len_l2 = len(l2)
+        if len_l1 < len_l2:
+            self.result += ['DEL', len_l2-len_l1]
             temp = l2
             l2 = l1
             l1 = temp
             rev = True
             self.longer = 1
-        elif len(l1) > len(l2):
+        elif len_l1 > len_l2:
+            self.result += ['ADD', len_l1-len_l2]
             self.longer = 2
 
         # finds all possible combinations of node matching (exhaustive list)
@@ -171,6 +177,8 @@ class GraphMatching():
         allComb = []
         permut = permutations(l1, len(l2))
         for comb in permut:
+            if len(allComb) == 1000:
+                break
             zipped = zip(comb, l2)
             allComb.append(list(zipped))
 
@@ -239,6 +247,11 @@ class GraphMatching():
                 matching[n2] = n1
             else:
                 matching[n1] = n2
+        final_score = score/len(allComb[0])
+        print("Score:", final_score)
+        if final_score < 0.6:
+            print('SCORE TOO LESS')
+            sys.exit(0)
         self.createModel(rev, bestMatch, matching)
 
     # based on the correct graph and the matching, it recreates the incorrect model
@@ -321,7 +334,7 @@ class GraphMatching():
             locs = d1.keys()
             extra = sorted(list(set(locs) - set(matching.keys())))
             for e in extra:
-                new_e2[e] = {}
+                new_e2[e] = []
                 edges2 = list(G1.edges(e, data=True))
                 _, t2, _ = edges2[0]
                 _, f2, _ = edges2[1]

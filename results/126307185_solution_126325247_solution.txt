@@ -1,7 +1,0 @@
-  * Delete 'n := int(input_val')' at line 1 (cost=2.0)
-  * Delete 'input_val_ := input()' at line 3 (cost=1.0)
-  * Change 'B := GetElement(lst', 1)' to 'B := input()' at line 7 (cost=3.0)
-  * Change 'lst := sort(ListInit(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)))' to 'lst := GetElement(list(map(int, split(B'))), 1)' at line 5 (cost=10.0)
-  * Change 'A := GetElement(lst', 0)' to 'A := GetElement(list(map(int, split(B'))), 0)' at line 6 (cost=5.0)
-  * Delete 'M := Sub(Add(B, S), 1)' at line 10 (cost=5.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(C, S))' at line 14 (cost=3.0)

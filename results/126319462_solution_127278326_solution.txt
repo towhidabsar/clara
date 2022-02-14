@@ -1,7 +1,0 @@
-  * Add assignment '$new_iter#0 := range(z')' around the beginning of function main (cost=3.0)
-  * Add assignment '$new_ind#0 := 0' around the beginning of function main (cost=2.0)
-  * Add assignment '$new_co := GetElement($new_iter#0, $new_ind#0)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
-  * Add assignment '$new_ind#0 := Add($new_ind#0, 1)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
-  * Change 'z := Sub(z, 1)' to 'z := z' at line 10 (cost=2.0)
-  * Add assignment '$new_d := ite(Eq(Mod(Add(c, n), nn), 0), nn, Mod(Add(c, n), nn))' inside the else-branch starting at line 9 (cost=15.0)
-  * Change '$out := StrAppend($out, Add(c, n))' to '$out := StrAppend($out, $new_d)' at line 9 (cost=3.0)

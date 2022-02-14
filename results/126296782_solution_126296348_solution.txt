@@ -1,5 +1,0 @@
-  * Change 'input_val_ := input_val_' to 'input_val_ := input()' around the beginning of function main (cost=1.0)
-  * Change 'input_val_ := input()' to 'input_val_ := input_val_' at line 2 (cost=1.0)
-  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(map(int, split(input_val')), 0)' at line 2 (cost=2.0)
-  * Change 'input_val := input_val' to 'input_val := input()' inside the body of the 'for' loop beginning at line 2 (cost=1.0)
-  * Change '$new_res := ite(Gt(Add(c', $new_dis'), x'), Mod(Add(c', $new_dis'), x'), Add(c', $new_dis'))' to '$new_res := Mult($new_dis', 2)' inside the body of the 'for' loop beginning at line 2 (cost=13.0)

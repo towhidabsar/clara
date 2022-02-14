@@ -1,3 +1,0 @@
-  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
-  * Add assignment '$new_h := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=5.0)
-  * Change 'front := Add(c, abs(Sub(a, b)))' to 'front := ite(Eq(Mod(Add(c, $new_h), n), 0), n, Mod(Add(c, $new_h), n))' at line 7 (cost=13.0)

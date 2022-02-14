@@ -1,3 +1,0 @@
-  * Change 'cnt := 0' to 'cnt := Mult(abs(Sub(a', b')), 2)' at line 3 (cost=6.0)
-  * Change '$out := StrAppend($out, Mult(abs(Sub(a, b)), 2))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=6.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(Gt(c, Div(cnt, 2)), Sub(c, abs(Sub(a, b))), Add(c, abs(Sub(a, b)))))' at line 7 (cost=18.0)

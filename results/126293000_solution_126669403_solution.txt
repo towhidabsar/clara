@@ -1,2 +1,0 @@
-  * Add assignment '$new_ans := FuncCall(fun, a', b', c')' inside the body of the 'for' loop beginning at line 10 (cost=6.0)
-  * Change '$out := StrAppend($out, FuncCall(solution, a, b, c))' to '$out := StrAppend($out, $new_ans)' at line 11 (cost=5.0)

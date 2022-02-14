@@ -1,2 +1,0 @@
-  * Delete 'diff := abs(Sub(a', b'))' at line 3 (cost=4.0)
-  * Change 'res := ite(Gt(Add(c', diff'), Mult(2, diff')), Sub(c', diff'), Add(c', diff'))' to 'res := FuncCall(fun, a', b', c')' at line 4 (cost=13.0)

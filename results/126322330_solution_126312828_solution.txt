@@ -1,7 +1,0 @@
-  * Add assignment '$new_cnt := int(input_val')' around the beginning of function main (cost=3.0)
-  * Change 'a := GetElement(l', 0)' to 'a := Lt(Mult(abs(Sub(b', l')), 2), c')' at line 3 (cost=7.0)
-  * Change 'num := abs(Mult(Sub(b', a'), 2))' to 'num := Lt(Mult(abs(Sub(b', l')), 2), max(b', l'))' at line 6 (cost=6.0)
-  * Change 'b := GetElement(l', 1)' to 'b := GetElement(map(int, split(input_val_')), 0)' at line 4 (cost=5.0)
-  * Change 'l := list(map(int, split(input_val_')))' to 'l := GetElement(map(int, split(input_val_')), 1)' at line 2 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Add(c, abs(Sub(b, l))))' at line 11 (cost=4.0)
-  * Change '$out := StrAppend($out, Sub(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Sub(c, abs(Sub(b, l))))' at line 14 (cost=4.0)

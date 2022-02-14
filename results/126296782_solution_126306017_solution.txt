@@ -1,3 +1,0 @@
-  * Change 'c := GetElement(tuple(map(int, split(input_val_'))), 2)' to 'c := GetElement(map(int, split(input_val_')), 1)' at line 3 (cost=2.0)
-  * Change 'k := abs(Sub(a', b'))' to 'k := GetElement(map(int, split(input_val_')), 0)' at line 11 (cost=6.0)
-  * Change 'b := GetElement(tuple(map(int, split(input_val_'))), 1)' to 'b := abs(Sub(k', c'))' at line 3 (cost=7.0)

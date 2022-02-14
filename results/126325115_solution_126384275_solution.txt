@@ -1,8 +1,0 @@
-  * Add assignment '$new_ind#0 := 0' around the beginning of function main (cost=2.0)
-  * Add assignment '$new_iter#0 := range(t')' around the beginning of function main (cost=3.0)
-  * Change 'n := Mult(2, dif')' to 'n := GetElement($new_iter#0, $new_ind#0)' at line 10 (cost=3.0)
-  * Add assignment '$new_ind#0 := Add($new_ind#0, 1)' inside the body of the 'while' loop beginning at line 8 (cost=3.0)
-  * Change 'dif := FuncCall(mod, a', b')' to 'dif := Mult(abs(Sub(a', b')), 2)' at line 9 (cost=5.0)
-  * Change 't := Sub(t, 1)' to 't := t' at line 18 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(c, dif))' to '$out := StrAppend($out, Add(c, FloorDiv(dif, 2)))' at line 15 (cost=2.0)
-  * Change '$out := StrAppend($out, Sub(c, dif))' to '$out := StrAppend($out, Sub(c, FloorDiv(dif, 2)))' at line 17 (cost=2.0)

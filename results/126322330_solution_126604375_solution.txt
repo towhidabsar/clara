@@ -1,4 +1,0 @@
-  * Change 'total_num := Mult(2, a_minus_b')' to 'total_num := Lt(Mult(abs(Sub(a', b')), 2), c')' at line 8 (cost=7.0)
-  * Delete 'input_val_ := input()' at line 3 (cost=1.0)
-  * Change '$out := StrAppend($out, Sub(c, a_minus_b))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 12 (cost=5.0)
-  * Change '$out := StrAppend($out, Add(c, a_minus_b))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 14 (cost=5.0)

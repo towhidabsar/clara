@@ -1,1 +1,0 @@
-  * Add assignment '$new_r := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)

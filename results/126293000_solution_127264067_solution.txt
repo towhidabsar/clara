@@ -1,6 +1,0 @@
-  * Change 'repeat := int(input_val')' to 'repeat := input()' at line 32 (cost=2.0)
-  * Change 'arr := split(line', " ")' to 'arr := FuncCall(fun, line', input_val', $new_c')' at line 36 (cost=4.0)
-  * Add assignment '$new_c := GetElement(map(int, split(input_val_')), 2)' inside the body of the 'for' loop beginning at line 35 (cost=7.0)
-  * Change 'input_val := input_val' to 'input_val := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 35 (cost=6.0)
-  * Change 'line := input_val_'' to 'line := GetElement(map(int, split(input_val_')), 0)' inside the body of the 'for' loop beginning at line 35 (cost=5.0)
-  * Change '$out := StrAppend($out, FuncCall(opposite, int(GetElement(arr, 0)), int(GetElement(arr, 1)), int(GetElement(arr, 2))))' to '$out := StrAppend($out, arr)' at line 38 (cost=13.0)

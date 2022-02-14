@@ -1,1 +1,0 @@
-  * Change 'n := n' to 'n := min(a', b')' inside the body of the 'for' loop beginning at line 3 (cost=3.0)

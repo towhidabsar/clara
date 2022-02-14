@@ -1,8 +1,0 @@
-  * Change 'a := list(map(int, split(input_val_')))' to 'a := GetElement(map(int, split(input_val_')), 0)' at line 4 (cost=2.0)
-  * Add assignment '$new_b := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 4 (cost=7.0)
-  * Add assignment '$new_c := GetElement(map(int, split(input_val_')), 2)' inside the body of the 'for' loop beginning at line 4 (cost=7.0)
-  * Change 'd := abs(Sub(GetElement(a', 0), GetElement(a', 1)))' to 'd := Mult(2, Sub(max(a', $new_b'), n'))' at line 6 (cost=7.0)
-  * Change 'n := n' to 'n := min(a', $new_b')' inside the body of the 'for' loop beginning at line 4 (cost=3.0)
-  * Change '$out := StrAppend($out, Sub(GetElement(a, 2), d))' to '$out := StrAppend($out, USub(1))' at line 9 (cost=5.0)
-  * Change '$out := StrAppend($out, Add(GetElement(a, 2), d))' to '$out := StrAppend($out, int(Sub($new_c, Div(d, 2))))' at line 11 (cost=6.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, int(Add(Div(d, 2), $new_c)))' at line 13 (cost=6.0)

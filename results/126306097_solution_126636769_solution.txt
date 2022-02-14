@@ -1,1 +1,0 @@
-  * Add assignment '$new_x := Mult(dia', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)

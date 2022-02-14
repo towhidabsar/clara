@@ -1,4 +1,0 @@
-  * Add assignment '$new_u2 := Lt(Mult(abs(Sub(w', y')), 2), max(w', y'))' inside the body of the 'for' loop beginning at line 3 (cost=11.0)
-  * Add assignment '$new_u1 := Lt(Mult(abs(Sub(w', y')), 2), z')' inside the body of the 'for' loop beginning at line 3 (cost=9.0)
-  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Add(z, abs(Sub(w, y))))' at line 9 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(z, y))' to '$out := StrAppend($out, Sub(z, abs(Sub(w, y))))' at line 11 (cost=4.0)

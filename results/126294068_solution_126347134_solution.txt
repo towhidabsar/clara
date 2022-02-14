@@ -1,8 +1,0 @@
-  * Add assignment '$new_iter#0 := range(t')' around the beginning of function main (cost=3.0)
-  * Add assignment '$new_ind#0 := 0' around the beginning of function main (cost=2.0)
-  * Add assignment '$new_t := GetElement($new_iter#0, $new_ind#0)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
-  * Add assignment '$new_ind#0 := Add($new_ind#0, 1)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
-  * Add assignment '$new_diff := Sub(max(a', b'), min(a', b'))' inside the body of the 'while' loop beginning at line 3 (cost=8.0)
-  * Change 't := Sub(t, 1)' to 't := t' at line 10 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(abs(Sub(a, b)), c))' to '$out := StrAppend($out, Sub(c, $new_diff))' at line 7 (cost=5.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, $new_diff))' at line 9 (cost=3.0)

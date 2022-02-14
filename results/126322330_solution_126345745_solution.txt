@@ -1,4 +1,0 @@
-  * Change 'diff := Sub(b', a')' to 'diff := Lt(Mult(abs(Sub(a', b')), 2), max(a', b'))' at line 4 (cost=8.0)
-  * Change 'n := Mult(diff', 2)' to 'n := Lt(Mult(abs(Sub(a', b')), 2), c')' at line 5 (cost=6.0)
-  * Change '$out := StrAppend($out, Add(c, diff))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 10 (cost=4.0)
-  * Change '$out := StrAppend($out, Sub(c, diff))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 12 (cost=4.0)

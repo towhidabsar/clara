@@ -1,3 +1,0 @@
-  * Change 'input_val_ := input_val_' to 'input_val_ := int(input_val')' around the beginning of function main (cost=2.0)
-  * Change 'l := list(map(int, split(input_val_')))' to 'l := input()' at line 2 (cost=5.0)
-  * Change 'input_val_ := input()' to 'input_val_ := input_val_' at line 2 (cost=1.0)

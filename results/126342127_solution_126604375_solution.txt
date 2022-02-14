@@ -1,6 +1,0 @@
-  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Delete 'input_val_ := input()' at line 3 (cost=1.0)
-  * Change 'a_minus_b := abs(Sub(a', b'))' to 'a_minus_b := min(a', b')' at line 7 (cost=2.0)
-  * Change '$out := StrAppend($out, Sub(c, a_minus_b))' to '$out := StrAppend($out, int(Sub(c, Div(total_num, 2))))' at line 12 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(c, a_minus_b))' to '$out := StrAppend($out, int(Add(Div(total_num, 2), c)))' at line 14 (cost=5.0)

@@ -1,4 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Delete 'htotal := abs(Sub(a', b'))' at line 4 (cost=4.0)
-  * Change 'total := Mult(abs(Sub(a', b')), 2)' to 'total := FuncCall(fun, a', b', c')' at line 5 (cost=5.0)
-  * Change '$out := StrAppend($out, Mod(Add(c, htotal), total))' to '$out := StrAppend($out, total)' at line 6 (cost=4.0)

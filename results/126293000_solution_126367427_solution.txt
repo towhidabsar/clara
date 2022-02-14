@@ -1,2 +1,0 @@
-  * Change 't := t' to 't := FuncCall(fun, a', b', c')' inside the body of the 'for' loop beginning at line 11 (cost=5.0)
-  * Change '$out := StrAppend($out, FuncCall(circle, a, b, c))' to '$out := StrAppend($out, t)' at line 12 (cost=5.0)

@@ -1,4 +1,0 @@
-  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
-  * Add assignment '$new_x := Mult(g', 2)' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(g, c))' to '$out := StrAppend($out, Sub(c, g))' at line 7 (cost=3.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, g))' at line 9 (cost=3.0)

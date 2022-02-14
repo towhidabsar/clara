@@ -42,7 +42,8 @@ class PyParser(Parser):
     def __init__(self, *args, **kwargs):
         super(PyParser, self).__init__(*args, **kwargs)
         self.ENTRY_FNC = args[0]
-        self.ARGS = args[1][0]
+        if args and len(args) > 1 and args[1] and len(args[1]) > 0:
+            self.ARGS = args[1][0]
         self.hiddenvarcnt = 0
         self.input_name = "input_val"
 

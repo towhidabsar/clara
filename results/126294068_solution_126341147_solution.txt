@@ -1,4 +1,0 @@
-  * Delete 'd := Add(c', diff')' at line 10 (cost=3.0)
-  * Delete 'max := Mult(2, diff')' at line 9 (cost=3.0)
-  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, Sub(c, diff))' at line 15 (cost=3.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, diff))' at line 17 (cost=3.0)

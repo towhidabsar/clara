@@ -1,3 +1,0 @@
-  * Delete 'g := abs(Sub(a', b'))' at line 3 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(g, c))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 7 (cost=6.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 9 (cost=6.0)

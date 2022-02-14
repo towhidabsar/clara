@@ -1,8 +1,0 @@
-  * Change 'B := GetElement(lst', 1)' to 'B := GetElement(split(input_val_'), 0)' at line 7 (cost=3.0)
-  * Add assignment '$new_k := Sub(M', A')' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
-  * Change 'M := M' to 'M := max(int(B'), int(lst'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
-  * Change 'lst := sort(ListInit(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)))' to 'lst := GetElement(split(input_val_'), 1)' at line 5 (cost=10.0)
-  * Change 'C := GetElement(map(int, split(input_val_')), 2)' to 'C := GetElement(split(input_val_'), 2)' at line 3 (cost=2.0)
-  * Change 'S := Sub(B', A')' to 'S := Mult(Sub(M', A'), 2)' at line 8 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(C, S))' to '$out := StrAppend($out, Add($new_k, int(C)))' at line 12 (cost=3.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(int(C), $new_k))' at line 14 (cost=4.0)

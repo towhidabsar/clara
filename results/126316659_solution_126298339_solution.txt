@@ -1,2 +1,0 @@
-  * Add assignment '$new_n := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, ite(Gt(c, Div($new_n, 2)), Sub(c, abs(Sub(a, b))), Add(c, abs(Sub(a, b)))))' at line 7 (cost=14.0)

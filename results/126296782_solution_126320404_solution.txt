@@ -1,2 +1,0 @@
-  * Delete '$new_lkol := Mult(x', 2)' at line 12 (cost=3.0)
-  * Add assignment '$new_lkol := Mult(x', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)

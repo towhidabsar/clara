@@ -1,4 +1,0 @@
-  * Add assignment '$new_res := ite(Gt(Add(c', d'), $new_lkol'), Mod(Add(c', d'), $new_lkol'), Add(c', d'))' inside the body of the 'for' loop beginning at line 2 (cost=15.0)
-  * Add assignment '$new_lkol := Mult(d', 2)' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Change '$out := StrAppend($out, Mult(2, d))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=3.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_res)' at line 7 (cost=2.0)

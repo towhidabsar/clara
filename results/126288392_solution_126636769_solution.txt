@@ -1,4 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Delete 'dia := ite(GtE(a', b'), Sub(a', b'), Sub(b', a'))' at line None (cost=10.0)
-  * Change '$out := StrAppend($out, Sub(c, dia))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 16 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(c, dia))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 18 (cost=4.0)

@@ -1,6 +1,0 @@
-  * Change 'a := int(GetElement(triples', 0))' to 'a := GetElement(sorted(ListInit(GetElement(map(int, split(triples')), 0), GetElement(map(int, split(triples')), 1))), 0)' at line 4 (cost=13.0)
-  * Delete 'input_val_ := input()' at line 3 (cost=1.0)
-  * Delete 'total_num := Mult(2, a_minus_b')' at line 8 (cost=3.0)
-  * Change 'a_minus_b := abs(Sub(a', b'))' to 'a_minus_b := Mult(Sub(b', a'), 2)' at line 7 (cost=4.0)
-  * Change '$out := StrAppend($out, Sub(c, a_minus_b))' to '$out := StrAppend($out, Sub(c, FloorDiv(a_minus_b, 2)))' at line 12 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(c, a_minus_b))' to '$out := StrAppend($out, Add(c, FloorDiv(a_minus_b, 2)))' at line 14 (cost=2.0)

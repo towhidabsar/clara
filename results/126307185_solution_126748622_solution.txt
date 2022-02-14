@@ -1,1 +1,0 @@
-  * Change 'b := GetElement(list(map(int, split(input_val_'))), 0)' to 'b := GetElement(list(map(int, split(input_val_'))), 2)' at line 2 (cost=1.0)

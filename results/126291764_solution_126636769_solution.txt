@@ -1,2 +1,0 @@
-  * Change 'c := int(GetElement(split(input_val_'), 2))' to 'c := Mult(Sub(b', a'), 2)' at line 6 (cost=5.0)
-  * Change 'dia := Mult(Sub(b', a'), 2)' to 'dia := GetElement(map(int, split(input_val_')), 2)' at line 7 (cost=5.0)

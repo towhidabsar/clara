@@ -1,4 +1,0 @@
-  * Delete 'n := int(input_val')' at line 1 (cost=2.0)
-  * Delete 'l := Mult(2, Sub(max(a', b'), min(a', b')))' at line 4 (cost=9.0)
-  * Change '$out := StrAppend($out, Sub(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' at line 9 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(c, FloorDiv(l, 2)))' to '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' at line 11 (cost=4.0)

@@ -1,2 +1,0 @@
-  * Add assignment '$new_m := Mult(g', 2)' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, g))' at line 9 (cost=3.0)

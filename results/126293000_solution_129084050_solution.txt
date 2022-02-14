@@ -1,1 +1,0 @@
-  * Delete 'n := Mult(2, abs(Sub(a', b')))' at line 3 (cost=6.0)

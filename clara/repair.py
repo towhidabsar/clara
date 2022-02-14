@@ -20,8 +20,10 @@ from .matching import Matching
 class StructMismatch(Exception):
     pass
 
+class Error(Exception):
+    pass
 
-class Timeout(Exception):
+class Timeout(Error):
     pass
 
 
@@ -77,6 +79,8 @@ class Repair(object):
         self.verbose = verbose
         self.cleanstrings = cleanstrings
         self.printloc = printloc
+        self.total_cost = 0
+        self.timedout = False
 
         if solver is None:
             from .ilp import Solver
@@ -158,7 +162,7 @@ class Repair(object):
                                 (self.sm[fnc1.name],))
 
         self.debug('total time: %.3f', round(time.time() - self.starttime, 3))
-        self.compareEndTracesAndFilter(P, Q, inter, ins, args, entryfnc, results)
+        # self.compareEndTracesAndFilter(P, Q, inter, ins, args, entryfnc, results)
 
         return results
 
@@ -225,6 +229,7 @@ class Repair(object):
                                 timeout=solvertime)
         # Retreive expressions used in repair
         ress = []
+        total_cost = 0
         for rep in res[1]:
             (loc1, var1, var2, cost, order, idx) = rep
             repobj = RepairResult()
@@ -239,7 +244,9 @@ class Repair(object):
                 repobj.expr1 = self.ER[loc1][var1][idx][0]
                 repobj.expr1_orig = self.ER[loc1][var1][idx][1]
             ress.append(repobj)
+            total_cost += cost
         res = (res[0], ress)
+        self.total_cost = total_cost
 
         self.debug('PGEN time: %.3f' % round(self.pgentime, 3))
         self.debug('mapping: %s', res[0])
@@ -321,6 +328,7 @@ class Repair(object):
     def one_to_ones(self, S1, S2, m1, m2, taken=None):
 
         if self.lefttime() < 0:
+            self.timedout = True
             raise Timeout()
 
         if taken is None:
@@ -626,7 +634,6 @@ class Repair(object):
     def applyRepairs(self, models, result, inter, ins, args, entryfnc):
         Q = models[1]
         traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
-
         for fname, (mapping, repairs, sm) in list(result.items()):
             # Copy mapping with converting '*' into a 'new_' variable
             nmapping = {k: '$new_%s' % (k,)
@@ -637,32 +644,37 @@ class Repair(object):
             # var2 - variable from the incorrect program.
             repairs.sort(key=lambda x: ord(x.var2[0]))
             while (len(repairs) > 0):
+                if self.lefttime() < 0:
+                    self.timedout = True
+                    raise Timeout()
+
                 for rep in repairs[:]:
                     loc1 = rep.loc1
                     var2 = rep.var2
                     expr1 = rep.expr1
                     var1 = rep.var1
                     f2 = Q.getfnc(fname)
+                    
 
                     # Get loc2
                     loc2 = sm[loc1]
                     expr2 = f2.getexpr(loc2, var2)
                     # Rewrite expr1 (from spec) with variables of impl.
                     expr1 = expr1.replace_vars(nmapping)
-
-                    if (var1 == "-" or (isinstance(expr1, Var) and (var2 == expr1.tostr()))): 
+                    if (var1 == "-" or (isinstance(expr1, Var) and (var2 == expr1.tostr()))):
                         # remove old definition of variable that we want to change
                         self.removeValFromResult(Q, var2, fname, loc2)
                         repairs.remove(rep)
                         continue
-                    
-                    trace = traceQ[loc2][0]
+                    trace = {}
+                    if loc2 in traceQ:
+                        trace = traceQ[loc2][0]
                     var2_ = var2
                     if (var2 == '*'): 
                         var2 = '$new_' + var1
                     
                     trace = self.preprocessTrace(trace, f2.locexprs[loc2])
-
+                    
                     flag = self.findAndSub(Q, var2, fname, loc2, expr1, trace)
                     if (not flag): continue
                     
@@ -687,9 +699,9 @@ class Repair(object):
         locexprs = Q.getfnc(fname).locexprs[loc2]
         loc_vars = [v[0] for v in locexprs]
 
-        if var in loc_vars:
-            self.removeValFromResult(Q, var, fname, loc2)
-            locexprs = Q.getfnc(fname).locexprs[loc2]
+        # if var in loc_vars:
+        #     self.removeValFromResult(Q, var, fname, loc2)
+        #     locexprs = Q.getfnc(fname).locexprs[loc2]
         all_vars = set(trace.keys())
         if (len(locexprs) == 0):
             temp = {var}
@@ -707,6 +719,9 @@ class Repair(object):
             temp = all_vars.union(temp)
 
             if exp_vars.issubset(temp):
+                if var in loc_vars:
+                    self.removeValFromResult(Q, var, fname, loc2)
+                    # locexprs = Q.getfnc(fname).locexprs[loc2]
                 self.substituteInFunc(Q, var, fname, loc2, exp, idx)
                 return True
         return False

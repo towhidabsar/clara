@@ -1,1 +1,0 @@
-  * Change '$out := StrAppend($out, Add(Sub(b, a), c))' to '$out := StrAppend($out, Mod($new_y, $new_x))' at line 7 (cost=5.0)

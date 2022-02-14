@@ -1,6 +1,0 @@
-  * Change 'c := GetElement(arr', 2)' to 'c := ite(Or(Or(Gt(a', m'), Gt(b', m')), Gt(arr', m')), USub(1), ite(Gt(Add(arr', Div(m', 2)), m'), Sub(arr', Div(m', 2)), Add(arr', Div(m', 2))))' at line 11 (cost=30.0)
-  * Change 'm := abs(Sub(a', b'))' to 'm := Mult(2, abs(Sub(a', b')))' at line 12 (cost=2.0)
-  * Change 'b := GetElement(arr', 1)' to 'b := GetElement(map(int, split(input_val_')), 0)' at line 10 (cost=5.0)
-  * Change 'a := GetElement(arr', 0)' to 'a := GetElement(map(int, split(input_val_')), 1)' at line 9 (cost=5.0)
-  * Change 'arr := list(map(int, split(input_val_')))' to 'arr := GetElement(map(int, split(input_val_')), 2)' at line 8 (cost=2.0)
-  * Change '$out := StrAppend($out, FuncCall(checking, arr, m, c))' to '$out := StrAppend($out, int(c))' at line 13 (cost=4.0)

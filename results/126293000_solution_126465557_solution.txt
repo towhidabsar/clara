@@ -1,2 +1,0 @@
-  * Change 'cases := cases' to 'cases := FuncCall(fun, a', b', c')' inside the body of the 'for' loop beginning at line 15 (cost=5.0)
-  * Change '$out := StrAppend($out, FuncCall(circlenator, a, b, c))' to '$out := StrAppend($out, cases)' at line 16 (cost=5.0)
