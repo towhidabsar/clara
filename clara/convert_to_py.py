@@ -88,7 +88,8 @@ def getExprs(exp):
         args = exp.args
 
         if name == 'ListInit':
-            return [getExprs(i) for i in args]
+            vals = [getExprs(i) for i in args]
+            return '[' + ', '.join(vals) + ']'
 
         elif name == 'SetInit':
             vals = [str(getExprs(i)) for i in args]

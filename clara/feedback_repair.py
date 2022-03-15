@@ -124,7 +124,6 @@ class RepairFeedback(object):
                         if v == '*' else v for (k, v) in list(mapping.items())}
 
             for rep in repairs:
-
                 loc1 = rep.loc1
                 var1 = rep.var1
                 var2 = rep.var2
@@ -163,7 +162,7 @@ class RepairFeedback(object):
                         self.add("Add assignment '%s' %s (cost=%s)",
                                  line, locdesc, cost)
                     continue
-                allExprs1 = convertExp(var1, expr1)
+                allExprs1 = convertExp(var2, expr1)
                 if len(allExprs2) > 1 and len(allExprs1) > 1:
                     self.add('Change')
                     for line in allExprs2:
@@ -190,7 +189,12 @@ class RepairFeedback(object):
                     if (len(exps) == 2 and str(exps[0]) == str(exps[1])):
                         self.add("Add assignment '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
                                 allExprs1[0], locdesc, locdesc1, cost)
-                    else:
-                        self.add(
-                            "Change '%s' to '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
-                            allExprs2[0], allExprs1[0], locdesc, locdesc1, cost)
+                        continue
+                    exps = allExprs1[0].split(' = ')
+                    if (len(exps) == 2 and str(exps[0]) == str(exps[1])):
+                        self.add("Delete assignment '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
+                                allExprs2[0], locdesc, locdesc1, cost)
+                        continue
+                    self.add(
+                        "Change '%s' to '%s' %s of the incorrect program and %s of the correct program (cost=%s)",
+                        allExprs2[0], allExprs1[0], locdesc, locdesc1, cost)
