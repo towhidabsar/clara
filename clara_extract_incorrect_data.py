@@ -1,9 +1,8 @@
-from html2text import elements
 import xlrd
 import os
 from xlwt import Workbook
 
-path = "/home/mc1927/clara/batch_tests/run1/"
+path = "/home/mc1927/clara/batch_tests/1554A/"
 
 wb = Workbook()
 sheet1 = wb.add_sheet('test 1')
@@ -35,12 +34,8 @@ sheet1.write(0,24, 'Corr Rep 1')
 sheet1.write(0,25, 'Corr Rep 2')
 sheet1.write(0,26, 'Corr Rep 3')
 sheet1.write(0,27, 'wrong test case')
+sheet1.write(0,28, 'avg matching score')
 i = 1
-# probs = ['1551A.xls', '1560B.xls', '1554A.xls', '276A.xls', '716A.xls', '1467A.xls', '977C.xls
-# AllCorrectProgs = {}
-# Progs = {}
-# for f in os.listdir('/home/mc1927/codeForcesTests/NSF_WebScraper/Tests/Subset_1560B/correct/'):
-#     AllCorrectProgs[f] = {
 reps = 0
 correct_reps = 0
 mismatch0  = 0
@@ -68,10 +63,13 @@ corr_rep1  = 0
 corr_rep2  = 0
 corr_rep3  = 0
 testcase  = False
+matching_score = 0
 # }
 #     Progs[f] = set()
 # for probname in probs:
 for probname in os.listdir(path):
+    if '_1' not in probname:
+        continue
     # if not ("1560B_" in probname):
     #     continue
     # print(probname)
@@ -102,6 +100,8 @@ for probname in os.listdir(path):
     corr_rep2  = 0
     corr_rep3  = 0
     testcase  = False
+    matching_score = 0
+    tot = 0
 
     prob_wb = xlrd.open_workbook(path+probname)
     prob_sheet = prob_wb.sheet_by_index(0)
@@ -109,6 +109,15 @@ for probname in os.listdir(path):
     for j in range(1,prob_sheet.nrows):
         name = prob_sheet.cell_value(j,1)
         name_c = prob_sheet.cell_value(j,0)
+
+        try:
+            temp = prob_sheet.cell_value(j, 13)
+            temp = float(temp)
+            tot += 1
+            matching_score += temp
+        except:
+            matching_score += 0
+
         
         runs += 1
         if prob_sheet.cell_value(j, 7) != 'Yes' :
@@ -218,18 +227,9 @@ for probname in os.listdir(path):
     sheet1.write(i, 25, corr_rep2)
     sheet1.write(i, 26, corr_rep3)
     sheet1.write(i,27,testcase)
+    if tot != 0:
+        sheet1.write(i, 28, matching_score/tot)
+
     i += 1
 
-wb.save('summary_full00.xls')
-# Progs = {k: v for k, v in sorted(Progs.items(), key=lambda item: len(item[1]), reverse=True)}
-# corr = []
-# tot = set()
-# for p in Progs:
-#     temp = tot.union(Progs[p])
-#     if len(temp) > len(tot):
-#         corr += [p]
-#         tot = temp
-#     if len(tot) >=23:
-#         break
-# print(Progs)
-# print('\n', corr, '\n', len(corr))
+wb.save('1554A_Summary_1.xls')

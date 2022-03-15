@@ -3,7 +3,7 @@ import xlrd
 import os
 from xlwt import Workbook
 
-path = "/home/mc1927/clara/batch_tests/run1/"
+path = "/home/mc1927/clara/batch_tests/1554A/"
 
 wb = Workbook()
 sheet1 = wb.add_sheet('test 1')
@@ -40,57 +40,57 @@ i = 1
 AllCorrectProgs = {}
 Progs = {}
 correct = [
-"130930971",
-"130078338",
-"130225774",
-"131119365",
-"129997565",
-"130245021",
-"130068712",
-"130331844",
-"130612621",
-"130276184",
-"131576541",
-"129846373",
-"130076384",
-"129852568",
-"131611963",
-"130323313",
-"130340117",
-"130276221",
-"129968415",
-"130933787",
-"130055970",
-"130098206",
-"131883065",
-"129918169",
-"130078746",
-"129920601",
-"129807498",
-"130326842",
-"129972870",
-"131647426",
-"130013592",
-"130226984",
-"130508376",
-"129819317",
-"130625847",
-"130907230",
-"131368485",
-"130253003",
-"131469008",
-"130557863",
-"130003012",
-"130913667",
-"130599257",
-"130734134",
-"130199629",
-"130068381",
-"130840706",
-"130247844",
-"129985561",
-"129977060"]
-
+"134421801",
+"137593443",
+"139037081",
+"136136048",
+"141824639",
+"141364911",
+"142772825",
+"133904059",
+"136299250",
+"137791508",
+"146510580",
+"143543133",
+"141611511",
+"134507857",
+"140296382",
+"138699322",
+"142115909",
+"134490571",
+"144809421",
+"142616589",
+"134365073",
+"146280589",
+"142944908",
+"137714968",
+"133380987",
+"133259378",
+"134779401",
+"142038218",
+"145962497",
+"141735863",
+"136304768",
+"135896521",
+"133124953",
+"137197832",
+"136176581",
+"136221644",
+"142116020",
+"145146319",
+"146495296",
+"139981511",
+"140372751",
+"143138890",
+"134364994",
+"142243406",
+"133090666",
+"132701466",
+"132628055",
+"131116158",
+"130978389",
+"130794595"
+]
 for f in correct:
     AllCorrectProgs[f] = {
 'reps' : 0,
@@ -122,18 +122,18 @@ for f in correct:
 'testcase' : False,
 }
     Progs[f] = set()
+
 # for probname in probs:
 for probname in os.listdir(path):
-    # if not ("1560B_" in probname):
-    #     continue
-    # print(probname)
+    if '_3' not in probname:
+        continue
 
     prob_wb = xlrd.open_workbook(path+probname)
     prob_sheet = prob_wb.sheet_by_index(0)
 
     for j in range(1,prob_sheet.nrows):
         name = prob_sheet.cell_value(j,1)
-        name_c = prob_sheet.cell_value(j,0)
+        name_c = str(prob_sheet.cell_value(j,0))
 
         AllCorrectProgs[name_c]['runs'] += 1
         if prob_sheet.cell_value(j, 7) != 'Yes' :
@@ -248,7 +248,7 @@ for c in AllCorrectProgs:
     sheet1.write(i,27,AllCorrectProgs[c]['testcase'])
     i += 1
 
-wb.save('summary_full0.xls')
+wb.save('1554A_corr_1.xls')
 Progs = {k: v for k, v in sorted(Progs.items(), key=lambda item: len(item[1]), reverse=True)}
 corr = []
 tot = set()
@@ -257,7 +257,7 @@ for p in Progs:
     if len(temp) > len(tot):
         corr += [p]
         tot = temp
-    if len(tot) >=79:
+    if len(tot) >=82:
         break
 print(Progs)
 print('\n', corr, '\n', len(corr))
