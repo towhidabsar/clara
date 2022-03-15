@@ -14,3 +14,5 @@ clara.egg-info/SOURCES.txt
 batch_tests/
 results/
 tests/
+*.txt
+*.xls
