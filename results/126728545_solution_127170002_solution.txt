@@ -1,7 +1,0 @@
-  * Change 'n := n' to 'n := Sub(n, 1)' inside the body of the 'for' loop beginning at line 4 (cost=2.0)
-  * Add assignment '$new_l := min(a', b')' inside the body of the 'for' loop beginning at line 4 (cost=4.0)
-  * Add assignment '$new_diff := Sub(i', $new_l')' inside the body of the 'for' loop beginning at line 4 (cost=4.0)
-  * Add assignment '$new_tot := Mult(2, $new_diff')' inside the body of the 'for' loop beginning at line 4 (cost=4.0)
-  * Change 'i := GetElement(iter#0, ind#0)' to 'i := max(a', b')' at line 3 (cost=3.0)
-  * Add assignment '$new_ans := ite(Eq(Mod(Add(c, $new_diff), $new_tot), 0), $new_tot, Mod(Add(c, $new_diff), $new_tot))' inside the if-branch starting at line 6 (cost=14.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' to '$out := StrAppend($out, $new_ans)' at line 6 (cost=6.0)

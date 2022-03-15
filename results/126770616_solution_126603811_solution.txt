@@ -1,5 +1,0 @@
-  * Change 'i := GetElement(iter#0, ind#0)' to 'i := abs(Sub(w', y'))' at line 2 (cost=4.0)
-  * Add assignment '$new_max := ite(Gt(z', ite(Gt(y', w'), y', w')), z', ite(Gt(y', w'), y', w'))' inside the body of the 'for' loop beginning at line 3 (cost=17.0)
-  * Change 'x := x' to 'x := Sub(x, 1)' after the if-statement beginning at line 4 (cost=2.0)
-  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Sub(z, i))' at line 9 (cost=1.0)
-  * Change '$out := StrAppend($out, Add(z, y))' to '$out := StrAppend($out, Add(z, i))' at line 11 (cost=1.0)

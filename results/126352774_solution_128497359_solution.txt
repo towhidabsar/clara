@@ -1,4 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Change 'k := abs(Sub(a', b'))' to 'k := Mult(Mult(2, Sub(a', b')), FuncCall(s, Sub(a', b')))' at line 4 (cost=8.0)
-  * Change '$out := StrAppend($out, Add(c, k))' to '$out := StrAppend($out, Add(c, FloorDiv(k, 2)))' at line 7 (cost=2.0)
-  * Change '$out := StrAppend($out, Sub(c, k))' to '$out := StrAppend($out, Sub(c, FloorDiv(k, 2)))' at line 9 (cost=2.0)

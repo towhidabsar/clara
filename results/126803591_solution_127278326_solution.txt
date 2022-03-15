@@ -1,7 +1,0 @@
-  * Add assignment '$new_ind#0 := 0' around the beginning of function main (cost=2.0)
-  * Add assignment '$new_iter#0 := range(int(input_val'))' around the beginning of function main (cost=4.0)
-  * Add assignment '$new_ind#0 := Add($new_ind#0, 1)' inside the body of the 'while' loop beginning at line 3 (cost=3.0)
-  * Change 'n := abs(Sub(a', b'))' to 'n := GetElement($new_iter#0, $new_ind#0)' at line 4 (cost=4.0)
-  * Change 'z := Sub(z, 1)' to 'z := z' at line 10 (cost=2.0)
-  * Change 'z := z' to 'z := Add(Mod(Add(Sub(c, 1), FloorDiv(nn, 2)), nn), 1)' inside the else-branch starting at line 9 (cost=11.0)
-  * Change '$out := StrAppend($out, Add(c, n))' to '$out := StrAppend($out, z)' at line 9 (cost=3.0)

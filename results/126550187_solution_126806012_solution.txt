@@ -1,4 +1,0 @@
-  * Add assignment '$new_d := Sub(c, FloorDiv(k, 2))' inside the if-branch starting at line 7 (cost=6.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(a, b))))' to '$out := StrAppend($out, $new_d)' at line 7 (cost=6.0)
-  * Add assignment '$new_d := Add(c, FloorDiv(k, 2))' inside the else-branch starting at line 9 (cost=6.0)
-  * Change '$out := StrAppend($out, Sub(c, abs(Sub(a, b))))' to '$out := StrAppend($out, $new_d)' at line 9 (cost=6.0)

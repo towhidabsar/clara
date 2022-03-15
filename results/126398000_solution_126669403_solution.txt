@@ -1,2 +1,0 @@
-  * Add assignment '$new_n := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 10 (cost=7.0)
-  * Change '$out := StrAppend($out, FuncCall(solution, a, b, c))' to '$out := StrAppend($out, ite(Or(Or(Gt(a, $new_n), Gt(b, $new_n)), Gt(c, $new_n)), USub(1), Add(Mod(Add(Sub(c, 1), FloorDiv($new_n, 2)), $new_n), 1)))' at line 11 (cost=23.0)

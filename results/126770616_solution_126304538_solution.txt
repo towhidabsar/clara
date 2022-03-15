@@ -1,6 +1,0 @@
-  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
-  * Change '_ := GetElement(iter#0, ind#0)' to '_ := abs(Sub(a', b'))' at line 2 (cost=4.0)
-  * Add assignment '$new_max := ite(Gt(c', ite(Gt(b', a'), b', a')), c', ite(Gt(b', a'), b', a'))' inside the body of the 'for' loop beginning at line 3 (cost=17.0)
-  * Add assignment '$new_t := Sub($new_t, 1)' after the if-statement beginning at line 4 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, Sub(c, _))' at line 7 (cost=5.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, _))' at line 9 (cost=3.0)

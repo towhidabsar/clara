@@ -1,4 +1,0 @@
-  * Change 'cnt := 0' to 'cnt := Mult(abs(Sub(a', b')), 2)' at line 3 (cost=6.0)
-  * Change '$out := StrAppend($out, Mult(abs(Sub(a, b)), 2))' to '$out := StrAppend($out, USub(1))' at line 5 (cost=6.0)
-  * Add assignment '$new_p := Add(Mod(Add(Sub(c, 1), FloorDiv(cnt, 2)), cnt), 1)' inside the else-branch starting at line 7 (cost=12.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_p)' at line 7 (cost=2.0)

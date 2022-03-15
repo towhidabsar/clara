@@ -1,5 +1,0 @@
-  * Change 'i := GetElement(iter#0, ind#0)' to 'i := Add(Mult(2, Sub(Sub(y', w'), 1)), 2)' at line 2 (cost=9.0)
-  * Change 'x := x' to 'x := Sub(x, 1)' inside the body of the 'for' loop beginning at line 3 (cost=2.0)
-  * Change 'w := GetElement(map(int, split(input_val_')), 0)' to 'w := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 3 (cost=23.0)
-  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Sub(z, Sub(y, w)))' at line 9 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(z, y))' to '$out := StrAppend($out, Add(z, Sub(y, w)))' at line 11 (cost=2.0)

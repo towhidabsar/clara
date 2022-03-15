@@ -1,6 +1,0 @@
-  * Change 'a := a' to 'a := int(input_val')' around the beginning of function main (cost=2.0)
-  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := list(map(int, split(input_val_')))' at line 3 (cost=2.0)
-  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := a' at line 3 (cost=6.0)
-  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := Mult(abs(Sub(GetElement(c', 0), GetElement(c', 1))), 2)' at line 3 (cost=10.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, Add(GetElement(c, 2), FloorDiv(b, 2)))' at line 7 (cost=5.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(GetElement(c, 2), FloorDiv(b, 2)))' at line 9 (cost=7.0)

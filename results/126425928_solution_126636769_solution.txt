@@ -1,3 +1,0 @@
-  * Change 'dia := ite(GtE(a', b'), Sub(a', b'), Sub(b', a'))' to 'dia := abs(Mult(Sub(a', b'), 2))' inside the body of the 'for' loop beginning at line 3 (cost=8.0)
-  * Change '$out := StrAppend($out, Sub(c, dia))' to '$out := StrAppend($out, Add(c, FloorDiv(dia, 2)))' at line 16 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(c, dia))' to '$out := StrAppend($out, Sub(c, FloorDiv(dia, 2)))' at line 18 (cost=3.0)

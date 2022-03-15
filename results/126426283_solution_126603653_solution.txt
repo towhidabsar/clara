@@ -1,3 +1,0 @@
-  * Change 'z := GetElement(map(int, split(input_val_')), 1)' to 'z := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
-  * Change 'y := GetElement(map(int, split(input_val_')), 2)' to 'y := GetElement(map(int, split(input_val_')), 1)' at line 3 (cost=1.0)
-  * Change '$out := StrAppend($out, Add(y, int(Div(i, 2))))' to '$out := StrAppend($out, Add(z, int(Div(i, 2))))' at line 11 (cost=1.0)

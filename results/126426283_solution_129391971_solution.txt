@@ -1,4 +1,0 @@
-  * Change 'num2 := GetElement(split(input_val_'), 1)' to 'num2 := GetElement(map(int, split(input_val_')), 1)' at line 4 (cost=2.0)
-  * Change 'num3 := GetElement(split(input_val_'), 2)' to 'num3 := GetElement(map(int, split(input_val_')), 2)' at line 4 (cost=2.0)
-  * Delete 'difference := abs(Sub(int(num2'), int(num1')))' at line 5 (cost=6.0)
-  * Change 'num1 := GetElement(split(input_val_'), 0)' to 'num1 := GetElement(map(int, split(input_val_')), 0)' at line 4 (cost=2.0)

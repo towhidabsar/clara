@@ -1,2 +1,0 @@
-  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
-  * Change '$out := StrAppend($out, FuncCall(solution, a, b, c))' to '$out := StrAppend($out, FuncCall(findAns, a, b, c))' at line 11 (cost=1.0)

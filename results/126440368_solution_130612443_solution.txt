@@ -1,3 +1,0 @@
-  * Change 'n := n' to 'n := Sub(n, 1)' inside the body of the 'for' loop beginning at line 3 (cost=2.0)
-  * Change 'a := GetElement(map(int, split(input_val_', " ")), 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 3 (cost=24.0)
-  * Delete '_ := GetElement(iter#0, ind#0)' at line 2 (cost=3.0)

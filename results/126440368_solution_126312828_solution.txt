@@ -1,7 +1,0 @@
-  * Change 't := t' to 't := int(input_val')' around the beginning of function main (cost=2.0)
-  * Change 't := GetElement(iter#0, ind#0)' to 't := Sub(t, 1)' at line 1 (cost=3.0)
-  * Change 'l := list(map(int, split(input_val_')))' to 'l := input()' at line 2 (cost=5.0)
-  * Change 'a := GetElement(l', 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(l')), 0), GetElement(map(int, split(l')), 1)), max(GetElement(map(int, split(l')), 0), GetElement(map(int, split(l')), 1))), 0)' at line 3 (cost=26.0)
-  * Delete 'input_val_ := input()' at line 2 (cost=1.0)
-  * Change '$out := StrAppend($out, Add(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Sub(c, Sub(b, a)))' at line 11 (cost=4.0)
-  * Change '$out := StrAppend($out, Sub(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Add(c, Sub(b, a)))' at line 14 (cost=4.0)

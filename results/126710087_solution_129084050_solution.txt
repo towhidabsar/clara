@@ -1,6 +1,0 @@
-  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(split(input_val_'), 2)' at line 2 (cost=2.0)
-  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(split(input_val_'), 0)' at line 2 (cost=2.0)
-  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(split(input_val_'), 1)' at line 2 (cost=2.0)
-  * Delete 'n := Mult(2, abs(Sub(a', b')))' at line 3 (cost=6.0)
-  * Delete 'res := ite(And(And(In(a', range(1, n')), In(b', range(1, n'))), In(c', range(1, n'))), Add(c', FloorDiv(n', 2)), USub(1))' at line None (cost=25.0)
-  * Change '$out := StrAppend($out, res)' to '$out := StrAppend($out, FuncCall(f_b, int(a), int(b), int(c)))' at line 9 (cost=8.0)

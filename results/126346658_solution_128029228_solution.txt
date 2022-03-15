@@ -1,5 +1,0 @@
-  * Change 'd := abs(Sub(b', a'))' to 'd := Mult(abs(Sub(a', b')), 2)' at line 4 (cost=4.0)
-  * Change '$out := StrAppend($out, Sub(c, d))' to '$out := StrAppend($out, "-1")' at line 6 (cost=3.0)
-  * Change 't := t' to 't := Add(c, FloorDiv(d, 2))' inside the else-branch starting at line 7 (cost=5.0)
-  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, Sub(t, d))' at line 8 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, t)' at line 10 (cost=2.0)

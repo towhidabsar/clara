@@ -1,7 +1,0 @@
-  * Add assignment '$new_t := int(input_val')' around the beginning of function main (cost=3.0)
-  * Add assignment '$new_re := Sub(Sub($new_ma', $new_mi'), 1)' inside the body of the 'for' loop beginning at line 2 (cost=6.0)
-  * Add assignment '$new_ma := max(a', b')' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Add assignment '$new_mi := min(a', b')' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Change 'g := abs(Sub(a', b'))' to 'g := Add(Mult(2, $new_re'), 2)' at line 3 (cost=5.0)
-  * Change '$out := StrAppend($out, Add(g, c))' to '$out := StrAppend($out, Sub(c, FloorDiv(g, 2)))' at line 7 (cost=4.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(FloorDiv(g, 2), c))' at line 9 (cost=5.0)

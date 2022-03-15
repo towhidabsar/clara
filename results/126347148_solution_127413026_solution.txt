@@ -1,2 +1,0 @@
-  * Delete 'd := abs(Sub(a', b'))' at line 4 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, FuncCall(findAns, a, b, c))' at line 5 (cost=5.0)

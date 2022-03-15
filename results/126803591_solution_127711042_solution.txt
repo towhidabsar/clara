@@ -1,1 +1,0 @@
-  * Change 'front := Add(c, abs(Sub(a, b)))' to 'front := Add(Mod(Add(Sub(c, 1), FloorDiv(n, 2)), n), 1)' at line 7 (cost=10.0)

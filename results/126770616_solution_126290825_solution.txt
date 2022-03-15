@@ -1,1 +1,0 @@
-  * Change 'a := Sub(GetElement(map(int, split(input_val_')), 0), 1)' to 'a := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 1)' at line 5 (cost=8.0)

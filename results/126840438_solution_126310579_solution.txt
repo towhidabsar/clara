@@ -1,1 +1,0 @@
-  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(k, 2)), Add(c, d), Sub(c, d)))' at line 10 (cost=11.0)

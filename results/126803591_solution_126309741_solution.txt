@@ -1,3 +1,0 @@
-  * Delete 'd := ite(Lt(c', Div(k', 2)), Add(c', abs(Sub(a', b'))), Sub(c', abs(Sub(a', b'))))' at line 5 (cost=18.0)
-  * Change 'n := n' to 'n := Add(Mod(Add(Sub(c, 1), FloorDiv(k, 2)), k), 1)' inside the else-branch starting at line 10 (cost=11.0)
-  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, n)' at line 10 (cost=1.0)

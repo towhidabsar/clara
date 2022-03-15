@@ -1,3 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Delete 'htotal := abs(Sub(a', b'))' at line 4 (cost=4.0)
-  * Change '$out := StrAppend($out, Mod(Add(c, htotal), total))' to '$out := StrAppend($out, ite(Or(Or(Gt(a, total), Gt(b, total)), Gt(c, total)), USub(1), Add(Mod(Add(Sub(c, 1), FloorDiv(total, 2)), total), 1)))' at line 6 (cost=21.0)

@@ -1,3 +1,0 @@
-  * Change '$out := StrAppend($out, Mod(Add(c, FloorDiv(n, 2)), n))' to '$out := StrAppend($out, USub(1))' at line 6 (cost=7.0)
-  * Change 't := t' to 't := Add(Mod(Add(Sub(c, 1), FloorDiv(n, 2)), n), 1)' inside the else-branch starting at line 8 (cost=11.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, t)' at line 8 (cost=2.0)

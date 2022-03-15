@@ -1,4 +1,0 @@
-  * Change 'n := Mult(2, dif')' to 'n := abs(Sub(a', b'))' at line 10 (cost=4.0)
-  * Change 'dif := FuncCall(mod, a', b')' to 'dif := ite(Gt(c', ite(Gt(b', a'), b', a')), c', ite(Gt(b', a'), b', a'))' at line 9 (cost=14.0)
-  * Change '$out := StrAppend($out, Add(c, dif))' to '$out := StrAppend($out, Sub(c, n))' at line 15 (cost=2.0)
-  * Change '$out := StrAppend($out, Sub(c, dif))' to '$out := StrAppend($out, Add(c, n))' at line 17 (cost=2.0)

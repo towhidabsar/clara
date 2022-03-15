@@ -1,5 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Delete 'maxminum := Add(c, FloorDiv(l, 2))' at line 8 (cost=5.0)
-  * Delete 'minimal := Sub(c, FloorDiv(l, 2))' at line 7 (cost=5.0)
-  * Change '$out := StrAppend($out, maxminum)' to '$out := StrAppend($out, Add(c, FloorDiv(l, 2)))' at line 10 (cost=5.0)
-  * Change '$out := StrAppend($out, minimal)' to '$out := StrAppend($out, Sub(c, FloorDiv(l, 2)))' at line 12 (cost=5.0)

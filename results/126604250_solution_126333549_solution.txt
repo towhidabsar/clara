@@ -1,2 +1,0 @@
-  * Change 'input_val := input()' to 'input_val := int(g')' at line 1 (cost=2.0)
-  * Change 'g := int(input_val')' to 'g := input()' at line 1 (cost=2.0)

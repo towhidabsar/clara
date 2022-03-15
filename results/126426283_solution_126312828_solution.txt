@@ -1,7 +1,0 @@
-  * Change 'c := c' to 'c := int(input_val')' around the beginning of function main (cost=2.0)
-  * Delete 't := GetElement(iter#0, ind#0)' at line 1 (cost=3.0)
-  * Change 'l := list(map(int, split(input_val_')))' to 'l := GetElement(map(int, split(input_val_')), 2)' at line 2 (cost=2.0)
-  * Change 'c := GetElement(l', 2)' to 'c := c' at line 5 (cost=3.0)
-  * Change 'c := c' to 'c := Sub(c, 1)' after the if-statement beginning at line 7 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Sub(l, int(Div(num, 2))))' at line 11 (cost=4.0)
-  * Change '$out := StrAppend($out, Sub(c, FloorDiv(num, 2)))' to '$out := StrAppend($out, Add(l, int(Div(num, 2))))' at line 14 (cost=4.0)

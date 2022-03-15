@@ -1,2 +1,0 @@
-  * Delete 'input_val_ := input()' at line 19 (cost=1.0)
-  * Delete 'q := list(map(int, split(input_val_')))' at line 19 (cost=5.0)

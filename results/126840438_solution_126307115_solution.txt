@@ -1,2 +1,0 @@
-  * Change 'd := abs(Sub(a', b'))' to 'd := Mult(k', 2)' at line 15 (cost=4.0)
-  * Change 'k := Mult(2, abs(Sub(a', b')))' to 'k := abs(Sub(a', b'))' at line 5 (cost=2.0)

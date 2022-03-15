@@ -1,7 +1,0 @@
-  * Change 'x := x' to 'x := int(input_val')' around the beginning of function main (cost=2.0)
-  * Delete 'y := abs(Sub(b', a'))' at line 3 (cost=4.0)
-  * Change 'x := Mult(FloorDiv(y', 2), 2)' to 'x := x' at line 4 (cost=5.0)
-  * Change '$out := StrAppend($out, Sub(c, y))' to '$out := StrAppend($out, USub(1))' at line 6 (cost=3.0)
-  * Change 'b := b' to 'b := abs(Sub(a, b))' inside the else-branch starting at line 7 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(c, y))' to '$out := StrAppend($out, Sub(c, b))' at line 8 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, b))' at line 10 (cost=3.0)

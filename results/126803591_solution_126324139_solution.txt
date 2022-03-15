@@ -1,4 +1,0 @@
-  * Delete 'diff := abs(Sub(a', b'))' at line 4 (cost=4.0)
-  * Change '$out := StrAppend($out, max_value)' to '$out := StrAppend($out, USub(1))' at line 7 (cost=2.0)
-  * Change 't := t' to 't := Add(Mod(Add(Sub(c, 1), FloorDiv(max_value, 2)), max_value), 1)' inside the else-branch starting at line 9 (cost=11.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, t)' at line 9 (cost=2.0)

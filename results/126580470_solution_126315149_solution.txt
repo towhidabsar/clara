@@ -1,4 +1,0 @@
-  * Delete 'a := GetElement(map(int, split(input_val_')), 0)' at line 14 (cost=6.0)
-  * Delete 'b := GetElement(map(int, split(input_val_')), 1)' at line 14 (cost=6.0)
-  * Delete 'c := GetElement(map(int, split(input_val_')), 2)' at line 14 (cost=6.0)
-  * Delete 'input_val_ := input()' at line 14 (cost=1.0)

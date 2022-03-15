@@ -1,3 +1,0 @@
-  * Delete 'diff := abs(Sub(a', b'))' at line 3 (cost=4.0)
-  * Change 'res := ite(Gt(Add(c', diff'), Mult(2, diff')), Sub(c', diff'), Add(c', diff'))' to 'res := Mult(abs(Sub(a', b')), 2)' at line 4 (cost=14.0)
-  * Change '$out := StrAppend($out, ite(GtE(res, 1), res, USub(1)))' to '$out := StrAppend($out, ite(Or(Or(Gt(a, res), Gt(b, res)), Gt(c, res)), USub(1), Add(Mod(Add(Sub(c, 1), FloorDiv(res, 2)), res), 1)))' at line 5 (cost=20.0)

@@ -1,8 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Delete 'x := 0' at line 2 (cost=1.0)
-  * Change 'h := h' to 'h := int(input_val')' around the beginning of function main (cost=2.0)
-  * Delete 'l := min(a', b')' at line 7 (cost=3.0)
-  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 4 (cost=23.0)
-  * Change 'h := Sub(Add(min(a', b'), n'), 1)' to 'h := Sub(h, 1)' at line 6 (cost=5.0)
-  * Delete 'x := AssAdd(x, 1)' at line 15 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, Sub(b, a)))' at line 11 (cost=5.0)

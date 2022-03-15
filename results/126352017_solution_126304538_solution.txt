@@ -1,4 +1,0 @@
-  * Add assignment '$new_l := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
-  * Add assignment '$new_y := Sub(c, abs(Sub(a, b)))' inside the else-branch starting at line 6 (cost=7.0)
-  * Add assignment '$new_x := Add(c, abs(Sub(a, b)))' inside the else-branch starting at line 6 (cost=7.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_y)' at line 9 (cost=2.0)

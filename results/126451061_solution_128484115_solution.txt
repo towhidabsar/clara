@@ -1,5 +1,0 @@
-  * Delete 'a := int(GetElement(list(map(int, split(input_val_'))), 0))' at line 4 (cost=8.0)
-  * Delete 'b := int(GetElement(list(map(int, split(input_val_'))), 1))' at line 5 (cost=8.0)
-  * Delete 'c := int(GetElement(list(map(int, split(input_val_'))), 2))' at line 6 (cost=8.0)
-  * Delete 'input_val_ := input()' at line 3 (cost=1.0)
-  * Delete 'x := ite(Or(Eq(Add(c', abs(Sub(b', a'))), a'), Eq(Add(c', abs(Sub(b', a'))), b')), USub(1), ite(Or(Eq(Sub(c', abs(Sub(b', a'))), a'), And(Eq(Sub(c', abs(Sub(b', a'))), b'), Gt(Sub(c', abs(Sub(b', a'))), 0))), USub(1), ite(Eq(Mod(Sub(Add(c', Add(Add(a', b'), Sub(a', b'))), c'), 2), 0), Add(c', Add(Add(a', b'), Sub(a', b'))), USub(1))))' at line None (cost=76.0)

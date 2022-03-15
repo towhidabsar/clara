@@ -1,6 +1,0 @@
-  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(TupleInit(min(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1)), max(GetElement(map(int, split(input_val_')), 0), GetElement(map(int, split(input_val_')), 1))), 0)' at line 5 (cost=23.0)
-  * Change 'x := x' to 'x := Sub(x, 1)' inside the body of the 'while' loop beginning at line 4 (cost=2.0)
-  * Change 'i := AssAdd(i, 1)' to 'i := Add(Mult(2, Sub(Sub(b', a'), 1)), 2)' at line 4 (cost=8.0)
-  * Change '$out := StrAppend($out, Add(c, Sub(a, b)))' to '$out := StrAppend($out, USub(1))' at line 7 (cost=5.0)
-  * Change '$out := StrAppend($out, Sub(c, Sub(a, b)))' to '$out := StrAppend($out, Sub(c, Sub(b, a)))' at line 9 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, Sub(b, a)))' at line 11 (cost=5.0)

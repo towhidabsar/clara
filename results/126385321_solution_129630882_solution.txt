@@ -1,7 +1,0 @@
-  * Change 'total_num := Mult(2, Sub(bigger', smaller'))' to 'total_num := abs(Sub(a', b'))' at line 8 (cost=4.0)
-  * Change 'inp_list := split(str(input_val_'), " ")' to 'inp_list := input()' at line 4 (cost=4.0)
-  * Delete 'bigger := max(ListInit(a', b'))' at line 6 (cost=4.0)
-  * Delete 'input_val_ := input()' at line 4 (cost=1.0)
-  * Delete 'smaller := min(ListInit(a', b'))' at line 7 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(Div(total_num, 2), c))' to '$out := StrAppend($out, Sub(c, total_num))' at line 16 (cost=5.0)
-  * Change '$out := StrAppend($out, Sub(Div(total_num, 2), c))' to '$out := StrAppend($out, Add(c, total_num))' at line 18 (cost=5.0)

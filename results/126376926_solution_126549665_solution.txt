@@ -1,7 +1,0 @@
-  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Change 'n := Mult(2, abs(Sub(a', b')))' to 'n := GetElement(iter#0, ind#0)' at line 6 (cost=6.0)
-  * Delete 'i := GetElement(iter#0, ind#0)' at line 3 (cost=3.0)
-  * Change 'd := d' to 'd := Mult(abs(Sub(a, b)), 2)' inside the if-branch starting at line 8 (cost=6.0)
-  * Change 'd := Sub(c, FloorDiv(n, 2))' to 'd := d' at line 9 (cost=5.0)
-  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, Sub(c, FloorDiv(d, 2)))' at line 13 (cost=4.0)

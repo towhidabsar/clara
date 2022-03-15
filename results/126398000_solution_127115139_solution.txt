@@ -1,6 +1,0 @@
-  * Change 'input_val_ := input_val_' to 'input_val_ := input()' inside the body of the 'for' loop beginning at line 19 (cost=1.0)
-  * Add assignment '$new_n := Mult(abs(Sub(n', $new_b')), 2)' inside the body of the 'for' loop beginning at line 19 (cost=7.0)
-  * Change 'n := n' to 'n := GetElement(list(map(int, split(input_val_'))), 0)' inside the body of the 'for' loop beginning at line 19 (cost=7.0)
-  * Add assignment '$new_b := GetElement(list(map(int, split(input_val_'))), 1)' inside the body of the 'for' loop beginning at line 19 (cost=8.0)
-  * Add assignment '$new_c := GetElement(list(map(int, split(input_val_'))), 2)' inside the body of the 'for' loop beginning at line 19 (cost=8.0)
-  * Change '$out := StrAppend($out, FuncCall(returnPos, split(input_val_')))' to '$out := StrAppend($out, ite(Or(Or(Gt(n, $new_n), Gt($new_b, $new_n)), Gt($new_c, $new_n)), USub(1), Add(Mod(Add(Sub($new_c, 1), FloorDiv($new_n, 2)), $new_n), 1)))' at line 19 (cost=25.0)

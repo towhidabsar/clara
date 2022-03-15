@@ -1,3 +1,0 @@
-  * Delete 'd2 := Add(c', Div(n', 2))' at line 5 (cost=5.0)
-  * Change 'd1 := d1' to 'd1 := Add(Mod(Add(Sub(c, 1), FloorDiv(n, 2)), n), 1)' inside the else-branch starting at line 9 (cost=11.0)
-  * Change '$out := StrAppend($out, int(max(d1, d2)))' to '$out := StrAppend($out, d1)' at line 9 (cost=3.0)

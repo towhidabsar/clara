@@ -1,6 +1,0 @@
-  * Change 'e := Mult(r', 2)' to 'e := Add(Mult(2, Sub(Sub(c', r'), 1)), 2)' at line 7 (cost=7.0)
-  * Delete 'a := GetElement(split(inp'), 0)' at line 5 (cost=4.0)
-  * Delete 'input_val_ := input()' at line 4 (cost=1.0)
-  * Change 'c := GetElement(split(inp'), 2)' to 'c := GetElement(TupleInit(min(r', GetElement(map(int, split(inp')), 1)), max(r', GetElement(map(int, split(inp')), 1))), 1)' at line 5 (cost=16.0)
-  * Change 'b := GetElement(split(inp'), 1)' to 'b := GetElement(map(int, split(inp')), 2)' at line 5 (cost=3.0)
-  * Change 'r := abs(Sub(int(a'), int(b')))' to 'r := GetElement(TupleInit(min(GetElement(map(int, split(inp')), 0), GetElement(map(int, split(inp')), 1)), max(GetElement(map(int, split(inp')), 0), GetElement(map(int, split(inp')), 1))), 0)' at line 6 (cost=29.0)

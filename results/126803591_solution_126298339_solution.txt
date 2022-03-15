@@ -1,3 +1,0 @@
-  * Add assignment '$new_k := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
-  * Add assignment '$new_p := Add(Mod(Add(Sub(c, 1), FloorDiv($new_k, 2)), $new_k), 1)' inside the else-branch starting at line 7 (cost=11.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, $new_p)' at line 7 (cost=6.0)

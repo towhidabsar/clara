@@ -1,1 +1,0 @@
-  * Change 'n := n' to 'n := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' inside the body of the 'for' loop beginning at line 3 (cost=10.0)

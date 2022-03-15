@@ -1,4 +1,0 @@
-  * Change 'total := int(Mult(difference', 2))' to 'total := ite(Gt(num3', ite(Gt(num2', num1'), num2', num1')), num3', ite(Gt(num2', num1'), num2', num1'))' at line 6 (cost=16.0)
-  * Change 'num2 := GetElement(split(input_val_'), 1)' to 'num2 := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 1)' at line 4 (cost=6.0)
-  * Change 'num3 := GetElement(split(input_val_'), 2)' to 'num3 := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' at line 4 (cost=6.0)
-  * Change 'num1 := GetElement(split(input_val_'), 0)' to 'num1 := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 0)' at line 4 (cost=6.0)
