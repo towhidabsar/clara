@@ -1,6 +1,0 @@
-  * Add assignment '$new_b := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 2 (cost=7.0)
-  * Change 'b := ListComp(1, int(BoundVar(0)), split(input_val_'), True)' to 'b := GetElement(map(int, split(input_val_')), 0)' inside the body of the 'for' loop beginning at line 2 (cost=7.0)
-  * Change 'diff := abs(Sub(GetElement(b', 0), GetElement(b', 1)))' to 'diff := GetElement(map(int, split(input_val_')), 2)' at line 4 (cost=9.0)
-  * Add assignment '$new_d := ite(Gt(Add(diff', val'), max'), Sub(Add(diff', val'), max'), Add(diff', val'))' inside the body of the 'for' loop beginning at line 2 (cost=15.0)
-  * Change '$out := StrAppend($out, val)' to '$out := StrAppend($out, USub(1))' at line 8 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, $new_d)' at line 9 (cost=2.0)

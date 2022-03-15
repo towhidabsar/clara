@@ -1,3 +1,0 @@
-  * Delete 'a := GetElement(map(int, split(input_val_', " ")), 0)' at line 3 (cost=7.0)
-  * Add assignment '$new_b := GetElement(map(int, split(input_val_')), 1)' inside the body of the 'for' loop beginning at line 3 (cost=7.0)
-  * Change 'b := GetElement(map(int, split(input_val_', " ")), 1)' to 'b := GetElement(map(int, split(input_val_')), 0)' at line 3 (cost=2.0)

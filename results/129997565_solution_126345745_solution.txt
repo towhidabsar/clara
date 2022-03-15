@@ -1,4 +1,0 @@
-  * Change 'diff := diff' to 'diff := USub(1)' around the beginning of function main (cost=2.0)
-  * Change 'n := n' to 'n := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
-  * Change 'diff := abs(Sub(a', b'))' to 'diff := diff' at line 5 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(c, diff))' to '$out := StrAppend($out, Add(c, n))' at line 10 (cost=1.0)

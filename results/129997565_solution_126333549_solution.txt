@@ -1,3 +1,0 @@
-  * Change 'g := g' to 'g := int(input_val')' around the beginning of function main (cost=2.0)
-  * Change '$new_n := $new_n' to '$new_n := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Change 'g := abs(Sub(a', b'))' to 'g := g' at line 3 (cost=4.0)

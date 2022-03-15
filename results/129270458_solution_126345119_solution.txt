@@ -1,5 +1,0 @@
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Change 'tc := int(input_val')' to 'tc := input()' at line 1 (cost=2.0)
-  * Delete 'n := Mult(diff', 2)' at line 5 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(c, diff))' to '$out := StrAppend($out, Sub(c, diff))' at line 10 (cost=1.0)
-  * Change '$out := StrAppend($out, Sub(c, diff))' to '$out := StrAppend($out, Add(c, diff))' at line 12 (cost=1.0)

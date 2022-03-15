@@ -1,4 +1,0 @@
-  * Delete 'n := int(input_val')' at line 2 (cost=2.0)
-  * Change 'd := Add(c', diff')' to 'd := ite(Gt(Add(c', diff'), max'), Sub(Add(c', diff'), max'), Add(c', diff'))' at line 10 (cost=11.0)
-  * Change '$out := StrAppend($out, d)' to '$out := StrAppend($out, USub(1))' at line 15 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, d)' at line 17 (cost=2.0)

@@ -1,4 +1,0 @@
-  * Change 'mid := FloorDiv(get', 2)' to 'mid := abs(Sub(b', a'))' at line 5 (cost=4.0)
-  * Delete 'get := Mult(2, Add(s', 1))' at line 4 (cost=5.0)
-  * Delete 's := abs(Sub(a', b'))' at line 3 (cost=4.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Sub(c, mid))' at line 9 (cost=3.0)

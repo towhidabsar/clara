@@ -1,2 +1,0 @@
-  * Change 'a := int(GetElement(x', 0))' to 'a := GetElement(map(int, split(x')), 0)' at line 3 (cost=4.0)
-  * Change 'c := int(GetElement(x', 2))' to 'c := GetElement(map(int, split(x')), 1)' at line 5 (cost=5.0)

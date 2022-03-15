@@ -1,7 +1,0 @@
-  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(map(int, split(input_val_')), 1)' at line 2 (cost=1.0)
-  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(map(int, split(input_val_')), 0)' at line 2 (cost=1.0)
-  * Change 'y := abs(Sub(b', a'))' to 'y := Mult(abs(Sub(b', a')), 2)' at line 3 (cost=2.0)
-  * Delete 'x := Mult(FloorDiv(y', 2), 2)' at line 4 (cost=5.0)
-  * Change '$out := StrAppend($out, Sub(c, y))' to '$out := StrAppend($out, USub(1))' at line 6 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(c, y))' to '$out := StrAppend($out, Sub(c, int(Div(y, 2))))' at line 8 (cost=4.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, int(Div(y, 2))))' at line 10 (cost=6.0)

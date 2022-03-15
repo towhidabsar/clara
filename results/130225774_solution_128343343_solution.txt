@@ -1,3 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Change 'n := Mult(2, abs(Sub(a', b')))' to 'n := abs(Sub(a', b'))' at line 4 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(c, FloorDiv(n, 2)))' to '$out := StrAppend($out, ite(LtE(c, n), Add(c, n), Sub(c, n)))' at line 8 (cost=9.0)

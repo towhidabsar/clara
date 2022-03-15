@@ -1,3 +1,0 @@
-  * Change 'y := GetElement(map(int, split(input_val_')), 1)' to 'y := ite(Gt(Add($new_end', $new_l'), x'), Sub(Add($new_end', $new_l'), x'), Add($new_end', $new_l'))' at line 3 (cost=15.0)
-  * Change 'z := GetElement(map(int, split(input_val_')), 2)' to 'z := GetElement(map(int, split(input_val_')), 1)' at line 3 (cost=1.0)
-  * Change '$new_end := Mult($new_l', 2)' to '$new_end := GetElement(map(int, split(input_val_')), 2)' at line 5 (cost=5.0)

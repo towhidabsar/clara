@@ -1,2 +1,0 @@
-  * Delete 'res := ite(Gt(Add(c', diff'), Mult(2, diff')), Sub(c', diff'), Add(c', diff'))' at line 4 (cost=14.0)
-  * Change '$out := StrAppend($out, ite(GtE(res, 1), res, USub(1)))' to '$out := StrAppend($out, ite(Or(Lt(diff, min(a, b)), Gt(c, Mult(diff, 2))), USub(1), ite(Gt(c, diff), Sub(c, diff), Add(c, diff))))' at line 5 (cost=21.0)

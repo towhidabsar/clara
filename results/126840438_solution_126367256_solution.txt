@@ -1,4 +1,0 @@
-  * Change 'maxim := Mult(2, FloorDiv(Add(a', b'), 2))' to 'maxim := Mult($new_dif', 2)' at line 5 (cost=5.0)
-  * Add assignment '$new_dif := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
-  * Change '$out := StrAppend($out, Sub(maxim, min(a, b)))' to '$out := StrAppend($out, USub(1))' at line 8 (cost=5.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(maxim, 2)), Add(c, $new_dif), Sub(c, $new_dif)))' at line 10 (cost=12.0)

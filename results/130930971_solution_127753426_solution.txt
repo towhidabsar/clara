@@ -1,2 +1,0 @@
-  * Change 'q := q' to 'q := ListInit()' around the beginning of function main (cost=1.0)
-  * Change 'q := list(map(int, split(input_val_')))' to 'q := append(q, ListComp(1, int(BoundVar(0)), split(input_val_'), True))' at line 19 (cost=8.0)

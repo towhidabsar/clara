@@ -1,5 +1,0 @@
-  * Delete 'ch := abs(Sub(a', b'))' at line 4 (cost=4.0)
-  * Delete 'cir := Mult(abs(Sub(a', b')), 2)' at line 3 (cost=6.0)
-  * Change 'ans := ans' to 'ans := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=4.0)
-  * Change 'ans := ite(LtE(Sub(c, ch), 0), AssAdd(Sub(c, ch), cir), Sub(c, ch))' to 'ans := ans' inside the else-branch starting at line 8 (cost=14.0)
-  * Change '$out := StrAppend($out, ans)' to '$out := StrAppend($out, ite(LtE(c, ans), Add(c, ans), Sub(c, ans)))' at line 11 (cost=9.0)

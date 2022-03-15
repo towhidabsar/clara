@@ -1,1 +1,0 @@
-  * Delete 'n := Mult(diff', 2)' at line 5 (cost=3.0)

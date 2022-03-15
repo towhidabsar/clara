@@ -1,4 +1,0 @@
-  * Delete 'd1 := Sub(c', Div(n', 2))' at line 4 (cost=5.0)
-  * Delete 'd2 := Add(c', Div(n', 2))' at line 5 (cost=5.0)
-  * Change 'n := Mult(2, abs(Sub(a', b')))' to 'n := abs(Sub(a', b'))' at line 3 (cost=2.0)
-  * Change '$out := StrAppend($out, int(max(d1, d2)))' to '$out := StrAppend($out, ite(LtE(c, n), Add(c, n), Sub(c, n)))' at line 9 (cost=10.0)

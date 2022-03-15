@@ -1,6 +1,0 @@
-  * Change '_ := _' to '_ := int(input_val')' around the beginning of function main (cost=2.0)
-  * Add assignment '$new_half := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
-  * Change '_ := GetElement(iter#0, ind#0)' to '_ := Sub(_, 1)' at line 2 (cost=3.0)
-  * Add assignment '$new_inp := input_val_'' inside the body of the 'for' loop beginning at line 3 (cost=2.0)
-  * Add assignment '$new_total := Mult($new_half', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Mod(Add(c, $new_half), $new_total))' at line 9 (cost=5.0)

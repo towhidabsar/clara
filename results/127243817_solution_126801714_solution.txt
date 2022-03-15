@@ -1,7 +1,0 @@
-  * Add assignment '$new_tot_inp := int(input_val')' around the beginning of function main (cost=3.0)
-  * Change 'a := list(map(int, split(input_val_', " ")))' to 'a := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 0)' at line 2 (cost=9.0)
-  * Change 'y := max(GetElement(a', 0), GetElement(a', 1))' to 'y := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 2)' at line 4 (cost=11.0)
-  * Add assignment '$new_b := GetElement(ListComp(1, int(BoundVar(0)), split(input_val_'), True), 1)' inside the body of the 'for' loop beginning at line 2 (cost=11.0)
-  * Change 'x := min(GetElement(a', 0), GetElement(a', 1))' to 'x := Mult(2, abs(Sub(a', $new_b')))' at line 3 (cost=7.0)
-  * Change '$out := StrAppend($out, Mult(2, Sub(y, x)))' to '$out := StrAppend($out, Sub(y, FloorDiv(x, 2)))' at line 7 (cost=4.0)
-  * Change '$out := StrAppend($out, "-1")' to '$out := StrAppend($out, Add(FloorDiv(x, 2), y))' at line 9 (cost=5.0)

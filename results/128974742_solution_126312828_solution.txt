@@ -1,4 +1,0 @@
-  * Change 't := t' to 't := int(input_val')' around the beginning of function main (cost=2.0)
-  * Change 't := GetElement(iter#0, ind#0)' to 't := Sub(t, 1)' at line 1 (cost=3.0)
-  * Add assignment '$new_half := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 2 (cost=5.0)
-  * Change 'l := list(map(int, split(input_val_')))' to 'l := input_val_'' at line 2 (cost=4.0)

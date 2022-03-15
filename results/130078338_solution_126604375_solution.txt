@@ -1,3 +1,0 @@
-  * Change 'triples := input_val_'' to 'triples := split(input_val_')' inside the body of the 'for' loop beginning at line 3 (cost=1.0)
-  * Change '$out := StrAppend($out, Sub(c, a_minus_b))' to '$out := StrAppend($out, Add(c, a_minus_b))' at line 12 (cost=1.0)
-  * Change '$out := StrAppend($out, Add(c, a_minus_b))' to '$out := StrAppend($out, Mod(Add(c, a_minus_b), total_num))' at line 14 (cost=2.0)

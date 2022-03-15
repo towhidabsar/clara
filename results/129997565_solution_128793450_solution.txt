@@ -1,7 +1,0 @@
-  * Change 'input_val_ := input_val_' to 'input_val_ := int(input_val')' around the beginning of function main (cost=2.0)
-  * Add assignment '$new_error := USub(1)' around the beginning of function main (cost=3.0)
-  * Change 'input_val_ := input()' to 'input_val_ := input_val_' at line 2 (cost=1.0)
-  * Change 'x := split(input_val_')' to 'x := input()' at line 2 (cost=2.0)
-  * Change '$out := StrAppend($out, abs(Sub(c, n)))' to '$out := StrAppend($out, $new_error)' at line 5 (cost=4.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, Add(c, n))' at line 7 (cost=3.0)
-  * Change '$out := StrAppend($out, Add(c, n))' to '$out := StrAppend($out, Sub(c, n))' at line 9 (cost=1.0)

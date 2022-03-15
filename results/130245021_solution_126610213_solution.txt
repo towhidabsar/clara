@@ -1,6 +1,0 @@
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
-  * Change 'd := d' to 'd := Mult(abs(Sub(a', b')), 2)' inside the body of the 'for' loop beginning at line 3 (cost=6.0)
-  * Change 'd := abs(Sub(a, b))' to 'd := d' at line 7 (cost=4.0)
-  * Change '$out := StrAppend($out, Add(c, d))' to '$out := StrAppend($out, Sub(c, int(Div(d, 2))))' at line 9 (cost=4.0)
-  * Change '$out := StrAppend($out, abs(Sub(c, d)))' to '$out := StrAppend($out, Add(c, int(Div(d, 2))))' at line 11 (cost=5.0)

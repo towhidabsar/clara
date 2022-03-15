@@ -1,3 +1,0 @@
-  * Delete 't := int(input_val')' at line 1 (cost=2.0)
-  * Change 'x := ite(Or(Eq(Add(c', abs(Sub(b', a'))), a'), Eq(Add(c', abs(Sub(b', a'))), b')), USub(1), ite(Or(Eq(Sub(c', abs(Sub(b', a'))), a'), And(Eq(Sub(c', abs(Sub(b', a'))), b'), Gt(Sub(c', abs(Sub(b', a'))), 0))), USub(1), Add(c', Add(Add(a', b'), Sub(a', b')))))' to 'x := abs(Sub(b', a'))' inside the body of the 'for' loop beginning at line 3 (cost=54.0)
-  * Change '$out := StrAppend($out, x)' to '$out := StrAppend($out, ite(Or(Lt(x, min(a, b)), Gt(c, Mult(x, 2))), USub(1), ite(Gt(c, x), Sub(c, x), Add(c, x))))' at line 16 (cost=23.0)

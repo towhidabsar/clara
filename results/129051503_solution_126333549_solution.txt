@@ -1,2 +1,0 @@
-  * Change 'g := abs(Sub(a', b'))' to 'g := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=6.0)
-  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := abs(Sub(a', b'))' at line 2 (cost=6.0)

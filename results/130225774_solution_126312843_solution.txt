@@ -1,4 +1,0 @@
-  * Change 'n := int(input_val')' to 'n := input()' at line 1 (cost=2.0)
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Change '$out := StrAppend($out, Add(c, x))' to '$out := StrAppend($out, USub(1))' at line 7 (cost=3.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, x), Add(c, x), Sub(c, x)))' at line 9 (cost=10.0)

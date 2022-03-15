@@ -1,5 +1,0 @@
-  * Delete 'input_val := input()' at line 1 (cost=1.0)
-  * Change 't := int(input_val')' to 't := input()' at line 1 (cost=2.0)
-  * Delete 'max_value := Mult(diff', 2)' at line 5 (cost=3.0)
-  * Change '$out := StrAppend($out, max_value)' to '$out := StrAppend($out, USub(1))' at line 7 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, diff), Add(c, diff), Sub(c, diff)))' at line 9 (cost=10.0)

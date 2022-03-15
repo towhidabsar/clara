@@ -1,4 +1,0 @@
-  * Change 'c := GetElement(map(int, split(input_val_')), 2)' to 'c := GetElement(map(int, split(input_val_')), 1)' at line 3 (cost=1.0)
-  * Change 'a := GetElement(map(int, split(input_val_')), 0)' to 'a := GetElement(map(int, split(input_val_')), 2)' at line 3 (cost=1.0)
-  * Change 'b := GetElement(map(int, split(input_val_')), 1)' to 'b := GetElement(map(int, split(input_val_')), 0)' at line 3 (cost=1.0)
-  * Change '$out := StrAppend($out, Add(c, abs(Sub(b, a))))' to '$out := StrAppend($out, Add(a, $new_diff))' at line 7 (cost=5.0)

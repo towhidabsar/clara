@@ -1,3 +1,0 @@
-  * Add assignment '$new_dif := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
-  * Change '$out := StrAppend($out, val)' to '$out := StrAppend($out, USub(1))' at line 6 (cost=2.0)
-  * Change '$out := StrAppend($out, USub(1))' to '$out := StrAppend($out, ite(LtE(c, FloorDiv(val, 2)), Add(c, $new_dif), Sub(c, $new_dif)))' at line 8 (cost=12.0)

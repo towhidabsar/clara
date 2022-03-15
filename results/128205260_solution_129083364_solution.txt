@@ -1,4 +1,0 @@
-  * Add assignment '$new_good := 0' inside the body of the 'for' loop beginning at line 2 (cost=2.0)
-  * Change 'res := ite(Gt(Add(c', diff'), Mult(2, diff')), Sub(c', diff'), Add(c', diff'))' to 'res := max(a', b', c')' at line 4 (cost=13.0)
-  * Change 'diff := abs(Sub(a', b'))' to 'diff := Mult(abs(Sub(a', b')), 2)' at line 3 (cost=2.0)
-  * Change '$out := StrAppend($out, ite(GtE(res, 1), res, USub(1)))' to '$out := StrAppend($out, FuncCall(func, diff, res, c))' at line 5 (cost=6.0)

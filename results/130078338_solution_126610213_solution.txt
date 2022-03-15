@@ -1,3 +1,0 @@
-  * Add assignment '$new_inp := split(input_val_')' inside the body of the 'for' loop beginning at line 3 (cost=3.0)
-  * Change 'd := d' to 'd := abs(Sub(a', b'))' inside the body of the 'for' loop beginning at line 3 (cost=4.0)
-  * Add assignment '$new_R := Mult(d', 2)' inside the body of the 'for' loop beginning at line 3 (cost=4.0)

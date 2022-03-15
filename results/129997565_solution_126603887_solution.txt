@@ -1,4 +1,0 @@
-  * Add assignment '$new_error := USub(1)' around the beginning of function main (cost=3.0)
-  * Add assignment '$new_diff := abs(Sub(w', y'))' inside the body of the 'for' loop beginning at line 3 (cost=5.0)
-  * Change '$out := StrAppend($out, Sub(z, y))' to '$out := StrAppend($out, Add(z, $new_diff))' at line 9 (cost=2.0)
-  * Change '$out := StrAppend($out, Add(z, y))' to '$out := StrAppend($out, Sub(z, $new_diff))' at line 11 (cost=2.0)

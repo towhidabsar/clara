@@ -1,2 +1,0 @@
-  * Change '_ := GetElement(iter#0, ind#0)' to '_ := int(GetElement($new_inp', 2))' at line 2 (cost=3.0)
-  * Change 'c := GetElement(map(int, split(input_val_', " ")), 2)' to 'c := GetElement(iter#0, ind#0)' at line 3 (cost=6.0)

@@ -1,2 +1,0 @@
-  * Change 'c := int(GetElement(split(inp'), 2))' to 'c := int(GetElement(split(inp'), 1))' at line 10 (cost=1.0)
-  * Change 'b := int(GetElement(split(inp'), 1))' to 'b := int(GetElement(split(inp'), 2))' at line 9 (cost=1.0)

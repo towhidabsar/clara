@@ -1,3 +1,0 @@
-  * Change 'input_val_ := input_val_' to 'input_val_ := input()' around the beginning of function main (cost=1.0)
-  * Change 'input_val_ := input()' to 'input_val_ := input_val_' at line 3 (cost=1.0)
-  * Change 'input_val := input_val' to 'input_val := input()' inside the body of the 'for' loop beginning at line 3 (cost=1.0)
