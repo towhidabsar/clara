@@ -354,6 +354,10 @@ class PyInterpreter(Interpreter):
         return l.count(*a)
 
     @eargs
+    def execute_strip(self, s):
+        return s.strip()
+
+    @eargs
     def execute_pop(self, l, *a):
         nl = deepcopy(l)
         res = nl.pop(*a)
