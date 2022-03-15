@@ -1,3 +1,4 @@
+import math
 import sys
 import networkx as nx
 from itertools import permutations, product
@@ -5,8 +6,6 @@ from itertools import permutations, product
 from clara.model import SPECIAL_VARS, Const, Var
 
 # find jaccard distance between two labels
-
-
 def jaccard(list1, list2):
     intersection = len(list(set(list1).intersection(list2)))
     union = (len(list1) + len(list2)) - intersection
@@ -184,11 +183,7 @@ class GraphMatching():
                 else:
                     lab2 = d2[n2]
                 val = jaccard(lab1.split(','), lab2.split(','))
-                # if val > 0.0:
-                #     
                 labelSim[n1][n2] = val
-            # if len(labelSim[n1]) == 0 and lab1 == 'EMPTY':
-            #     labelSim[n1] = l2
 
         print(l1, '\n', l2, '\n', labelSim)
 
@@ -200,7 +195,7 @@ class GraphMatching():
         print(possibleMatch, '\n')
         perms = self.createPermutations(possibleMatch)
         (bestMatch, score) = self.findBestMatch(perms, labelSim)
-        score /= (len(l1) + 1)
+        score /= len(possibleMatch)
         print('\n', bestMatch, score)
 
     def findBestMatch(self, phi, labelScores):
@@ -260,11 +255,11 @@ class GraphMatching():
 
     def createPermutations(self, possibleMatch):
         perms = []
+        size = 0.2 * math.factorial((len(possibleMatch) - 1))
         for v in product(*possibleMatch.values()):
+            if len(perms) == int(size):
+                return perms
             if len(v) == len(set(v)):
-                # temp = dict(zip(possibleMatch, v))
-                # if len(temp) != size:
-                #     continue
                 perms.append(dict(zip(possibleMatch, v)))
         return perms
 
