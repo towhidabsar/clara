@@ -1,13 +1,12 @@
-from os import system
 import sys
 import networkx as nx
-import matplotlib
-import matplotlib.pyplot as plt
-from itertools import permutations
+from itertools import permutations, product
 
 from clara.model import SPECIAL_VARS, Const, Var
 
 # find jaccard distance between two labels
+
+
 def jaccard(list1, list2):
     intersection = len(list(set(list1).intersection(list2)))
     union = (len(list1) + len(list2)) - intersection
@@ -107,11 +106,11 @@ class GraphMatching():
     def makeGraph(self, fnc):
         # the multidigraph indicates its directed and can have multiple repeated edges
         G = nx.MultiDiGraph()
-        
+
         # since a transition can go to None, it gives it the location 0 as 0 can never exist
         G.add_node(0, label='None')
-        
-        # extracts the locations and dicts for descriptions, transitions and expressions 
+
+        # extracts the locations and dicts for descriptions, transitions and expressions
         desc = fnc.locdescs
         trans = fnc.loctrans
         exprs = fnc.locexprs
@@ -147,6 +146,127 @@ class GraphMatching():
                 _, to, trans = e
                 print(trans['weight'], ' : ', to)
             print('\n')
+
+    def createMatchDict(self):
+        G1 = self.CG
+        G2 = self.ICG
+        d1 = self.CDict
+        d2 = self.ICDict
+        labelSim = {0: {0: 1}}
+
+        # checks to see which graph is shorter
+        l1 = list(G1.nodes())
+        l2 = list(G2.nodes())
+        len_l1 = len(l1)
+        len_l2 = len(l2)
+        self.shorter = 1
+        if len_l1 < len_l2:
+            self.result += ['DEL', len_l2-len_l1]
+        elif len_l1 > len_l2:
+            temp = l2
+            l2 = l1
+            l1 = temp
+            self.result += ['ADD', len_l1-len_l2]
+            self.shorter = 2
+
+        # removing node 0 from comparisons because that will always match with each other
+        l1.remove(0)
+        l2.remove(0)
+        for n1 in l1:
+            labelSim[n1] = {}
+            if self.shorter == 2:
+                lab1 = d2[n1]
+            else:
+                lab1 = d1[n1]
+            for n2 in l2:
+                if self.shorter == 2:
+                    lab2 = d1[n2]
+                else:
+                    lab2 = d2[n2]
+                val = jaccard(lab1.split(','), lab2.split(','))
+                # if val > 0.0:
+                #     
+                labelSim[n1][n2] = val
+            # if len(labelSim[n1]) == 0 and lab1 == 'EMPTY':
+            #     labelSim[n1] = l2
+
+        print(l1, '\n', l2, '\n', labelSim)
+
+        possibleMatch = {0: [0]}
+        for n1 in labelSim:
+            options = [k for k, _ in sorted(
+                labelSim[n1].items(), key=lambda item: item[1], reverse=True)]
+            possibleMatch[n1] = options
+        print(possibleMatch, '\n')
+        perms = self.createPermutations(possibleMatch)
+        (bestMatch, score) = self.findBestMatch(perms, labelSim)
+        score /= (len(l1) + 1)
+        print('\n', bestMatch, score)
+
+    def findBestMatch(self, phi, labelScores):
+        G1 = self.CG
+        G2 = self.ICG
+        d1 = self.CDict
+        d2 = self.ICDict
+        bestMatch = []
+        score = 0
+        
+        # traversing a possible match for the graphs
+        for match in phi:
+            currScore = 0
+            # traversing each node match
+            for n1 in match:
+                if n1 == 0:
+                    currScore += 1
+                    continue
+                n2 = match[n1]
+                labelDist = labelScores[n1][n2]
+                if self.option != 3:
+                    edges1 = []
+                    edges2 = []
+                    if self.shorter == 2:
+                        edges1 = list(G1.edges(n2, data=True))
+                        edges2 = list(G2.edges(n1, data=True))
+                    else:
+                        edges1 = list(G1.edges(n1, data=True))
+                        edges2 = list(G2.edges(n2, data=True))
+
+                    _, t1, _ = edges1[0]
+                    _, f1, _ = edges1[1]
+                    _, t2, _ = edges2[0]
+                    _, f2, _ = edges2[1]
+
+                    edgeDist = 0
+                    if self.shorter == 2:
+                        if (t1 == match[t2]):
+                            edgeDist += 1
+                        if (f1 == match[f2]):
+                            edgeDist += 1
+                    else:
+                        if (t2 == match[t1]):
+                            edgeDist += 1
+                        if (f2 == match[f1]):
+                            edgeDist += 1
+
+                    edgeDist *= 0.5
+                    currScore += (labelDist + edgeDist) / 2
+                else:
+                    currScore += labelDist
+            # if currScore is greater than this is the best match of graphs
+            if currScore > score:
+                score = currScore
+                bestMatch = match
+        return (bestMatch, score)
+
+    def createPermutations(self, possibleMatch):
+        perms = []
+        for v in product(*possibleMatch.values()):
+            if len(v) == len(set(v)):
+                # temp = dict(zip(possibleMatch, v))
+                # if len(temp) != size:
+                #     continue
+                perms.append(dict(zip(possibleMatch, v)))
+        return perms
 
     # analyzes both the graphs and finds a matching based on label distance and edges
     def allNodeCombinations(self):
@@ -188,7 +308,7 @@ class GraphMatching():
         # traversing a possible match for the graphs
         for match in allComb:
             currScore = 0
-            # traversing each node match 
+            # traversing each node match
             for n1, n2 in match:
                 lab1 = 0
                 lab2 = 0
@@ -241,13 +361,13 @@ class GraphMatching():
                 score = currScore
                 bestMatch = match
         matching = {}
-
+        print("old ", bestMatch)
         for n1, n2 in bestMatch:
             if rev:
                 matching[n2] = n1
             else:
                 matching[n1] = n2
-        final_score = score/len(allComb[0])
+        final_score = score/len(l1)
         print("Score:", final_score)
         if final_score < 0.6:
             print('SCORE TOO LESS')
@@ -262,7 +382,7 @@ class GraphMatching():
 
         G1 = self.CG
         G2 = self.ICG
-        
+
         # intialize the following dicts for new expressions, descriptions and transitions of the model
         new_e2 = {}
         new_d2 = {}
@@ -365,7 +485,7 @@ class GraphMatching():
         remLocs = list(self.ICF.locexprs.keys() - match_incorr.keys())
         for l in remLocs:
             self.removedLocs[l] = (self.ICF.locexprs[l], self.ICF.locdescs[l])
-        
+
         # we always start from location 1
         self.ICF.initloc = 1
         self.ICF.locexprs = new_e2
