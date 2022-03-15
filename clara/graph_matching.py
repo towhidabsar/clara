@@ -185,8 +185,6 @@ class GraphMatching():
                 val = jaccard(lab1.split(','), lab2.split(','))
                 labelSim[n1][n2] = val
 
-        print(l1, '\n', l2, '\n', labelSim)
-
         possibleMatch = {0: [0]}
         for n1 in labelSim:
             options = [k for k, _ in sorted(
@@ -198,11 +196,15 @@ class GraphMatching():
         score /= len(possibleMatch)
         print('\n', bestMatch, score)
 
+        print("Score:", score)
+        if score < 0.6:
+            print('SCORE TOO LESS')
+            sys.exit(0)
+        self.createModel(bestMatch)
+
     def findBestMatch(self, phi, labelScores):
         G1 = self.CG
         G2 = self.ICG
-        d1 = self.CDict
-        d2 = self.ICDict
         bestMatch = []
         score = 0
         
@@ -282,10 +284,10 @@ class GraphMatching():
             l2 = l1
             l1 = temp
             rev = True
-            self.longer = 1
+            self.shorter = 1
         elif len_l1 > len_l2:
             self.result += ['ADD', len_l1-len_l2]
-            self.longer = 2
+            self.shorter = 2
 
         # finds all possible combinations of node matching (exhaustive list)
         # the allComb is a list of lists where the outer list contains 1 possible matching for the entire graph
@@ -367,12 +369,12 @@ class GraphMatching():
         if final_score < 0.6:
             print('SCORE TOO LESS')
             sys.exit(0)
-        self.createModel(rev, bestMatch, matching)
+        self.createModel(bestMatch)
 
     # based on the correct graph and the matching, it recreates the incorrect model
     # if the correct graph is longer, nodes are added to the incorrect graph
     # if the correct graph is shorter, nodes are removed from the incorrect graph
-    def createModel(self, rev, bestMatch, matching):
+    def createModel(self, bestMatch):
         d1 = self.CDict
 
         G1 = self.CG
@@ -385,20 +387,23 @@ class GraphMatching():
 
         # creates a dictionary for the mapped nodes
         match_incorr = {}
-        for n1, n2 in bestMatch:
+        print(bestMatch)
+        for n1 in bestMatch:
+            n2 = bestMatch[n1]
             c1 = n1
             c2 = n2
-            if rev:
+            if self.shorter == 1:
                 c1 = n2
                 c2 = n1
             match_incorr[c2] = c1
 
         # based on the matches it recreates the new model
         # n1 and n2 are location/node numbers
-        for n1, n2 in bestMatch:
+        for n1 in bestMatch:
+            n2 = bestMatch[n1]
             c1 = n1
             c2 = n2
-            if rev:
+            if self.shorter == 1:
                 c1 = n2
                 c2 = n1
             if c1 == 0 and c2 == 0:
@@ -445,9 +450,9 @@ class GraphMatching():
 
         # this indicates that the correct program is longer so new locations must be added
         # new locations are always empty
-        if self.longer == 2:
+        if self.shorter == 2:
             locs = d1.keys()
-            extra = sorted(list(set(locs) - set(matching.keys())))
+            extra = sorted(list(set(locs) - set(bestMatch.values())))
             for e in extra:
                 new_e2[e] = []
                 edges2 = list(G1.edges(e, data=True))
