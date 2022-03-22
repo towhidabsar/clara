@@ -1,5 +1,6 @@
-import math
 import sys
+import time
+from matplotlib.pyplot import flag
 import networkx as nx
 from itertools import permutations, product
 
@@ -26,10 +27,12 @@ class GraphMatching():
         self.CDictInvert = {}
         self.finalMatrix = []
         self.finalMatching = {}
+        self.finalScore = {}
         self.longer = 0
         self.removedLocs = {}
         self.option = option
         self.result = []
+        self.perms = []
 
     def createGraphs(self):
         self.ICG = self.makeGraph(self.ICF)
@@ -186,21 +189,28 @@ class GraphMatching():
                 labelSim[n1][n2] = val
 
         possibleMatch = {0: [0]}
+        print("Smaller: ", self.shorter)
         for n1 in labelSim:
             options = [k for k, _ in sorted(
                 labelSim[n1].items(), key=lambda item: item[1], reverse=True)]
             possibleMatch[n1] = options
-        print(possibleMatch, '\n')
-        perms = self.createPermutations(possibleMatch)
-        (bestMatch, score) = self.findBestMatch(perms, labelSim)
+        start = time.time()
+        # perms = self.createPermutations(possibleMatch)
+        self.permBackTrack([0] + l1, possibleMatch, {}, labelSim)
+        end = time.time()
+        print('Done permutataions', end - start)
+        # print('possible match', possibleMatch)
+        start = time.time()
+        (bestMatch, score) = self.findBestMatch(self.perms, labelSim)
+        end = time.time()
+        # print('Model Creation', end - start)
         score /= len(possibleMatch)
-        print('\n', bestMatch, score)
 
         print("Score:", score)
         if score < 0.6:
             print('SCORE TOO LESS')
             sys.exit(0)
-        self.createModel(bestMatch)
+        self.createModel2(bestMatch)
 
     def findBestMatch(self, phi, labelScores):
         G1 = self.CG
@@ -255,15 +265,70 @@ class GraphMatching():
                 bestMatch = match
         return (bestMatch, score)
 
+    def cartesianProduct(self, set_a, set_b, last, possibleMatch):
+        result =[]
+        for i in range(0, len(set_a)):
+            vals_used = 0
+            for j in range(0, len(set_b)):
+                if vals_used == 2:
+                    break
+                if type(set_a[i]) != list:        
+                    set_a[i] = [set_a[i]]
+                # if set_b[j] in set_a[i]:
+                #     continue
+                temp = [num for num in set_a[i]]
+                temp.append(set_b[j])
+                if len(temp) == len(set(temp)):
+                    vals_used += 1
+                    if last:
+                        result.append(dict(zip(possibleMatch, temp)))
+                    else:
+                        result.append(temp)
+                
+        return result
+
+    def permBackTrack(self, U, possibleMatch, phi, labelSim):
+        if len(U) == len(phi):
+            if phi not in self.perms:
+                self.perms += [dict(phi)]
+            if len(self.perms) == 10000:
+                return True
+            return False
+        unmappedU = set(U) - set(phi.keys())
+
+        for currU in unmappedU:
+            unmappedV = set(possibleMatch[currU]) - set(phi.values())
+
+            for currV in unmappedV:
+                temp_phi = phi
+                temp_phi[currU] = currV
+                flag = self.permBackTrack(U, possibleMatch, temp_phi, labelSim)
+                if flag:
+                    return True
+        return False
+
     def createPermutations(self, possibleMatch):
         perms = []
-        size = 0.2 * math.factorial((len(possibleMatch) - 1))
-        for v in product(*possibleMatch.values()):
-            if len(perms) == int(size):
-                return perms
-            if len(v) == len(set(v)):
-                perms.append(dict(zip(possibleMatch, v)))
-        return perms
+        # print(len(possibleMatch))
+        # size = 0.2 * math.factorial((len(possibleMatch) - 1))
+        size = 1
+        list_a = list(possibleMatch.values())
+        temp = list_a[0]
+        
+        # do product of N sets
+        for i in range(1, len(possibleMatch)):
+            temp = self.cartesianProduct(temp, list_a[i], i + 1 == len(possibleMatch), possibleMatch)
+            # print(i, len(temp))
+        # print(temp)
+        # values = (p for p in product(*possibleMatch.values()) if len(set(p)) == len(p))
+        # for _ in range(0,size):
+        #     # if len(perms) == int(size):
+        #     #     return perms
+        #     # print(v, set(v), len(perms), len(v), len(set(v)))
+        #     # if len(set(v)) != len(v):
+        #     #     continue
+        #     perms.append(dict(zip(possibleMatch, next(values))))
+        return temp
 
     # analyzes both the graphs and finds a matching based on label distance and edges
     def allNodeCombinations(self):
@@ -371,6 +436,108 @@ class GraphMatching():
             sys.exit(0)
         self.createModel(bestMatch)
 
+    def createModel2(self, bestMatch):
+        # print("Correct\n", self.CF)
+        # print("\nIncorrect\n", self.ICF)
+        G1 = self.CG
+        G2 = self.ICG
+        # intialize the following dicts for new expressions, descriptions and transitions of the model
+        new_e2 = {}
+        new_d2 = {}
+        new_t2 = {}
+        if self.shorter == 1:
+            initloc = bestMatch[self.CF.initloc]
+        else:
+            # find the maximum location number so we don't have repeated locations
+            maxLoc = max(G2.nodes())
+            lastLoc = maxLoc
+            mappedG1Locs = set(bestMatch.values())
+            unmappedG1Locs = list(set(G1.nodes()) - mappedG1Locs)
+            new_locs = {}
+
+            # create a mapping of new locations to be added from G1 -> G2
+            for l in unmappedG1Locs:
+                maxLoc += 1
+                new_locs[l] = maxLoc
+            
+            new_locs.update({v:k for k, v in bestMatch.items()})
+
+        for loc1 in bestMatch:
+            if loc1 == 0:
+                continue
+            loc2 = bestMatch[loc1]
+
+            # if G2 is smaller, reverse the locations as bestMatch is a map from G2 -> G1
+            if (self.shorter == 2):
+                temp = loc1
+                loc1 = loc2
+                loc2 = temp
+                if loc1 == self.CF.initloc:
+                    initloc = loc2
+            new_e2[loc2] = G2.nodes[loc2]['exprs']
+            new_d2[loc2] = G2.nodes[loc2]['desc']
+
+            edges = list(G1.edges(loc1, data=True))
+            _, t_edge, _ = edges[0]
+            _, f_edge, _ = edges[1]
+            if self.shorter == 1:
+                t = None if bestMatch[t_edge] == 0 else bestMatch[t_edge]
+                f = None if bestMatch[f_edge] == 0 else bestMatch[f_edge]
+            else:
+                t = None if new_locs[t_edge] == 0 else new_locs[t_edge]
+                f = None if new_locs[f_edge] == 0 else new_locs[f_edge]
+            new_t2[loc2] = {True: t, False: f}
+
+        # add the remaining locations since G2 is smaller
+        if self.shorter == 2:
+            for currLoc in unmappedG1Locs:
+                edges = list(G1.edges(currLoc, data=True))
+                _, finalTrue, _ = edges[0]
+                _, finalFalse, _ = edges[1]
+                trans = finalTrue
+                mainLoc = currLoc
+                desc = 'At the end of the function'
+                flag = False
+                # _, f_edge, _ = edges[1]
+                while(trans == 0 or trans not in mappedG1Locs):
+                    if trans == lastLoc:
+                        flag = True
+                        break
+                    if trans < currLoc or trans == 0:
+                        _, false_edge, _ = edges[1]
+                        if trans == 0 and false_edge == 0:
+                            flag = True
+                            break
+                        currLoc = trans
+                        trans = false_edge
+                    else:
+                        currLoc = trans
+                        edges = list(G1.edges(trans, data=True))
+                        _, true_edge, _ = edges[0]
+                        trans = true_edge
+                newG2Loc = new_locs[mainLoc]
+                new_e2[newG2Loc] = []
+                new_t2[newG2Loc] = {True: None if finalTrue == 0 else new_locs[finalTrue], False: None if finalFalse == 0 else new_locs[finalFalse]}
+                
+                if not flag:
+                    desc = G2.nodes[new_locs[trans]]['desc']
+                new_d2[newG2Loc] = desc
+        if self.shorter == 1:
+            # adds all the expressions into a list so they can be adde to the feedback
+            remLocs = list(self.ICF.locexprs.keys() - bestMatch.values())
+            for l in remLocs:
+                self.removedLocs[l] = (self.ICF.locexprs[l], self.ICF.locdescs[l])
+        self.ICF.initloc = initloc
+        self.ICF.locexprs = new_e2
+        self.ICF.loctrans = new_t2
+        self.ICF.locdescs = new_d2
+
+        # print('\n\nNew Incorrect', self.ICF)
+
+        print('\n', bestMatch)
+
+
+
     # based on the correct graph and the matching, it recreates the incorrect model
     # if the correct graph is longer, nodes are added to the incorrect graph
     # if the correct graph is shorter, nodes are removed from the incorrect graph
@@ -384,7 +551,7 @@ class GraphMatching():
         new_e2 = {}
         new_d2 = {}
         new_t2 = {}
-
+        
         # creates a dictionary for the mapped nodes
         match_incorr = {}
         print(bestMatch)
