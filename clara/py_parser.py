@@ -38,14 +38,17 @@ class PyParser(Parser):
     BOUND_VARS = []
     ENTRY_FNC = ""
     ARGS = []
+    RENAME_FNCS = []
 
     def __init__(self, *args, **kwargs):
         super(PyParser, self).__init__(*args, **kwargs)
         self.ENTRY_FNC = args[0]
         if args and len(args) > 1 and args[1] and len(args[1]) > 0:
             self.ARGS = args[1][0]
+            self.RENAME_FNCS = args[2]
         self.hiddenvarcnt = 0
         self.input_name = "input_val"
+        self.rename = "fnc_new_name"
 
     def parse(self, code):
         # Get AST
@@ -509,12 +512,26 @@ class PyParser(Parser):
                     name = Var(name)
                     self.input_name += "_"
                     return name
+                elif (fncname in self.RENAME_FNCS):
+                    name = self.rename
+                    self.addexpr(name, Op(fncname, *args, line=node.lineno))
+                    self.addtype(name, '*')
+                    name = Var(name)
+                    self.rename += "_"
+                    return name
                 return Op(fncname, *args, line=node.lineno)
             elif node.func.id in self.UNSUPPORTED_BUILTIN_FNCS:
                 raise NotSupported("builtin: '%s'" % (node.func.id,))
             else:
                 fnc = Var(node.func.id)
                 args = list(map(self.visit_expr, node.args))
+                if (node.func.id in self.RENAME_FNCS):
+                    name = self.rename
+                    self.addexpr(name, Op('FuncCall', fnc, *args, line=node.lineno))
+                    self.addtype(name, '*')
+                    name = Var(name)
+                    self.rename += "_"
+                    return name
                 return Op('FuncCall', fnc, *args, line=node.lineno)
 
         elif isinstance(node.func, ast.Num):
