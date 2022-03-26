@@ -291,15 +291,15 @@ class GraphMatching():
         if len(U) == len(phi):
             if phi not in self.perms:
                 self.perms += [dict(phi)]
-            if len(self.perms) == 10000:
+            if len(self.perms) == 1000:
                 return True
             return False
         unmappedU = set(U) - set(phi.keys())
 
         for currU in unmappedU:
-            unmappedV = set(possibleMatch[currU]) - set(phi.values())
-
-            for currV in unmappedV:
+            for currV in possibleMatch[currU]:
+                if currV in phi.values():
+                    continue
                 temp_phi = phi
                 temp_phi[currU] = currV
                 flag = self.permBackTrack(U, possibleMatch, temp_phi, labelSim)
