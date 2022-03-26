@@ -3,6 +3,7 @@ Repair algorithm
 '''
 
 # Python imports
+from collections import defaultdict
 import time
 
 # External libs
@@ -73,12 +74,11 @@ class RepairResult(object):
 class Repair(object):
 
     def __init__(self, timeout=60, verbose=False, solver=None,
-                 allowsuboptimal=True, cleanstrings=False, printloc=False):
+                 allowsuboptimal=True, cleanstrings=False):
         self.starttime = None
         self.timeout = timeout
         self.verbose = verbose
         self.cleanstrings = cleanstrings
-        self.printloc = printloc
         self.total_cost = 0
         self.timedout = False
 
@@ -575,9 +575,6 @@ class Repair(object):
         
         locs1 = fnc1.retlocs
         locs2 = fnc2.retlocs
-        if (self.printloc):
-            locs1 = fnc1.printlocs
-            locs2 = fnc2.printlocs
 
         if(len(locs1) == 0): locs1 = [list(traceP.keys())[-1]]
         if(len(locs2) == 0): locs2 = [list(traceQ.keys())[-1]]
@@ -654,7 +651,6 @@ class Repair(object):
                     expr1 = rep.expr1
                     var1 = rep.var1
                     f2 = Q.getfnc(fname)
-                    
 
                     # Get loc2
                     loc2 = sm[loc1]
@@ -754,3 +750,41 @@ class Repair(object):
             if (k1 in trace):
                 del trace[k1]
         return trace
+
+    def calculateRepairPercentage(self, P, Q, result, remLocs):
+        add = defaultdict(int)
+        change = defaultdict(int)
+        modifications = 0
+        for fname, (_, repairs, sm) in list(result.items()):
+            for rep in repairs:
+                loc1 = rep.loc1
+                var1 = rep.var1
+                var2 = rep.var2
+                loc2 = sm[loc1]
+                if var1 == '-':
+                    add[loc2] -= 1
+                elif var2 == '*':
+                    add[loc2] += 1
+                else:
+                    change[loc2] += 1
+        fnc1 = P.getfnc(fname)
+        fnc2 = Q.getfnc(fname)
+        exprDict2 = fnc2.locexprs
+        exprDict1 = fnc1.locexprs
+        total = 0
+        for loc in exprDict2:
+            total += len(exprDict2[loc])
+        for loc in exprDict1:
+            total += len(exprDict1[loc])
+        modifications += sum([abs(i) for i in add.values()])
+        modifications += sum(change.values())
+        if remLocs:
+            for l in remLocs:
+                modifications += len(remLocs[l])
+                total += len(remLocs)
+        
+        # for a in add:
+        #     modifications += abs(add[a])
+        # for c in change:
+        #     modifications += change[c]
+        return (modifications/total * 100)
