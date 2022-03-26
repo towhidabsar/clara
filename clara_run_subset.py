@@ -83,8 +83,11 @@ correct = [
 correct_path = path + problem_name + '/OK/python.3/'
 incorrect_path = path + problem_name + '/REJECTED/python.3/'
 ic = '/home/mc1927/codeForcesTests/NSF_WebScraper/Code/c.txt'
+# correct_path = path + 'correct/'
+# incorrect_path = path + 'incorrect/'
 with open(ic) as ff:
     probs = ff.read().splitlines()
+# probs = os.listdir(incorrect_path)
 size = len(probs)
 start = time.time()
 
@@ -111,18 +114,21 @@ def batch_run(a, b, name):
         sheet1.write(0, 11, 'Technique')
         sheet1.write(0, 12, 'Cost')
         sheet1.write(0, 13, 'GM Score')
+        sheet1.write(0, 14, 'Percentage Repaired')
 
         # if ifile.endswith("_test_cases.txt"):
         #     continue
 
         for cfile in correct:
-            # if cfile.endswith("_test_cases.txt"):
-            #     continue
+        # for cfile in os.listdir(correct_path):
+            if cfile.endswith("_test_cases.txt"):
+                continue
 
             # file_code = ifile.split('_')[0]
             # testcase = incorrect_path+file_code+'_test_cases.txt'
 
             cdired = correct_path + cfile + '_solution.txt'
+            # cdired = correct_path + cfile
             idired = incorrect_path + ifile
             print(cfile, ' ', ifile)
 
@@ -195,6 +201,10 @@ def batch_run(a, b, name):
                     if len(temp):
                         temp = temp[0].split("Cost:")[-1].strip()
                         sheet1.write(i, 12, temp)
+                    temp = list(filter(lambda x : 'Percentage of the model modified' in x, formatted_output))
+                    if len(temp):
+                        temp = temp[0].split('Percentage of the model modified')[-1].strip()
+                        sheet1.write(i, 14, temp)
                 else:
                     # print("ifile ", ifile, " cfile ", cfile, " err ", err)
                     if ('StructMismatch' in err):
@@ -227,7 +237,7 @@ def batch_run(a, b, name):
                 i += 1
 
         incorrect_file_no = ifile.split('_')[0]
-        wb.save('batch_tests/1554A/' + incorrect_file_no + "_"+ str(g) + '.xls')
+        wb.save('batch_tests/algo2/1554A/' + incorrect_file_no + "_"+ str(g) + '.xls')
 
 
 threads = list()

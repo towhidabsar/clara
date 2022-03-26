@@ -74,7 +74,6 @@ Options are:
                      than N, an error occurs
                      (default is 0, which means that there is no limit)
   --clusterdir DIR   directory to write/read clustering results
-  --printloc  [0|1]  check final traces during repair at the print location
 '''
 
     def __init__(self):
@@ -135,7 +134,6 @@ Options are:
         self.suboptimal = int(self.opts.pop('suboptimal', 1))
         self.maxfeedcost = int(self.opts.pop('maxfeedcost', 0))
         self.clusterdir = self.opts.pop('clusterdir', 'clusters')
-        self.printloc = int(self.opts.pop('printloc', 0))
         self.testcase = '1.txt'
         self.applyRep = True
         self.shouldCheckRepair = bool(self.opts.pop('c', False))
@@ -143,6 +141,7 @@ Options are:
         self.removedLocs = {}
         self.graphMatchingType = int(self.opts.pop('matchOp', 1))
         self.graphResult = []
+        self.rename = self.opts.pop('renameFncs', "").split(',')
 
         self.poolsize = self.opts.pop('poolsize', None)
         if self.poolsize is not None:
@@ -237,9 +236,13 @@ Options are:
         # self.graphMatchingType -> 3 -> labels + correct program's edges
         fnc1 = self.models[0].getfnc(self.entryfnc)
         fnc2 = self.models[1].getfnc(self.entryfnc)
+        # print("CORRECT  ", fnc1)
+        # print("\n\nINCORRECT    ", fnc2, '\n\n')
         G = GraphMatching(fnc1, fnc2, self.graphMatchingType)
         G.createGraphs()
-        G.allNodeCombinations()
+        G.createMatchDict()
+        # G.allNodeCombinations()
+
         self.graphResult = G.result
 
         self.models[0].rmfnc(self.entryfnc)
@@ -247,6 +250,7 @@ Options are:
 
         self.models[0].addfnc(G.CF)
         self.models[1].addfnc(G.ICF)
+        # print("\n\n NEW INCORRECT    ", self.models[1], '\n\n')
         self.removedLocs = G.removedLocs
         self.repair()
 
@@ -351,7 +355,7 @@ Options are:
         
         R = Repair(timeout=self.timeout, verbose=self.verbose,
                    allowsuboptimal=self.suboptimal,
-                   cleanstrings=self.cleanstrings, printloc=self.printloc)
+                   cleanstrings=self.cleanstrings)
         r = R.repair(self.models[0], self.models[1], self.inter,
                      ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                      ignoreret=self.ignoreret, entryfnc=self.entryfnc)
@@ -366,6 +370,8 @@ Options are:
             txt.genConvertedfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
+            percentageChanged = R.calculateRepairPercentage(self.models[0], self.models[1], r, self.removedLocs)
+            print('Percentage of the model modified ', percentageChanged)
             self.feedback = txt.feedback
             if (self.applyRep):
                 self.applyRep = False
@@ -375,11 +381,11 @@ Options are:
 
                     r = R.repair(self.models[0], self.models[1], self.inter,
                                 ins=self.ins, args=self.args, ignoreio=self.ignoreio,
-                                ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=False)
+                                ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
                     _, repairs, _ = r[self.entryfnc]
                     if repairs:
                         txt = RepairFeedback(self.models[1], self.models[0], r)
-                        txt.genfeedback()
+                        txt.genConvertedfeedback()
                         print('Old Repairs were incomplete, apply these repairs too:')
                         print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
                     else:
@@ -509,7 +515,7 @@ Options are:
 
             rex[loc][var].append(expr)
 
-    def process_source(self, src, entryfnc, args):
+    def process_source(self, src, entryfnc, args, renameFncs):
         '''
         Reads and parses a single source file `src` and stets model fields.
         '''
@@ -520,7 +526,7 @@ Options are:
             code = f.read()
             code = "".join(x for x in code if x in string.printable)
             
-        model = self.parser.parse_code(code, entryfnc, args)
+        model = self.parser.parse_code(code, entryfnc, args, renameFncs)
         model.name = src
         self.extract_exprs(model)
 
@@ -534,7 +540,7 @@ Options are:
         self.models = []
 
         for src in self.sources:
-            model = self.process_source(src, entryfnc, args)
+            model = self.process_source(src, entryfnc, args, self.rename)
             self.models.append(model)
                 
     def findTestCaseNo(self):
@@ -576,7 +582,7 @@ Options are:
             s = s.split('/')[-1].split('.')[0]
             files += [s]
         name = '_'.join(files) + '.txt'
-        f = open('results/GM1/'+name,"w+")
+        f = open('results/algo2/1554A/'+name,"w+")
         f.write('\n'.join(['  * %s' % (x,) for x in feedback]))
         f.close()
 if __name__ == '__main__':
