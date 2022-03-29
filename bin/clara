@@ -123,7 +123,7 @@ Options are:
 
         self.verbose = int(self.opts.pop('verbose', 0))
         VERBOSE = self.verbose
-        
+        self.oldModel = None
         self.lang = self.opts.pop('lang', None)
         self.timeout = int(self.opts.pop('timeout', 300))
         self.ignoreio = int(self.opts.pop('ignoreio', 0))
@@ -234,6 +234,7 @@ Options are:
         # self.graphMatchingType -> 1 -> labels + edges + correct program's edges
         # self.graphMatchingType -> 2 -> labels + edges + incorrect program's edges
         # self.graphMatchingType -> 3 -> labels + correct program's edges
+        self.oldModel = self.models[1]
         fnc1 = self.models[0].getfnc(self.entryfnc)
         fnc2 = self.models[1].getfnc(self.entryfnc)
         # print("CORRECT  ", fnc1)
@@ -370,7 +371,8 @@ Options are:
             txt.genConvertedfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
-            percentageChanged = R.calculateRepairPercentage(self.models[0], self.models[1], r, self.removedLocs)
+            self.printValues(r)
+            percentageChanged = R.calculateRepairPercentage(self.models, r, self.removedLocs, self.entryfnc, self.oldModel)
             print('Percentage of the model modified ', percentageChanged)
             self.feedback = txt.feedback
             if (self.applyRep):
@@ -378,7 +380,6 @@ Options are:
                 try:
                     R.applyRepairs(self.models, r, self.inter,
                                 ins=self.ins, args=self.args, entryfnc=self.entryfnc)
-
                     r = R.repair(self.models[0], self.models[1], self.inter,
                                 ins=self.ins, args=self.args, ignoreio=self.ignoreio,
                                 ignoreret=self.ignoreret, entryfnc=self.entryfnc, suppressPrints=True)
@@ -582,9 +583,38 @@ Options are:
             s = s.split('/')[-1].split('.')[0]
             files += [s]
         name = '_'.join(files) + '.txt'
-        f = open('results/algo2/1554A/'+name,"w+")
+        f = open('results/algo2/1554A/3/'+name,"w+")
         f.write('\n'.join(['  * %s' % (x,) for x in feedback]))
         f.close()
+
+    def printValues(self, rep):
+        corr = self.models[0].getfnc(self.entryfnc)
+        incorr = self.models[1].getfnc(self.entryfnc)
+        exprDict1 = corr.locexprs
+        total = 0
+        for loc in exprDict1:
+            total += len(exprDict1[loc])
+        print('Locs in Correct Program Model', len(exprDict1))
+        print('Exprs in Correct Program Model', total)
+
+        exprDict1 = incorr.locexprs
+        total = 0
+        for loc in exprDict1:
+            total += len(exprDict1[loc])
+        print('Locs in Incorrect Program Model', len(exprDict1))
+        print('Exprs in Incorrect Program Model', total)
+
+        if self.oldModel:
+            oldIncorr = self.oldModel.getfnc(self.entryfnc)
+            exprDict1 = oldIncorr.locexprs
+            total = 0
+            for loc in exprDict1:
+                total += len(exprDict1[loc])
+            print('Locs in Old Incorrect Program Model', len(exprDict1))
+            print('Exprs in Old Incorrect Program Model', total)
+
+        print('Number of Repairs ', len(rep))
+
 if __name__ == '__main__':
     try:
         clara = Clara()

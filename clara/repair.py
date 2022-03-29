@@ -751,24 +751,26 @@ class Repair(object):
                 del trace[k1]
         return trace
 
-    def calculateRepairPercentage(self, P, Q, result, remLocs):
-        add = defaultdict(int)
-        change = defaultdict(int)
-        modifications = 0
-        for fname, (_, repairs, sm) in list(result.items()):
-            for rep in repairs:
-                loc1 = rep.loc1
-                var1 = rep.var1
-                var2 = rep.var2
-                loc2 = sm[loc1]
-                if var1 == '-':
-                    add[loc2] -= 1
-                elif var2 == '*':
-                    add[loc2] += 1
-                else:
-                    change[loc2] += 1
-        fnc1 = P.getfnc(fname)
-        fnc2 = Q.getfnc(fname)
+    def calculateRepairPercentage(self, models, result, remLocs, entryfnc, oldModel):
+        P = models[0]
+        Q = models[1]
+        if oldModel:
+            Q = oldModel
+        modifications = len(result)
+        # for fname, (_, repairs, sm) in list(result.items()):
+        #     for rep in repairs:
+        #         loc1 = rep.loc1
+        #         var1 = rep.var1
+        #         var2 = rep.var2
+        #         loc2 = sm[loc1]
+        #         if var1 == '-':
+        #             add[loc2] -= 1
+        #         elif var2 == '*':
+        #             add[loc2] += 1
+        #         else:
+        #             change[loc2] += 1
+        fnc1 = P.getfnc(entryfnc)
+        fnc2 = Q.getfnc(entryfnc)
         exprDict2 = fnc2.locexprs
         exprDict1 = fnc1.locexprs
         total = 0
@@ -776,8 +778,8 @@ class Repair(object):
             total += len(exprDict2[loc])
         for loc in exprDict1:
             total += len(exprDict1[loc])
-        modifications += sum([abs(i) for i in add.values()])
-        modifications += sum(change.values())
+        # modifications += sum([abs(i) for i in add.values()])
+        # modifications += sum(change.values())
         if remLocs:
             for l in remLocs:
                 modifications += len(remLocs[l])
