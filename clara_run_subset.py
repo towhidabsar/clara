@@ -13,7 +13,7 @@ rep_not_needed = 'No repair!'
 rep_partial = 'Partial Repaired'
 timeout = 'TIMEOUT'
 
-graph_matching_options = [1]
+graph_matching_options = [3]
 loc_add = 'Locs Added:'
 loc_del = 'Locs Deleted:'
 loc_same = 'Locs Same'
@@ -24,60 +24,66 @@ test_not_available = 'Test Case Not Available'
 path = '/home/mc1927/codeForcesTests/NSF_WebScraper/Output/ScrapeData/'
 problem_name = '1554A'
 testcase = '/home/mc1927/codeForcesTests/NSF_WebScraper/Output/ScrapeData/1554A/testcases/'
-
+corr_locs = 'Locs in Correct Program Model'
+corr_exp = 'Exprs in Correct Program Model'
+incorr_locs = 'Locs in Incorrect Program Model'
+incorr_exps = 'Exprs in Incorrect Program Model'
+old_incorr_locs = 'Locs in Old Incorrect Program Model'
+old_incorr_exps = 'Exprs in Old Incorrect Program Model'
+num_Reps = 'Number of Repairs '
 print(problem_name)
 
 correct = [
-"134421801",
-"137593443",
-"139037081",
-"136136048",
-"141824639",
-"141364911",
-"142772825",
-"133904059",
-"136299250",
-"137791508",
-"146510580",
-"143543133",
-"141611511",
-"134507857",
-"140296382",
-"138699322",
-"142115909",
-"134490571",
-"144809421",
-"142616589",
-"134365073",
-"146280589",
-"142944908",
-"137714968",
-"133380987",
-"133259378",
-"134779401",
-"142038218",
-"145962497",
-"141735863",
-"136304768",
-"135896521",
-"133124953",
-"137197832",
-"136176581",
-"136221644",
-"142116020",
-"145146319",
-"146495296",
-"139981511",
-"140372751",
-"143138890",
-"134364994",
-"142243406",
-"133090666",
-"132701466",
-"132628055",
-"131116158",
-"130978389",
-"130794595"
+    "134421801",
+    "137593443",
+    "139037081",
+    "136136048",
+    "141824639",
+    "141364911",
+    "142772825",
+    "133904059",
+    "136299250",
+    "137791508",
+    "146510580",
+    "143543133",
+    "141611511",
+    "134507857",
+    "140296382",
+    "138699322",
+    "142115909",
+    "134490571",
+    "144809421",
+    "142616589",
+    "134365073",
+    "146280589",
+    "142944908",
+    "137714968",
+    "133380987",
+    "133259378",
+    "134779401",
+    "142038218",
+    "145962497",
+    "141735863",
+    "136304768",
+    "135896521",
+    "133124953",
+    "137197832",
+    "136176581",
+    "136221644",
+    "142116020",
+    "145146319",
+    "146495296",
+    "139981511",
+    "140372751",
+    "143138890",
+    "134364994",
+    "142243406",
+    "133090666",
+    "132701466",
+    "132628055",
+    "131116158",
+    "130978389",
+    "130794595"
 ]
 
 correct_path = path + problem_name + '/OK/python.3/'
@@ -115,12 +121,19 @@ def batch_run(a, b, name):
         sheet1.write(0, 12, 'Cost')
         sheet1.write(0, 13, 'GM Score')
         sheet1.write(0, 14, 'Percentage Repaired')
+        sheet1.write(0, 15, 'Correct Locs')
+        sheet1.write(0, 16, 'Incorrect Locs')
+        sheet1.write(0, 17, 'Old incorrect Locs')
+        sheet1.write(0, 18, 'Correct Exprs')
+        sheet1.write(0, 19, 'Incorrect Exprs')
+        sheet1.write(0, 20, 'Old Incorrect Exprs')
+        sheet1.write(0, 21, 'Repairs')
 
         # if ifile.endswith("_test_cases.txt"):
         #     continue
 
         for cfile in correct:
-        # for cfile in os.listdir(correct_path):
+            # for cfile in os.listdir(correct_path):
             if cfile.endswith("_test_cases.txt"):
                 continue
 
@@ -156,19 +169,57 @@ def batch_run(a, b, name):
                 elif (test_not_available in output):
                     sheet1.write(i, 7, 'No')
 
+                # Locs + Exp
+                temp = list(
+                    filter(lambda x: corr_locs in x, formatted_output))
+                if len(temp):
+                    temp = temp[0].split(corr_locs)[-1].strip()
+                    sheet1.write(i, 15, temp)
+                temp = list(
+                    filter(lambda x: incorr_locs in x, formatted_output))
+                if len(temp):
+                    temp = temp[0].split(incorr_locs)[-1].strip()
+                    sheet1.write(i, 16, temp)
+                temp = list(
+                    filter(lambda x: old_incorr_locs in x, formatted_output))
+                if len(temp):
+                    temp = temp[0].split(old_incorr_locs)[-1].strip()
+                    sheet1.write(i, 17, temp)
+                temp = list(
+                    filter(lambda x: corr_exp in x, formatted_output))
+                if len(temp):
+                    temp = temp[0].split(corr_exp)[-1].strip()
+                    sheet1.write(i, 18, temp)
+                temp = list(
+                    filter(lambda x: incorr_exps in x, formatted_output))
+                if len(temp):
+                    temp = temp[0].split(incorr_exps)[-1].strip()
+                    sheet1.write(i, 19, temp)
+                temp = list(
+                    filter(lambda x: old_incorr_exps in x, formatted_output))
+                if len(temp):
+                    temp = temp[0].split(old_incorr_exps)[-1].strip()
+                    sheet1.write(i, 20, temp)
+                temp = list(
+                    filter(lambda x: num_Reps in x, formatted_output))
+                if len(temp):
+                    temp = temp[0].split(num_Reps)[-1].strip()
+                    sheet1.write(i, 21, temp)
+
                 sheet1.write(i, 11, g)
                 if g == 0:
                     sheet1.write(i, 9, 0)
                     sheet1.write(i, 10, 0)
                 else:
                     temp = list(
-                    filter(lambda x: 'Score:' in x, formatted_output))
+                        filter(lambda x: 'Score:' in x, formatted_output))
                     if len(temp):
                         temp = temp[0].split("Score:")[-1].strip()
                         sheet1.write(i, 13, temp)
                     if loc_add in output:
                         sheet1.write(i, 9, 'Add')
-                        temp = list(filter(lambda x: loc_add in x, formatted_output))
+                        temp = list(
+                            filter(lambda x: loc_add in x, formatted_output))
                         temp = temp[0].split(loc_add)[-1].strip()
                         sheet1.write(i, 10, temp)
                     elif loc_same in output:
@@ -201,9 +252,11 @@ def batch_run(a, b, name):
                     if len(temp):
                         temp = temp[0].split("Cost:")[-1].strip()
                         sheet1.write(i, 12, temp)
-                    temp = list(filter(lambda x : 'Percentage of the model modified' in x, formatted_output))
+                    temp = list(
+                        filter(lambda x: 'Percentage of the model modified' in x, formatted_output))
                     if len(temp):
-                        temp = temp[0].split('Percentage of the model modified')[-1].strip()
+                        temp = temp[0].split(
+                            'Percentage of the model modified')[-1].strip()
                         sheet1.write(i, 14, temp)
                 else:
                     # print("ifile ", ifile, " cfile ", cfile, " err ", err)
@@ -237,7 +290,8 @@ def batch_run(a, b, name):
                 i += 1
 
         incorrect_file_no = ifile.split('_')[0]
-        wb.save('batch_tests/algo2/1554A/' + incorrect_file_no + "_"+ str(g) + '.xls')
+        wb.save('batch_tests/algo2/1554A/' +
+                incorrect_file_no + "_" + str(g) + '.xls')
 
 
 threads = list()
