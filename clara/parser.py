@@ -455,7 +455,7 @@ class Parser(object):
         self.loc = exitloc
 
     def add_import(self, key, val):
-        self.prog.add_import(key, val)
+        self.prog.add_import(val, key)
 
     def add_from_import(self, module, key, val):
         self.prog.add_from_import(module, key, val)

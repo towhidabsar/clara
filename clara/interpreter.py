@@ -214,7 +214,7 @@ class Interpreter(object):
         if ('.' in op.name):
             s2 = op.name.split('.')
             if (s2[0] in self.prog.imports):
-               return self.execute_lib_fnc(s2[0], s2[1], op.args, mem)
+               return self.execute_lib_fnc(self.prog.imports[s2[0]], s2[1], op.args, mem)
         meth = getattr(self, 'execute_%s' % (op.name,))
         return meth(op, mem)
 
@@ -265,10 +265,16 @@ class Interpreter(object):
 
     def execute_FuncCall(self, f, mem):
         name = f.args[0].name
-        
         if (name in self.prog.from_imports):
             key, val = self.prog.from_imports[name]
             return self.execute_lib_fnc(val, key, f.args[1:], mem)
+        else:
+            if '*' in self.prog.from_imports:
+                key, val = self.prog.from_imports['*']
+                try:
+                    return self.execute_lib_fnc(val, name, f.args[1:], mem)
+                except:
+                    pass
         
         try:
             fnc = self.getfnc(name)

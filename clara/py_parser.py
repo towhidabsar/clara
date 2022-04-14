@@ -500,7 +500,6 @@ class PyParser(Parser):
             raise NotSupported(
                 'keyword arguments not supported',
                 line=node.lineno)
-
         if isinstance(node.func, ast.Name):
             if node.func.id in self.BUILTIN_FNCS:
                 fncname = node.func.id
@@ -545,17 +544,15 @@ class PyParser(Parser):
             val = self.visit_expr(node.func.value)
             args = list(map(self.visit_expr, node.args))
             lib = None
+            lib_rename = None
             if (hasattr(val, 'name')):
                 lib = importlib.util.find_spec(val.name)
+                lib_rename = val.name in self.prog.imports
             
-            if (lib):
+            if (lib or lib_rename):
                 return Op('%s.%s' % (val, attr), *args, line=node.lineno)
             if (isinstance(val, Var) and val.name in self.MODULE_NAMES
                 and not self.hasvar(val.name)):
-                # A bit of hack...
-                if val.name == 'm':
-                    val.name = 'math'
-                    
                 return Op('%s_%s' % (val, attr), *args, line=node.lineno)
             if attr == 'pop':
                 if isinstance(val, Var):
@@ -606,11 +603,11 @@ class PyParser(Parser):
         From Imports are added into from_imports dictionary in the Program model
         '''
         module = node.module
-        node = node.names[0]
-        val = node.name
-        if (node.asname):
-            node.name = node.asname
-        self.add_from_import(module, node.name, val)
+        for n in node.names:
+            val = n.name
+            if (n.asname):
+                n.name = n.asname
+            self.add_from_import(module, n.name, val)
 
     def visit_If(self, node):
         self.visit_if(node, node.test, node.body, node.orelse)

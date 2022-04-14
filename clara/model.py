@@ -324,7 +324,7 @@ class Program(object):
         self.imports[val] = key
     
     def add_from_import(self, module, key, val):
-        self.from_imports[val] = [key, module]
+        self.from_imports[key] = [val, module]
 
     def addfnc(self, fnc):
         self.fncs[fnc.name] = fnc
