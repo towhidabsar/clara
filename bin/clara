@@ -243,12 +243,9 @@ Options are:
             total += len(exprDict1[loc])
         self.oldModelLocs = len(exprDict1)
         self.oldModelExp = total
-        # print("CORRECT  ", fnc1)
-        # print("\n\nINCORRECT    ", fnc2, '\n\n')
         G = GraphMatching(fnc1, fnc2, self.graphMatchingType)
         G.createGraphs()
         G.createMatchDict()
-        # G.allNodeCombinations()
 
         self.graphResult = G.result
 
@@ -257,10 +254,8 @@ Options are:
 
         self.models[0].addfnc(G.CF)
         self.models[1].addfnc(G.ICF)
-        # print("\n\n NEW INCORRECT    ", self.models[1], '\n\n')
         self.removedLocs = G.removedLocs
         self.repair()
-        # self.extractRepAndAttach()
 
 
     def convertToPy(self):
@@ -271,6 +266,7 @@ Options are:
 
         if len(self.models) != 1:
             self.error('Model requires one program!')
+        print(self.models[0].tostring())
 
 
     def match(self):
@@ -360,7 +356,7 @@ Options are:
                 print('Locs Added:', self.graphResult[1])
         else:
             print('Locs Same')
-        
+ 
         R = Repair(timeout=self.timeout, verbose=self.verbose,
                    allowsuboptimal=self.suboptimal,
                    cleanstrings=self.cleanstrings)
@@ -379,7 +375,7 @@ Options are:
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
             self.printValues(r)
-            percentageChanged = R.calculateRepairPercentage(self.models, r, self.removedLocs, self.entryfnc, self.oldModel)
+            percentageChanged = R.calculateRepairPercentage(self.models, r, self.removedLocs, self.entryfnc, self.oldModelExp)
             print('Percentage of the model modified ', percentageChanged)
             self.feedback = txt.feedback
             if (self.applyRep):
@@ -617,42 +613,6 @@ Options are:
 
         print('Number of Repairs ', len(rep[self.entryfnc][1]))
     
-    def extractRepAndAttach(self):
-        repairs_dir = '/home/mc1927/clara/results/algo2/1554A/3/'
-        files = []
-        for s in self.sources:
-            s = s.split('/')[-1].split('.')[0]
-            files += [s]
-        name = '_'.join(files) + '.txt'
-        reps = 0
-        with open(repairs_dir + name, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if '* Add' in line or '* Change' in line or '* Delete' in line:
-                    reps += 1
-        corr = self.models[0].getfnc(self.entryfnc)
-        incorr = self.models[1].getfnc(self.entryfnc)
-        exprDict1 = corr.locexprs
-        total = 0
-        for loc in exprDict1:
-            total += len(exprDict1[loc])
-        print('Locs in Correct Program Model', len(exprDict1))
-        print('Exprs in Correct Program Model', total)
-
-        exprDict1 = incorr.locexprs
-        total = 0
-        for loc in exprDict1:
-            total += len(exprDict1[loc])
-        print('Locs in Incorrect Program Model', len(exprDict1))
-        print('Exprs in Incorrect Program Model', total)
-
-        if self.oldModelLocs:
-            print('Locs in Old Incorrect Program Model', self.oldModelLocs)
-            print('Exprs in Old Incorrect Program Model', self.oldModelExp)
-
-        print('Number of Repairs ', reps)
-        
-
 
 if __name__ == '__main__':
     try:
