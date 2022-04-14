@@ -1,16 +1,28 @@
 import sys
 import time
-from matplotlib.pyplot import flag
 import networkx as nx
-from itertools import permutations, product
+from itertools import permutations
+from collections import defaultdict
 
 from clara.model import SPECIAL_VARS, Const, Var
 
 # find jaccard distance between two labels
 def jaccard(list1, list2):
-    intersection = len(list(set(list1).intersection(list2)))
-    union = (len(list1) + len(list2)) - intersection
-    return float(intersection) / union
+    l1 = defaultdict(int)
+    l2 = defaultdict(int)
+    keys = list(set(list1).union(set(list2)))
+    top = 0
+    bot = 0
+    
+    for l in list1:
+        l1[l] += 1
+    for l in list2:
+        l2[l] += 1
+
+    for k in keys:
+        top += min(l1[k], l2[k])
+        bot += max(l1[k], l2[k])
+    return top / bot
 
 
 class GraphMatching():
