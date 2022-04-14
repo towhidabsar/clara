@@ -45,6 +45,7 @@ Commands are:
   cluster    run the clustering on a set of files
   repair     run the repair algorithm on two source files
   feedback   generates feedback on multiple specifications
+  graph      runs the graph matching technique to eliminate control flow before carring out the repair
 
 Options are:
   --verbose [0|1]    controls the amount of output information printed
@@ -52,7 +53,7 @@ Options are:
   --lang LANG        language of the source files
                      (default is to guess from the first source file extension)
   --args ARGS        arguments for matching or repair
-  --argsfile FILE    file with arguments for matching or repair
+  --argsfile FILE    folder path with arguments for matching or repair
   --ins INS          inputs for matching or repair
   --insfile FILE     file with arguments for matching or repair
   --entryfnc FNC     entry function for matching or repair
@@ -74,6 +75,10 @@ Options are:
                      than N, an error occurs
                      (default is 0, which means that there is no limit)
   --clusterdir DIR   directory to write/read clustering results
+  --matchOp [0|1|2]  graph matching technique
+  --checkAllRep [0|1]  
+                    whether to check current repair against all other test
+                    cases (default is 0)
 '''
 
     def __init__(self):
@@ -137,7 +142,7 @@ Options are:
         self.clusterdir = self.opts.pop('clusterdir', 'clusters')
         self.testcase = '1.txt'
         self.applyRep = True
-        self.shouldCheckRepair = bool(self.opts.pop('c', False))
+        self.shouldCheckRepair = bool(self.opts.pop('checkAllRep', False))
         self.feedback = []
         self.removedLocs = {}
         self.graphMatchingType = int(self.opts.pop('matchOp', 1))
@@ -224,9 +229,6 @@ Options are:
         elif self.cmd == 'graph':
             self.graph()
 
-        elif self.cmd == 'convert':
-            self.convertToPy()
-
         else:
             self.usage()
             self.error("Unknown command: '%s'", self.cmd)
@@ -257,17 +259,11 @@ Options are:
         self.removedLocs = G.removedLocs
         self.repair()
 
-
-    def convertToPy(self):
-        for m in self.models:
-            makefunc(m)
-
     def model(self):
 
         if len(self.models) != 1:
             self.error('Model requires one program!')
         print(self.models[0].tostring())
-
 
     def match(self):
 
@@ -370,7 +366,6 @@ Options are:
             txt = RepairFeedback(self.models[1], self.models[0], r)
             if len(self.removedLocs):
                 txt.genRemovedLocFeedback(self.removedLocs)
-            # txt.genfeedback()
             txt.genConvertedfeedback()
             print('Repairs:')
             print('\n'.join(['  * %s' % (x,) for x in txt.feedback]))
@@ -403,7 +398,6 @@ Options are:
         else:
             self.checkRep = 2
             print('No repair!')
-        
 
     def feedback(self):
 

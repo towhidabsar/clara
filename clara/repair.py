@@ -3,7 +3,6 @@ Repair algorithm
 '''
 
 # Python imports
-from collections import defaultdict
 import time
 
 # External libs
@@ -12,7 +11,7 @@ from zss import Node, simple_distance as tree_distance
 # clara imports
 from .common import debug, equals
 from .interpreter import RuntimeErr, UndefValue, isundef
-from .model import isprimed, unprime, prime, getUnprimedVersion, getPrimedVersion
+from .model import isprimed, unprime, prime, getPrimedVersion
 from .model import SPECIAL_VARS, VAR_IN, VAR_OUT, VAR_RET
 from .model import Var, Const, Op
 from .matching import Matching
@@ -162,7 +161,6 @@ class Repair(object):
                                 (self.sm[fnc1.name],))
 
         self.debug('total time: %.3f', round(time.time() - self.starttime, 3))
-        # self.compareEndTracesAndFilter(P, Q, inter, ins, args, entryfnc, results)
 
         return results
 
@@ -517,7 +515,6 @@ class Repair(object):
 
             # (2) Generate repairs
             tmprepairs = {}
-            #for rexpr, rtree in zip([self.E1[loc1][var1]], [self.T1[loc1][var1]]):
             for idx, ((rexpr, _), rtree) in enumerate(zip(self.ER[loc1][var1], self.TR[loc1][var1])):
 
                 risid = (isinstance(rexpr, Var) and rexpr.name == var1
@@ -558,75 +555,11 @@ class Repair(object):
                     if tmp not in tmprepairs:
                         tmprepairs[tmp] = []
                     tmprepairs[tmp].append((cost, (m, cost, set(order), idx)))
-
-                    #yield (m, cost, set(order))
                 
             for treps in list(tmprepairs.values()):
                 treps.sort()
                 #print treps[0][1]
                 yield treps[0][1]
-
-    def compareEndTracesAndFilter(self, P, Q, inter, ins, args, entryfnc, results):
-        traceP = self.gettrace(P, inter, ins, args, entryfnc)[entryfnc]
-        traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
-
-        fnc1 = P.getfnc(entryfnc)
-        fnc2 = Q.getfnc(entryfnc)
-        
-        locs1 = fnc1.retlocs
-        locs2 = fnc2.retlocs
-
-        if(len(locs1) == 0): locs1 = [list(traceP.keys())[-1]]
-        if(len(locs2) == 0): locs2 = [list(traceQ.keys())[-1]]
-        
-        dictP = self.findDictFromTrace(traceP, locs1)
-        dictQ = self.findDictFromTrace(traceQ, locs2)
-        results = results[entryfnc]
-        matching, repairs, sm = results
-
-        for key in matching:
-            if key not in dictP:
-                continue
-            val = matching[key]
-            if val not in dictQ:
-                continue
-            key_primed = key if (isprimed(key)) else (key + "'")
-            val_primed = val if (isprimed(val)) else (val + "'")
-            k_val = dictP[key_primed] if (key_primed in dictP) else dictP[key]
-            v_val = dictQ[val_primed] if (val_primed in dictQ) else dictQ[val]
-            if (k_val == v_val):
-                for r in repairs[:]:
-                    m1 = r.var1
-                    m2 = r.var2
-                    loc1 = r.loc1
-                    loc2 = sm[loc1]
-                    e2 = fnc2.getexpr(loc2, m2)
-                    if isinstance(e2, Var):
-                        if (m2 == e2.tostr()): continue
-                    if (m1 == key and m2 == val):
-                      repairs.remove(r)
-        return repairs
-
-    def findDictFromTrace(self, trace, arr):
-        # find trace for location containing returns
-        dict_ = []
-        flag = False
-
-        for x in arr:
-            if (x in trace):
-                flag = True
-        
-        if (not flag):
-            arr = [list(trace.keys())[-1]]
-
-        while(not dict_):
-            max_ = max(arr)
-            if (max_ in trace):
-                dict_ = trace[max_]
-            else:
-                arr.remove(max_)
-            assert (arr), 'Location not in Trace!'
-        return dict_[0]
 
     def applyRepairs(self, models, result, inter, ins, args, entryfnc):
         Q = models[1]
@@ -681,7 +614,6 @@ class Repair(object):
                     if (var2_ == '*' or (isinstance(expr2, Var) and var2 == expr2.tostr())):
                         traceQ = self.gettrace(Q, inter, ins, args, entryfnc)[entryfnc]
                     break
-                    
 
     def removeValFromResult(self, Q, var, fname, loc2):
         for idx, (k, _) in enumerate(Q.getfnc(fname).locexprs[loc2]):
@@ -695,9 +627,6 @@ class Repair(object):
         locexprs = Q.getfnc(fname).locexprs[loc2]
         loc_vars = [v[0] for v in locexprs]
 
-        # if var in loc_vars:
-        #     self.removeValFromResult(Q, var, fname, loc2)
-        #     locexprs = Q.getfnc(fname).locexprs[loc2]
         all_vars = set(trace.keys())
         if (len(locexprs) == 0):
             temp = {var}
@@ -717,7 +646,6 @@ class Repair(object):
             if exp_vars.issubset(temp):
                 if var in loc_vars:
                     self.removeValFromResult(Q, var, fname, loc2)
-                    # locexprs = Q.getfnc(fname).locexprs[loc2]
                 self.substituteInFunc(Q, var, fname, loc2, exp, idx)
                 return True
         return False
@@ -754,39 +682,21 @@ class Repair(object):
     def calculateRepairPercentage(self, models, result, remLocs, entryfnc, oldModel):
         P = models[0]
         Q = models[1]
-        if oldModel:
-            Q = oldModel
-        modifications = len(result)
-        # for fname, (_, repairs, sm) in list(result.items()):
-        #     for rep in repairs:
-        #         loc1 = rep.loc1
-        #         var1 = rep.var1
-        #         var2 = rep.var2
-        #         loc2 = sm[loc1]
-        #         if var1 == '-':
-        #             add[loc2] -= 1
-        #         elif var2 == '*':
-        #             add[loc2] += 1
-        #         else:
-        #             change[loc2] += 1
+        modifications = len(result[entryfnc][1])
         fnc1 = P.getfnc(entryfnc)
         fnc2 = Q.getfnc(entryfnc)
         exprDict2 = fnc2.locexprs
         exprDict1 = fnc1.locexprs
         total = 0
-        for loc in exprDict2:
-            total += len(exprDict2[loc])
+        if not oldModel:
+            for loc in exprDict2:
+                total += len(exprDict2[loc])
+        else:
+            total += oldModel
         for loc in exprDict1:
             total += len(exprDict1[loc])
-        # modifications += sum([abs(i) for i in add.values()])
-        # modifications += sum(change.values())
         if remLocs:
             for l in remLocs:
                 modifications += len(remLocs[l])
                 total += len(remLocs)
-        
-        # for a in add:
-        #     modifications += abs(add[a])
-        # for c in change:
-        #     modifications += change[c]
         return (modifications/total * 100)

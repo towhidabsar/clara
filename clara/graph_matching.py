@@ -186,6 +186,7 @@ class GraphMatching():
         # removing node 0 from comparisons because that will always match with each other
         l1.remove(0)
         l2.remove(0)
+        # create label scores between every node
         for n1 in l1:
             labelSim[n1] = {}
             if self.shorter == 2:
@@ -201,28 +202,22 @@ class GraphMatching():
                 labelSim[n1][n2] = val
 
         possibleMatch = {0: [0]}
-        print("Smaller: ", self.shorter)
+        # sort possible matches for each node by label value
         for n1 in labelSim:
             options = [k for k, _ in sorted(
                 labelSim[n1].items(), key=lambda item: item[1], reverse=True)]
             possibleMatch[n1] = options
-        start = time.time()
-        # perms = self.createPermutations(possibleMatch)
+        
         self.permBackTrack([0] + l1, possibleMatch, {}, labelSim)
-        end = time.time()
-        print('Done permutataions', end - start)
-        # print('possible match', possibleMatch)
-        start = time.time()
+        
         (bestMatch, score) = self.findBestMatch(self.perms, labelSim)
-        end = time.time()
-        # print('Model Creation', end - start)
         score /= len(possibleMatch)
 
         print("Score:", score)
         if score < 0.6:
             print('SCORE TOO LESS')
             sys.exit(0)
-        self.createModel2(bestMatch)
+        self.createModel(bestMatch)
 
     def findBestMatch(self, phi, labelScores):
         G1 = self.CG
@@ -240,7 +235,7 @@ class GraphMatching():
                     continue
                 n2 = match[n1]
                 labelDist = labelScores[n1][n2]
-                if self.option != 3:
+                if self.option == 1:
                     edges1 = []
                     edges2 = []
                     if self.shorter == 2:
@@ -277,28 +272,6 @@ class GraphMatching():
                 bestMatch = match
         return (bestMatch, score)
 
-    def cartesianProduct(self, set_a, set_b, last, possibleMatch):
-        result =[]
-        for i in range(0, len(set_a)):
-            vals_used = 0
-            for j in range(0, len(set_b)):
-                if vals_used == 2:
-                    break
-                if type(set_a[i]) != list:        
-                    set_a[i] = [set_a[i]]
-                # if set_b[j] in set_a[i]:
-                #     continue
-                temp = [num for num in set_a[i]]
-                temp.append(set_b[j])
-                if len(temp) == len(set(temp)):
-                    vals_used += 1
-                    if last:
-                        result.append(dict(zip(possibleMatch, temp)))
-                    else:
-                        result.append(temp)
-                
-        return result
-
     def permBackTrack(self, U, possibleMatch, phi, labelSim):
         if len(U) == len(phi):
             if phi not in self.perms:
@@ -319,138 +292,10 @@ class GraphMatching():
                     return True
         return False
 
-    def createPermutations(self, possibleMatch):
-        perms = []
-        # print(len(possibleMatch))
-        # size = 0.2 * math.factorial((len(possibleMatch) - 1))
-        size = 1
-        list_a = list(possibleMatch.values())
-        temp = list_a[0]
-        
-        # do product of N sets
-        for i in range(1, len(possibleMatch)):
-            temp = self.cartesianProduct(temp, list_a[i], i + 1 == len(possibleMatch), possibleMatch)
-            # print(i, len(temp))
-        # print(temp)
-        # values = (p for p in product(*possibleMatch.values()) if len(set(p)) == len(p))
-        # for _ in range(0,size):
-        #     # if len(perms) == int(size):
-        #     #     return perms
-        #     # print(v, set(v), len(perms), len(v), len(set(v)))
-        #     # if len(set(v)) != len(v):
-        #     #     continue
-        #     perms.append(dict(zip(possibleMatch, next(values))))
-        return temp
-
-    # analyzes both the graphs and finds a matching based on label distance and edges
-    def allNodeCombinations(self):
-        G1 = self.CG
-        G2 = self.ICG
-        d1 = self.CDict
-        d2 = self.ICDict
-
-        # checks to see which graph is longer
-        l1 = list(G1.nodes())
-        l2 = list(G2.nodes())
-        rev = False
-        len_l1 = len(l1)
-        len_l2 = len(l2)
-        if len_l1 < len_l2:
-            self.result += ['DEL', len_l2-len_l1]
-            temp = l2
-            l2 = l1
-            l1 = temp
-            rev = True
-            self.shorter = 1
-        elif len_l1 > len_l2:
-            self.result += ['ADD', len_l1-len_l2]
-            self.shorter = 2
-
-        # finds all possible combinations of node matching (exhaustive list)
-        # the allComb is a list of lists where the outer list contains 1 possible matching for the entire graph
-        allComb = []
-        permut = permutations(l1, len(l2))
-        for comb in permut:
-            if len(allComb) == 1000:
-                break
-            zipped = zip(comb, l2)
-            allComb.append(list(zipped))
-
-        bestMatch = []
-        score = 0
-
-        # traversing a possible match for the graphs
-        for match in allComb:
-            currScore = 0
-            # traversing each node match
-            for n1, n2 in match:
-                lab1 = 0
-                lab2 = 0
-                if rev:
-                    lab1 = d2[n1]
-                    lab2 = d1[n2]
-                else:
-                    lab1 = d1[n1]
-                    lab2 = d2[n2]
-
-                labelDist = jaccard(lab1.split(','), lab2.split(','))
-                if self.option != 3:
-                    edges1 = []
-                    edges2 = []
-                    if rev:
-                        edges1 = list(G1.edges(n2, data=True))
-                        edges2 = list(G2.edges(n1, data=True))
-                    else:
-                        edges1 = list(G1.edges(n1, data=True))
-                        edges2 = list(G2.edges(n2, data=True))
-
-                    if len(edges1) == 0 and len(edges2) == 0:
-                        currScore += 0.5 + 0.5*labelDist
-                        continue
-                    elif len(edges1) == 0 or len(edges2) == 0:
-                        currScore += 0.5*labelDist
-                        continue
-
-                    _, t1, _ = edges1[0]
-                    _, f1, _ = edges1[1]
-                    _, t2, _ = edges2[0]
-                    _, f2, _ = edges2[1]
-
-                    t1 = d1[t1]
-                    t2 = d2[t2]
-                    f1 = d1[f1]
-                    f2 = d2[f2]
-
-                    t1 = t1.split(',')
-                    t2 = t2.split(',')
-                    f1 = f1.split(',')
-                    f2 = f2.split(',')
-
-                    edgeDist = 0.5*jaccard(t1, t2) + 0.5*jaccard(f1, f2)
-                    currScore += (labelDist + edgeDist) / 2
-                else:
-                    currScore += labelDist
-            # if currScore is greater than this is the best match of graphs
-            if currScore > score:
-                score = currScore
-                bestMatch = match
-        matching = {}
-        print("old ", bestMatch)
-        for n1, n2 in bestMatch:
-            if rev:
-                matching[n2] = n1
-            else:
-                matching[n1] = n2
-        final_score = score/len(l1)
-        print("Score:", final_score)
-        if final_score < 0.6:
-            print('SCORE TOO LESS')
-            sys.exit(0)
-        self.createModel(bestMatch)
-
-    def createModel2(self, bestMatch):
-        # print("Correct\n", self.CF)
-        # print("\nIncorrect\n", self.ICF)
+ # based on the correct graph and the matching, it recreates the incorrect model
+    # if the correct graph is longer, nodes are added to the incorrect graph
+    # if the correct graph is shorter, nodes are removed from the incorrect graph
+    def createModel(self, bestMatch):
         G1 = self.CG
         G2 = self.ICG
         # intialize the following dicts for new expressions, descriptions and transitions of the model
@@ -510,7 +355,6 @@ class GraphMatching():
                 mainLoc = currLoc
                 desc = 'At the end of the function'
                 flag = False
-                # _, f_edge, _ = edges[1]
                 while(trans == 0 or trans not in mappedG1Locs):
                     if trans == lastLoc:
                         flag = True
@@ -544,129 +388,4 @@ class GraphMatching():
         self.ICF.loctrans = new_t2
         self.ICF.locdescs = new_d2
 
-        # print('\n\nNew Incorrect', self.ICF)
-
         print('\n', bestMatch)
-
-
-
-    # based on the correct graph and the matching, it recreates the incorrect model
-    # if the correct graph is longer, nodes are added to the incorrect graph
-    # if the correct graph is shorter, nodes are removed from the incorrect graph
-    def createModel(self, bestMatch):
-        d1 = self.CDict
-
-        G1 = self.CG
-        G2 = self.ICG
-
-        # intialize the following dicts for new expressions, descriptions and transitions of the model
-        new_e2 = {}
-        new_d2 = {}
-        new_t2 = {}
-        
-        # creates a dictionary for the mapped nodes
-        match_incorr = {}
-        print(bestMatch)
-        for n1 in bestMatch:
-            n2 = bestMatch[n1]
-            c1 = n1
-            c2 = n2
-            if self.shorter == 1:
-                c1 = n2
-                c2 = n1
-            match_incorr[c2] = c1
-
-        # based on the matches it recreates the new model
-        # n1 and n2 are location/node numbers
-        for n1 in bestMatch:
-            n2 = bestMatch[n1]
-            c1 = n1
-            c2 = n2
-            if self.shorter == 1:
-                c1 = n2
-                c2 = n1
-            if c1 == 0 and c2 == 0:
-                continue
-            loc1 = c1
-            # add all the expressions & descriptions of this location into the old one
-            new_e2[loc1] = G2.nodes[c2]['exprs']
-            new_d2[loc1] = G2.nodes[c2]['desc']
-
-            if self.option == 2:
-                # add the edges from the incorrect program
-                edges2 = list(G2.edges(c2, data=True))
-                _, t2, _ = edges2[0]
-                _, f2, _ = edges2[1]
-
-                if t2 == 0:
-                    t2 = None
-                # maps t2 to its new value
-                if t2 in match_incorr:
-                    t2 = match_incorr[t2]
-                else:
-                    t2 = None
-
-                if f2 == 0:
-                    f2 = None
-                # maps f2 to its new value
-                if f2 in match_incorr:
-                    f2 = match_incorr[f2]
-                else:
-                    f2 = None
-                new_t2[loc1] = {True: t2, False: f2}
-            else:
-                # add the edges from the correct program to ensure the graphs match
-                edges2 = list(G1.edges(loc1, data=True))
-                _, t2, _ = edges2[0]
-                _, f2, _ = edges2[1]
-
-                if t2 == 0:
-                    t2 = None
-
-                if f2 == 0:
-                    f2 = None
-                new_t2[loc1] = {True: t2, False: f2}
-
-        # this indicates that the correct program is longer so new locations must be added
-        # new locations are always empty
-        if self.shorter == 2:
-            locs = d1.keys()
-            extra = sorted(list(set(locs) - set(bestMatch.values())))
-            for e in extra:
-                new_e2[e] = []
-                edges2 = list(G1.edges(e, data=True))
-                _, t2, _ = edges2[0]
-                _, f2, _ = edges2[1]
-                if t2 == 0:
-                    t2 = None
-
-                if f2 == 0:
-                    f2 = None
-
-                new_t2[e] = {True: t2, False: f2}
-            for e in extra[::-1]:
-                trans = new_t2[e][True]
-                flag = False
-                while(trans not in new_d2):
-                    if trans == max(extra) or trans == None:
-                        flag = True
-                        break
-                    if new_t2[trans][True] < trans:
-                        trans = new_t2[trans][False]
-                    else:
-                        trans = new_t2[trans][True]
-                if flag:
-                    des = 'At the end of the function'
-                else:
-                    des = new_d2[trans]
-                new_d2[e] = des
-        # adds all the expressions into a list so they can be adde to the feedback
-        remLocs = list(self.ICF.locexprs.keys() - match_incorr.keys())
-        for l in remLocs:
-            self.removedLocs[l] = (self.ICF.locexprs[l], self.ICF.locdescs[l])
-
-        # we always start from location 1
-        self.ICF.initloc = 1
-        self.ICF.locexprs = new_e2
-        self.ICF.loctrans = new_t2
-        self.ICF.locdescs = new_d2
