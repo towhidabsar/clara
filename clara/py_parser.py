@@ -52,7 +52,6 @@ class PyParser(Parser):
 
     def parse(self, code):
         # Get AST
-        # code = self.addargs(code)
         try:
             pyast = ast.parse(code, mode='exec')
         except (SyntaxError, IndentationError) as e:

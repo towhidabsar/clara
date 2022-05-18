@@ -31,16 +31,8 @@ class GraphMatching():
         self.CF = fnc1
         self.ICG = None
         self.CG = None
-        self.labelMatch = []
-        self.edgeMatch = []
         self.ICDict = {}
         self.CDict = {}
-        self.ICDictInvert = {}
-        self.CDictInvert = {}
-        self.finalMatrix = []
-        self.finalMatching = {}
-        self.finalScore = {}
-        self.longer = 0
         self.removedLocs = {}
         self.option = option
         self.result = []
