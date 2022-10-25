@@ -21,9 +21,9 @@ loc_same = 'Locs Same'
 test_available = 'Test Case Available'
 test_not_available = 'Test Case Not Available'
 
-path = '/home/mc1927/codeForcesTests/NSF_WebScraper/Output/ScrapeData/'
+path = '/Users/towhidabsar/Documents/code/NSFwebscraper/Output/ScrapeData/'
 problem_name = '977C'
-testcase = '/home/mc1927/codeForcesTests/NSF_WebScraper/Output/ScrapeData/977C/testcases/'
+testcase = '/Users/towhidabsar/Documents/code/NSFwebscraper/Output/ScrapeData/977C/testcases/'
 corr_locs = 'Locs in Correct Program Model'
 corr_exp = 'Exprs in Correct Program Model'
 incorr_locs = 'Locs in Incorrect Program Model'
@@ -87,7 +87,7 @@ correct = [
 
 correct_path = path + problem_name + '/OK/python.3/'
 incorrect_path = path + problem_name + '/REJECTED/python.3/'
-ic = '/home/mc1927/codeForcesTests/NSF_WebScraper/Code/977Incorr.txt'
+ic = '/Users/towhidabsar/Documents/code/NSFwebscraper/Code/977Incorr.txt'
 # correct_path = path + 'correct/'
 # incorrect_path = path + 'incorrect/'
 with open(ic) as ff:
