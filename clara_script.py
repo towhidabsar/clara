@@ -292,6 +292,8 @@ for problem_name in sys.argv[1].split(","):
                     i += 1
 
             incorrect_file_no = ifile.split('_')[0]
+            if (not os.path.exists(f'/data/batch_tests/{problem}/')):
+                os.makedirs(f'/data/batch_tests/{problem}/')
             wb.save(f'/data/batch_tests/{problem}/' +
                     incorrect_file_no + "_" + str(g) + '.xls')
 
