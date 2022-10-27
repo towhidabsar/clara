@@ -31,7 +31,7 @@ for problem_name in sys.argv[1].split(","):
     test_not_available = 'Test Case Not Available'
 
     # path = '/Users/towhidabsar/Documents/code/NSFwebscraper/Output/ScrapeData/'
-    path = '/data/ScrapeData'
+    path = '/data/ScrapeData/'
     # problem_name = '1A'
     testcase = f'/data/{problem_name}/testcases/'
     corr_locs = 'Locs in Correct Program Model'
