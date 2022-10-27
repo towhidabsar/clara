@@ -31,7 +31,7 @@ for problem_name in sys.argv[1].split(","):
     test_not_available = 'Test Case Not Available'
 
     # path = '/Users/towhidabsar/Documents/code/NSFwebscraper/Output/ScrapeData/'
-    path = '/data/'
+    path = '/data/ScrapeData'
     # problem_name = '1A'
     testcase = f'/data/{problem_name}/testcases/'
     corr_locs = 'Locs in Correct Program Model'
@@ -292,7 +292,7 @@ for problem_name in sys.argv[1].split(","):
                     i += 1
 
             incorrect_file_no = ifile.split('_')[0]
-            wb.save(f'/data/batch_tests/algo2/{problem}/' +
+            wb.save(f'/data/batch_tests/{problem}/' +
                     incorrect_file_no + "_" + str(g) + '.xls')
 
 
