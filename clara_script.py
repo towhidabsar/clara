@@ -160,6 +160,7 @@ for problem_name in sys.argv[1].split(","):
                                                     stderr=subprocess.PIPE,
                                                     shell=True)
                     output = clara_call.stdout.decode('utf-8')
+                    print(output)
                     err = clara_call.stderr.decode('utf-8')
                     exitcode = clara_call.returncode
                     formatted_output = output.split('\n')
