@@ -6,6 +6,14 @@ import time
 import logging
 
 
+def get_problem_nums(path):
+    correct = []
+    for c in os.listdir(path):
+        if ('solution.txt' in c):
+            correct.append(c.split('_')[0])
+    return correct
+    
+
 rep_correct = 'All Repaired'
 rep_incorrect = 'Old Repairs were incomplete, apply these repairs too:'
 rep_error = 'There are issues with the suggested repairs. The new program may not run.'
@@ -21,9 +29,10 @@ loc_same = 'Locs Same'
 test_available = 'Test Case Available'
 test_not_available = 'Test Case Not Available'
 
-path = '/Users/towhidabsar/Documents/code/NSFwebscraper/Output/ScrapeData/'
-problem_name = '977C'
-testcase = '/Users/towhidabsar/Documents/code/NSFwebscraper/Output/ScrapeData/977C/testcases/'
+# path = '/Users/towhidabsar/Documents/code/NSFwebscraper/Output/ScrapeData/'
+path = '/data/'
+problem_name = '1A'
+testcase = '/data/977C/testcases/'
 corr_locs = 'Locs in Correct Program Model'
 corr_exp = 'Exprs in Correct Program Model'
 incorr_locs = 'Locs in Incorrect Program Model'
@@ -34,64 +43,69 @@ num_Reps = 'Number of Repairs '
 print(problem_name)
 
 correct = [
-"150875064",
-"144834824",
-"149760373",
-"136939961",
-"150604669",
-"145972490",
-"151337436",
-"140277461",
-"138642477",
-"144316167",
-"152715871",
-"147030676",
-"145345540",
-"137666902",
-"151486163",
-"144894998",
-"140042381",
-"141459535",
-"144895404",
-"143336552",
-"150979280",
-"148331386",
-"151476411",
-"151035792",
-"147987546",
-"148257236",
-"138273002",
-"150979254",
-"140046145",
-"150861729",
-"140360068",
-"148206075",
-"146718749",
-"138988901",
-"151574454",
-"150993704",
-"138719052",
-"143490076",
-"140510255",
-"138642406",
-"153508150",
-"151035791",
-"152715739",
-"150845401",
-"149601223",
-"142142583",
-"147892648",
-"146467345",
-"150210400",
-"150705258"]
+    "150875064",
+    "144834824",
+    "149760373",
+    "136939961",
+    "150604669",
+    "145972490",
+    "151337436",
+    "140277461",
+    "138642477",
+    "144316167",
+    "152715871",
+    "147030676",
+    "145345540",
+    "137666902",
+    "151486163",
+    "144894998",
+    "140042381",
+    "141459535",
+    "144895404",
+    "143336552",
+    "150979280",
+    "148331386",
+    "151476411",
+    "151035792",
+    "147987546",
+    "148257236",
+    "138273002",
+    "150979254",
+    "140046145",
+    "150861729",
+    "140360068",
+    "148206075",
+    "146718749",
+    "138988901",
+    "151574454",
+    "150993704",
+    "138719052",
+    "143490076",
+    "140510255",
+    "138642406",
+    "153508150",
+    "151035791",
+    "152715739",
+    "150845401",
+    "149601223",
+    "142142583",
+    "147892648",
+    "146467345",
+    "150210400",
+    "150705258"
+]
+
+
 
 correct_path = path + problem_name + '/OK/python.3/'
 incorrect_path = path + problem_name + '/REJECTED/python.3/'
-ic = '/Users/towhidabsar/Documents/code/NSFwebscraper/Code/977Incorr.txt'
+correct = get_problem_nums(correct_path)
+probs = get_problem_nums(incorrect_path)
+# ic = '/Users/towhidabsar/Documents/code/NSFwebscraper/Code/977Incorr.txt'
 # correct_path = path + 'correct/'
 # incorrect_path = path + 'incorrect/'
-with open(ic) as ff:
-    probs = ff.read().splitlines()
+# with open(ic) as ff:
+#     probs = ff.read().splitlines()
 # probs = os.listdir(incorrect_path)
 size = len(probs)
 start = time.time()
@@ -130,7 +144,7 @@ def batch_run(a, b, name):
         
         for cfile in correct:
             cdired = correct_path + cfile + '_solution.txt'
-            idired = incorrect_path + ifile
+            idired = incorrect_path + ifile + '_solution.txt'
             print(cfile, ' ', ifile)
 
             for g in graph_matching_options:
