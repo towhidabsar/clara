@@ -4,6 +4,7 @@ FROM ubuntu:18.04
 RUN apt update -y
 RUN apt upgrade -y
 RUN apt install -y lp-solve liblpsolve55-dev python3 python3-pip git
+ARG CACHEBUST=1
 RUN git clone https://towhidabsar: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@github.com/towhidabsar/clara.git
 RUN py_site_package=$(python3 -m site --user-site)
 RUN cp -r /clara/lpsolve_python3.4/* $py_site_package/

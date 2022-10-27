@@ -291,7 +291,7 @@ def batch_run(a, b, name):
                 i += 1
 
         incorrect_file_no = ifile.split('_')[0]
-        wb.save('batch_tests/algo2/977C/' +
+        wb.save('/data/batch_tests/algo2/977C/' +
                 incorrect_file_no + "_" + str(g) + '.xls')
 
 
