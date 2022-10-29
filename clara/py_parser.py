@@ -4,7 +4,7 @@ Python parser
 
 # Python imports
 import ast
-import importlib
+import importlib.util
 
 from itertools import chain
 
