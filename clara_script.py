@@ -5,12 +5,28 @@ from xlwt import Workbook
 import time
 import logging
 import sys
+# docker run --name=clara_container -v E:\code\Clara_Data\Output:/data -it clara
+# 
+# 
+def remove_unicode(fname):
+    """ Run on just one file.
+    """
+    source = open(fname)
+    dir_name = os.path.dirname(fname)
+    pname = os.path.basename(fname).split("_")[0]
+    print(pname)
+    print(dir_name)
+    with open(f'{dir_name}\{pname}_solution.py', "w") as mod:
+        r = source.read().replace('\u00a0','')
+        mod.write(r)
+    source.close()
 
 def get_problem_nums(path):
     correct = []
     for c in os.listdir(path):
         if ('solution.txt' in c):
             correct.append(c.split('_')[0])
+            remove_unicode(c)
     return correct
 
 for problem_name in sys.argv[1].split(","):
@@ -144,8 +160,8 @@ for problem_name in sys.argv[1].split(","):
             sheet1.write(0, 21, 'Repairs')
             
             for cfile in correct:
-                cdired = correct_path + cfile + '_solution.txt'
-                idired = incorrect_path + ifile + '_solution.txt'
+                cdired = correct_path + cfile + '_solution.py'
+                idired = incorrect_path + ifile + '_solution.py'
                 print(cfile, ' ', ifile)
 
                 for g in graph_matching_options:
