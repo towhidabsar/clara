@@ -26,7 +26,7 @@ def get_problem_nums(path):
     for c in os.listdir(path):
         if ('solution.txt' in c):
             correct.append(c.split('_')[0])
-            remove_unicode(f'{path}/{c}')
+            remove_unicode(f'{path}\{c}')
     return correct
 
 for problem_name in sys.argv[1].split(","):
