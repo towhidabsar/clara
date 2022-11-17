@@ -317,14 +317,14 @@ def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_
                                                 shell=True)
 
                 output = clara_call.stdout.decode('utf-8')
-                results.add(idx,idx,"First Output", output)
+                results.add(idx,"First Output", output)
                 err = clara_call.stderr.decode('utf-8')
-                results.add(idx,idx,"Error Output", err)
+                results.add(idx,"Error Output", err)
                 exitcode = clara_call.returncode
                 formatted_output = output.split('\n')
                 if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
                     continue
-                results.add(idx,idx,'Correct File', cfile)
+                results.add(idx,'Correct File', cfile)
                 results.add(idx,'Incorrect File', ifile)
                 if (test_available in output):
                     results.add(idx,'Test Available', 'Yes')
