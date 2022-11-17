@@ -443,8 +443,8 @@ def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_
         incorrect_file_no = ifile.split('_')[0]
         if (not os.path.exists(f'/data/batch_tests/{problem}/')):
             os.makedirs(f'/data/batch_tests/{problem}/')
-        with open(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json') as wb:
-            json.dump(wb)
+        with open(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json', "w") as wb:
+            json.dump(results, wb)
 
 
 def main(lst):
