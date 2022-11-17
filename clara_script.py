@@ -268,7 +268,7 @@ def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_
     for x in range(a, b):
         # incorrect file
         ifile = problems[x]
-        result = ClaraResults()
+        results = ClaraResults()
         for cfile in correct:
             cdired = correct_path + cfile + '_solution.py'
             idired = incorrect_path + ifile + '_solution.py'
