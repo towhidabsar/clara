@@ -87,7 +87,7 @@ class ClaraResults():
 
     def save(self, file):
         with open(file, "w") as f:
-            json.dump(self.data, file)
+            json.dump(self.data, f)
     
 
 
