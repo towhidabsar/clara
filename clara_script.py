@@ -51,39 +51,41 @@ def remove_unicode(fname):
 
 class ClaraResults():
     def __init__(self):
-        self.data = {
-            "Correct File": [], 
-            "Incorrect File": [],
-            "Repair": [],
-            "Structure Mismatch": [],
-            "Repair Correct": [],
-            "Match": [],
-            "Parse Error": [],
-            "Test Available": [],
-            "Timeout": [],
-            "Locs": [],
-            "Count": [],
-            "Technique": [],
-            "Cost": [],
-            "GM Score": [],
-            "Percentage Repaired": [],
-            "Correct Locs": [],
-            "Incorrect Locs": [],
-            "Old incorrect Locs": [],
-            "Correct Exprs": [],
-            "Incorrect Exprs": [],
-            "Old Incorrect Exprs": [],
-            "Repairs": [],
-            "First Output": [],
-            "Second Output": [],
-            "Error Output": []
+        self.data = {}
+        self.row = {
+            "Correct File": "", 
+            "Incorrect File": "",
+            "Repair": "",
+            "Structure Mismatch": "",
+            "Repair Correct": "",
+            "Match": "",
+            "Parse Error": "",
+            "Test Available": "",
+            "Timeout": "",
+            "Locs": "",
+            "Count": "",
+            "Technique": "",
+            "Cost": "",
+            "GM Score": "",
+            "Percentage Repaired": "",
+            "Correct Locs": "",
+            "Incorrect Locs": "",
+            "Old incorrect Locs": "",
+            "Correct Exprs": "",
+            "Incorrect Exprs": "",
+            "Old Incorrect Exprs": "",
+            "Repairs": "",
+            "First Output": "",
+            "Second Output": "",
+            "Error Output": ""
         }
-        
-    def write(self, row, col, data):
-        self.data[col][row] = data
+
+    def new(self, index):
+        self.data[index] = {}
+        return index
     
-    def add(self, col, data):
-        self.data[col].append(data)
+    def add(self, index, key, data):
+        self.data[index][key] = data
 
     def save(self, file):
         with open(file, "w") as f:
@@ -296,11 +298,13 @@ def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_
         ifile = problems[x]
         results = ClaraResults()
         for cfile in correct:
+            idx = results.new(cfile)
             cdired = correct_path + cfile + '_solution.py'
             idired = incorrect_path + ifile + '_solution.py'
             print(cfile, ' ', ifile)
             # go through each graph matching options
             for g in graph_matching_options:
+
                 if g == 0:
                     clara_call = subprocess.run(['clara repair ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1'],
                                                 stdout=subprocess.PIPE,
@@ -313,141 +317,141 @@ def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_
                                                 shell=True)
 
                 output = clara_call.stdout.decode('utf-8')
-                results.add("First Output", output)
+                results.add(idx,idx,"First Output", output)
                 err = clara_call.stderr.decode('utf-8')
-                results.add("Error Output", err)
+                results.add(idx,idx,"Error Output", err)
                 exitcode = clara_call.returncode
                 formatted_output = output.split('\n')
                 if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
                     continue
-                results.add('Correct File', cfile)
-                results.add('Incorrect File', ifile)
+                results.add(idx,idx,'Correct File', cfile)
+                results.add(idx,'Incorrect File', ifile)
                 if (test_available in output):
-                    results.add('Test Available', 'Yes')
+                    results.add(idx,'Test Available', 'Yes')
                 elif (test_not_available in output):
-                    results.add('Test Available', 'No')
+                    results.add(idx,'Test Available', 'No')
 
                 # Locs + Exp
                 temp = list(
                     filter(lambda x: corr_locs in x, formatted_output))
                 if len(temp):
                     temp = temp[0].split(corr_locs)[-1].strip()
-                    results.add("Correct Locs", temp)
+                    results.add(idx,"Correct Locs", temp)
                 temp = list(
                     filter(lambda x: incorr_locs in x, formatted_output))
                 if len(temp):
                     temp = temp[0].split(incorr_locs)[-1].strip()
-                    results.add("Incorrect Locs", temp)
+                    results.add(idx,"Incorrect Locs", temp)
                 temp = list(
                     filter(lambda x: old_incorr_locs in x, formatted_output))
                 if len(temp):
                     temp = temp[0].split(old_incorr_locs)[-1].strip()
-                    results.add("Old incorrect Locs", temp)
+                    results.add(idx,"Old incorrect Locs", temp)
                 temp = list(
                     filter(lambda x: corr_exp in x, formatted_output))
                 if len(temp):
                     temp = temp[0].split(corr_exp)[-1].strip()
-                    results.add("Correct Exprs", temp)
+                    results.add(idx,"Correct Exprs", temp)
                 temp = list(
                     filter(lambda x: incorr_exps in x, formatted_output))
                 if len(temp):
                     temp = temp[0].split(incorr_exps)[-1].strip()
-                    results.add( "Incorrect Exprs", temp)
+                    results.add(idx, "Incorrect Exprs", temp)
                 temp = list(
                     filter(lambda x: old_incorr_exps in x, formatted_output))
                 if len(temp):
                     temp = temp[0].split(old_incorr_exps)[-1].strip()
-                    results.add("Old Incorrect Exprs", temp)
+                    results.add(idx,"Old Incorrect Exprs", temp)
                 temp = list(
                     filter(lambda x: num_Reps in x, formatted_output))
                 if len(temp):
                     temp = temp[0].split(num_Reps)[-1].strip()
-                    results.add( "Repairs", temp)
+                    results.add(idx, "Repairs", temp)
 
-                results.add("Technique", g)
+                results.add(idx,"Technique", g)
                 if g == 0:
-                    results.add("Locs", 0)
-                    results.add("Count", 0)
+                    results.add(idx,"Locs", 0)
+                    results.add(idx,"Count", 0)
                 else:
                     temp = list(
                         filter(lambda x: 'Score:' in x, formatted_output))
                     if len(temp):
                         temp = temp[0].split("Score:")[-1].strip()
-                        results.add("GM Score", temp)
+                        results.add(idx,"GM Score", temp)
                     if loc_add in output:
-                        results.add("Locs", 'Add')
+                        results.add(idx,"Locs", 'Add')
                         temp = list(
                             filter(lambda x: loc_add in x, formatted_output))
                         temp = temp[0].split(loc_add)[-1].strip()
-                        results.add("Count", temp)
+                        results.add(idx,"Count", temp)
                     elif loc_same in output:
-                        results.add("Locs", 'Same')
+                        results.add(idx,"Locs", 'Same')
                     elif loc_del in output:
-                        results.add("Locs", 'Del')
+                        results.add(idx,"Locs", 'Del')
                         temp = list(
                             filter(lambda x: loc_del in x, formatted_output))
                         temp = temp[0].split(loc_del)[-1].strip()
-                        results.add("Count", temp)
+                        results.add(idx,"Count", temp)
                 if (timeout in output):
-                    results.add("Timeout", 'Yes')
+                    results.add(idx,"Timeout", 'Yes')
 
                 if (exitcode == 0):
-                    results.add("Repair", 'Yes')
-                    results.add("Structure Mismatch", 'False')
-                    results.add("Parse Error", 'No')
+                    results.add(idx,"Repair", 'Yes')
+                    results.add(idx,"Structure Mismatch", 'False')
+                    results.add(idx,"Parse Error", 'No')
                     if (rep_correct in output):
-                        results.add("Repair Correct", 'Yes')
+                        results.add(idx,"Repair Correct", 'Yes')
                     elif (rep_partial in output):
-                        results.add("Repair Correct", 'Partial')
+                        results.add(idx,"Repair Correct", 'Partial')
                     elif (rep_not_needed in output):
-                        results.add("Repair Correct", 'Not Needed')
+                        results.add(idx,"Repair Correct", 'Not Needed')
                     elif (rep_error in output):
-                        results.add("Repair Correct", 'Error')
+                        results.add(idx,"Repair Correct", 'Error')
                     elif (rep_incorrect in output):
-                        results.add("Repair Correct", 'No')
+                        results.add(idx,"Repair Correct", 'No')
                     temp = list(
                         filter(lambda x: 'Cost:' in x, formatted_output))
                     if len(temp):
                         temp = temp[0].split("Cost:")[-1].strip()
-                        results.add("Cost", temp)
+                        results.add(idx,"Cost", temp)
                     temp = list(
                         filter(lambda x: 'Percentage of the model modified' in x, formatted_output))
                     if len(temp):
                         temp = temp[0].split(
                             'Percentage of the model modified')[-1].strip()
-                        results.add("Percentage Repaired", temp)
+                        results.add(idx,"Percentage Repaired", temp)
                 else:
                     if ('StructMismatch' in err):
-                        results.add("Structure Mismatch", 'True')
+                        results.add(idx,"Structure Mismatch", 'True')
                     else:
-                        results.add("Structure Mismatch", 'False')
+                        results.add(idx,"Structure Mismatch", 'False')
                     if (timeout in err or 'Timeout' in err):
-                        results.add("Timeout", 'Yes')
-                    results.add("Repair", 'No')
-                    results.add("Repair Correct", 'Error')
+                        results.add(idx,"Timeout", 'Yes')
+                    results.add(idx,"Repair", 'No')
+                    results.add(idx,"Repair Correct", 'Error')
                     if ("Parse Error!" in output):
-                        results.add("Parse Error", 'Yes')
+                        results.add(idx,"Parse Error", 'Yes')
                     else:
-                        results.add("Parse Error", 'No')
-                    results.add("Cost", 0)
+                        results.add(idx,"Parse Error", 'No')
+                    results.add(idx,"Cost", 0)
                 clara_call_match = subprocess.run(['clara match ' + cdired + ' ' + idired + ' --argsfile ' + testcase],
                                                 stdout=subprocess.PIPE,
                                                 shell=True)
                 output_match = clara_call_match.stdout.decode('utf-8')
                 exitcode_match = clara_call_match.returncode
-                results.add("Second Output", output_match)
+                results.add(idx,"Second Output", output_match)
                 if (exitcode_match == 0):
                     if ('No match!' in output_match):
-                        results.add("Match", 'No')
+                        results.add(idx,"Match", 'No')
                     else:
-                        results.add("Match", 'Yes')
+                        results.add(idx,"Match", 'Yes')
                 else:
-                    results.add("Match", 'Error')
+                    results.add(idx,"Match", 'Error')
 
-                incorrect_file_no = ifile.split('_')[0]
-                if (not os.path.exists(f'/data/batch_tests/{problem}/')):
-                    os.makedirs(f'/data/batch_tests/{problem}/')
-                results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
+    incorrect_file_no = ifile.split('_')[0]
+    if (not os.path.exists(f'/data/batch_tests/{problem}/')):
+        os.makedirs(f'/data/batch_tests/{problem}/')
+    results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 
 
 def main(lst):
