@@ -263,7 +263,7 @@ def batch_run(a, b, name, problem):
                 incorrect_file_no + "_" + str(g) + '.xls')
 
 
-def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_path, graph_matching_options):
+def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
     logging.info("Thread %s: starting", name)
     for x in range(a, b):
         # incorrect file
@@ -527,7 +527,7 @@ def main(lst):
             threads = list()
             indexes = [0, size//4, size//2, 3*size//4, size]
             for i in range(4):
-                x = threading.Thread(target=batch_run_json, args=(indexes[i], indexes[i+1], i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options))
+                x = threading.Thread(target=batch_run_json, args=(indexes[i], indexes[i+1], i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
                 threads.append(x)
                 x.start()
 
