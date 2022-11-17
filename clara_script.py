@@ -444,10 +444,10 @@ def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_
                 else:
                     results.add("Match", 'Error')
 
-        incorrect_file_no = ifile.split('_')[0]
-        if (not os.path.exists(f'/data/batch_tests/{problem}/')):
-            os.makedirs(f'/data/batch_tests/{problem}/')
-        results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
+                incorrect_file_no = ifile.split('_')[0]
+                if (not os.path.exists(f'/data/batch_tests/{problem}/')):
+                    os.makedirs(f'/data/batch_tests/{problem}/')
+                results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 
 
 def main(lst):
