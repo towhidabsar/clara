@@ -84,6 +84,10 @@ class ClaraResults():
     
     def add(self, col, data):
         self.data[col].append(data)
+
+    def save(self, file):
+        with open(file, "w") as f:
+            json.dump(self.data, file)
     
 
 
@@ -443,8 +447,7 @@ def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_
         incorrect_file_no = ifile.split('_')[0]
         if (not os.path.exists(f'/data/batch_tests/{problem}/')):
             os.makedirs(f'/data/batch_tests/{problem}/')
-        with open(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json', "w") as wb:
-            json.dump(results, wb)
+        results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 
 
 def main(lst):
