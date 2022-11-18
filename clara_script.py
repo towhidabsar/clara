@@ -287,11 +287,11 @@ def batch_run(a, b, name, problem):
                 incorrect_file_no + "_" + str(g) + '.xls')
 
 
-def batch_run_json(a,b,name,problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
-    logging.info("Thread %s: starting", name)
-    for x in range(a, b):
+def batch_run_json(problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
+    logging.info("Thread %s: starting", problem)
+    for ifile in problems:
         # incorrect file
-        ifile = problems[x]
+        # ifile = problems[x]
         results = ClaraResults()
         for cfile in correct:
             idx = results.new(cfile)
@@ -472,7 +472,7 @@ def main(lst):
             #     x = threading.Thread(target=batch_run_json, args=(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
             #     threads.append(x)
             #     x.start()
-            batch_run_json(0, size, 1, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
+            batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
             # for i, thread in enumerate(threads):
             #     logging.info("Main    : before joining thread %d.", i)
