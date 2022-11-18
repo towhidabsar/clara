@@ -488,6 +488,11 @@ def main(lst):
 if __name__=='__main__':
     arg = sys.argv[1]
     if os.path.exists(arg):
-        main(os.listdir(sys.argv[1]))
+        if (len(sys.argv) >= 3):
+            start = sys.argv[2]
+            end = sys.argv[3]
+            main(os.listdir(arg[start:end]))
+        else:
+            main(os.listdir(arg))
     else:
         main(arg.split(','))
