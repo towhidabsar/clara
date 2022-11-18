@@ -148,12 +148,8 @@ def batch_run(a, b, name, problem):
                                                 stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE,
                                                 shell=True)
-                # print("Output1:")
                 output = clara_call.stdout.decode('utf-8')
-                # print("Output2:")
-                # print(output)
                 err = clara_call.stderr.decode('utf-8')
-                print(err)
                 exitcode = clara_call.returncode
                 formatted_output = output.split('\n')
                 if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
@@ -466,21 +462,17 @@ def main(lst):
             incorrect_path = path + problem_name + '/REJECTED/python.3/'
             correct = get_problem_nums(correct_path)
             probs = get_problem_nums(incorrect_path)
-            # ic = '/Users/towhidabsar/Documents/code/NSFwebscraper/Code/977Incorr.txt'
-            # correct_path = path + 'correct/'
-            # incorrect_path = path + 'incorrect/'
-            # with open(ic) as ff:
-            #     probs = ff.read().splitlines()
-            # probs = os.listdir(incorrect_path)
             size = len(probs)
             start = time.time()
 
-            threads = list()
-            indexes = [0, size//4, size//2, 3*size//4, size]
-            for i in range(4):
-                x = threading.Thread(target=batch_run_json, args=(indexes[i], indexes[i+1], i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
-                threads.append(x)
-                x.start()
+            # threads = list()
+            # indexes = [0, size//4, size//2, 3*size//4, size]
+            
+            # for i in range(4):
+            #     x = threading.Thread(target=batch_run_json, args=(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
+            #     threads.append(x)
+            #     x.start()
+            batch_run_json(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
             for i, thread in enumerate(threads):
                 logging.info("Main    : before joining thread %d.", i)
