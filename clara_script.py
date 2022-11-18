@@ -472,12 +472,12 @@ def main(lst):
             #     x = threading.Thread(target=batch_run_json, args=(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
             #     threads.append(x)
             #     x.start()
-            batch_run_json(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
+            batch_run_json(0, size, 1, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
-            for i, thread in enumerate(threads):
-                logging.info("Main    : before joining thread %d.", i)
-                thread.join()
-                logging.info("Main    : thread %d done", i)
+            # for i, thread in enumerate(threads):
+            #     logging.info("Main    : before joining thread %d.", i)
+            #     thread.join()
+            #     logging.info("Main    : thread %d done", i)
 
             end = time.time()
             hours, rem = divmod(end-start, 3600)
