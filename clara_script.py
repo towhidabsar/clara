@@ -101,192 +101,6 @@ def get_problem_nums(path):
             remove_unicode(f'{path}{c}')
     return correct
 
-def batch_run(a, b, name, problem):
-    logging.info("Thread %s: starting", name)
-    for x in range(a, b):
-        ifile = probs[x]
-        i = 1
-        wb = Workbook()
-
-        sheet1 = wb.add_sheet('test 1')
-        sheet1.write(0, 0, 'Correct File')
-        sheet1.write(0, 1, 'Incorrect File')
-        sheet1.write(0, 2, 'Repair')
-        sheet1.write(0, 3, 'Structure Mismatch')
-        sheet1.write(0, 4, 'Repair Correct')
-        sheet1.write(0, 5, 'Match')
-        sheet1.write(0, 6, 'Parse Error')
-        sheet1.write(0, 7, 'Test Available')
-        sheet1.write(0, 8, 'Timeout')
-        sheet1.write(0, 9, 'Locs')
-        sheet1.write(0, 10, 'Count')
-        sheet1.write(0, 11, 'Technique')
-        sheet1.write(0, 12, 'Cost')
-        sheet1.write(0, 13, 'GM Score')
-        sheet1.write(0, 14, 'Percentage Repaired')
-        sheet1.write(0, 15, 'Correct Locs')
-        sheet1.write(0, 16, 'Incorrect Locs')
-        sheet1.write(0, 17, 'Old incorrect Locs')
-        sheet1.write(0, 18, 'Correct Exprs')
-        sheet1.write(0, 19, 'Incorrect Exprs')
-        sheet1.write(0, 20, 'Old Incorrect Exprs')
-        sheet1.write(0, 21, 'Repairs')
-        
-        for cfile in correct:
-            cdired = correct_path + cfile + '_solution.py'
-            idired = incorrect_path + ifile + '_solution.py'
-            print(cfile, ' ', ifile)
-
-            for g in graph_matching_options:
-                if g == 0:
-                    clara_call = subprocess.run(['clara repair ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1'],
-                                                stdout=subprocess.PIPE,
-                                                stderr=subprocess.PIPE,
-                                                shell=True)
-                else:
-                    clara_call = subprocess.run(['clara graph ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1 --matchOp ' + str(g)],
-                                                stdout=subprocess.PIPE,
-                                                stderr=subprocess.PIPE,
-                                                shell=True)
-                output = clara_call.stdout.decode('utf-8')
-                err = clara_call.stderr.decode('utf-8')
-                exitcode = clara_call.returncode
-                formatted_output = output.split('\n')
-                if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
-                    continue
-                sheet1.write(i, 0, cfile)
-                sheet1.write(i, 1, ifile)
-                if (test_available in output):
-                    sheet1.write(i, 7, 'Yes')
-                elif (test_not_available in output):
-                    sheet1.write(i, 7, 'No')
-
-                # Locs + Exp
-                temp = list(
-                    filter(lambda x: corr_locs in x, formatted_output))
-                if len(temp):
-                    temp = temp[0].split(corr_locs)[-1].strip()
-                    sheet1.write(i, 15, temp)
-                temp = list(
-                    filter(lambda x: incorr_locs in x, formatted_output))
-                if len(temp):
-                    temp = temp[0].split(incorr_locs)[-1].strip()
-                    sheet1.write(i, 16, temp)
-                temp = list(
-                    filter(lambda x: old_incorr_locs in x, formatted_output))
-                if len(temp):
-                    temp = temp[0].split(old_incorr_locs)[-1].strip()
-                    sheet1.write(i, 17, temp)
-                temp = list(
-                    filter(lambda x: corr_exp in x, formatted_output))
-                if len(temp):
-                    temp = temp[0].split(corr_exp)[-1].strip()
-                    sheet1.write(i, 18, temp)
-                temp = list(
-                    filter(lambda x: incorr_exps in x, formatted_output))
-                if len(temp):
-                    temp = temp[0].split(incorr_exps)[-1].strip()
-                    sheet1.write(i, 19, temp)
-                temp = list(
-                    filter(lambda x: old_incorr_exps in x, formatted_output))
-                if len(temp):
-                    temp = temp[0].split(old_incorr_exps)[-1].strip()
-                    sheet1.write(i, 20, temp)
-                temp = list(
-                    filter(lambda x: num_Reps in x, formatted_output))
-                if len(temp):
-                    temp = temp[0].split(num_Reps)[-1].strip()
-                    sheet1.write(i, 21, temp)
-
-                sheet1.write(i, 11, g)
-                if g == 0:
-                    sheet1.write(i, 9, 0)
-                    sheet1.write(i, 10, 0)
-                else:
-                    temp = list(
-                        filter(lambda x: 'Score:' in x, formatted_output))
-                    if len(temp):
-                        temp = temp[0].split("Score:")[-1].strip()
-                        sheet1.write(i, 13, temp)
-                    if loc_add in output:
-                        sheet1.write(i, 9, 'Add')
-                        temp = list(
-                            filter(lambda x: loc_add in x, formatted_output))
-                        temp = temp[0].split(loc_add)[-1].strip()
-                        sheet1.write(i, 10, temp)
-                    elif loc_same in output:
-                        sheet1.write(i, 9, 'Same')
-                    elif loc_del in output:
-                        sheet1.write(i, 9, 'Del')
-                        temp = list(
-                            filter(lambda x: loc_del in x, formatted_output))
-                        temp = temp[0].split(loc_del)[-1].strip()
-                        sheet1.write(i, 10, temp)
-                if (timeout in output):
-                    sheet1.write(i, 8, 'Yes')
-
-                if (exitcode == 0):
-                    sheet1.write(i, 2, 'Yes')
-                    sheet1.write(i, 3, 'False')
-                    sheet1.write(i, 6, 'No')
-                    if (rep_correct in output):
-                        sheet1.write(i, 4, 'Yes')
-                    elif (rep_partial in output):
-                        sheet1.write(i, 4, 'Partial')
-                    elif (rep_not_needed in output):
-                        sheet1.write(i, 4, 'Not Needed')
-                    elif (rep_error in output):
-                        sheet1.write(i, 4, 'Error')
-                    elif (rep_incorrect in output):
-                        sheet1.write(i, 4, 'No')
-                    temp = list(
-                        filter(lambda x: 'Cost:' in x, formatted_output))
-                    if len(temp):
-                        temp = temp[0].split("Cost:")[-1].strip()
-                        sheet1.write(i, 12, temp)
-                    temp = list(
-                        filter(lambda x: 'Percentage of the model modified' in x, formatted_output))
-                    if len(temp):
-                        temp = temp[0].split(
-                            'Percentage of the model modified')[-1].strip()
-                        sheet1.write(i, 14, temp)
-                else:
-                    if ('StructMismatch' in err):
-                        sheet1.write(i, 3, 'True')
-                    else:
-                        sheet1.write(i, 3, 'False')
-                    if (timeout in err or 'Timeout' in err):
-                        sheet1.write(i, 8, 'Yes')
-                    sheet1.write(i, 2, 'No')
-                    sheet1.write(i, 4, 'Error')
-                    if ("Parse Error!" in output):
-                        sheet1.write(i, 6, 'Yes')
-                    else:
-                        sheet1.write(i, 6, 'No')
-                    sheet1.write(i, 12, 0)
-                clara_call_match = subprocess.run(['clara match ' + cdired + ' ' + idired + ' --argsfile ' + testcase],
-                                                stdout=subprocess.PIPE,
-                                                shell=True)
-                output_match = clara_call_match.stdout.decode('utf-8')
-                exitcode_match = clara_call_match.returncode
-
-                if (exitcode_match == 0):
-                    if ('No match!' in output_match):
-                        sheet1.write(i, 5, 'No')
-                    else:
-                        sheet1.write(i, 5, 'Yes')
-                else:
-                    sheet1.write(i, 5, 'Error')
-
-                i += 1
-
-        incorrect_file_no = ifile.split('_')[0]
-        if (not os.path.exists(f'/data/batch_tests/{problem}/')):
-            os.makedirs(f'/data/batch_tests/{problem}/')
-        wb.save(f'/data/batch_tests/{problem}/' +
-                incorrect_file_no + "_" + str(g) + '.xls')
-
-
 def batch_run_json(problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
     logging.info("Thread %s: starting", problem)
     for ifile in problems:
@@ -319,6 +133,7 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                 exitcode = clara_call.returncode
                 formatted_output = output.split('\n')
                 if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
+                    print('Score too less')
                     continue
                 results.add(idx,'Correct File', cfile)
                 results.add(idx,'Incorrect File', ifile)
@@ -444,10 +259,10 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                 else:
                     results.add(idx,"Match", 'Error')
 
-    incorrect_file_no = ifile.split('_')[0]
-    if (not os.path.exists(f'/data/batch_tests/{problem}/')):
-        os.makedirs(f'/data/batch_tests/{problem}/')
-    results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
+        incorrect_file_no = ifile.split('_')[0]
+        if (not os.path.exists(f'/data/batch_tests/{problem}/')):
+            os.makedirs(f'/data/batch_tests/{problem}/')
+        results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 
 
 def main(lst):
