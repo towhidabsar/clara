@@ -273,9 +273,8 @@ def main(lst, thread_num=6):
         print(per_array)
         j = 0
         for i, problem_name in enumerate(lst):
-            print(j)
             splits[j].append(problem_name)
-            if i % per_array == 0:
+            if i % per_array == 0 and i > 0:
                 j+=1
         print(splits)
         # indexes = [0, size//4, size//2, 3*size//4, size]
