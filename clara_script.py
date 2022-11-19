@@ -304,8 +304,8 @@ if __name__=='__main__':
     arg = sys.argv[1]
     if os.path.exists(arg):
         if (len(sys.argv) >= 3):
-            start = sys.argv[2]
-            end = sys.argv[3]
+            start = int(sys.argv[2])
+            end = int(sys.argv[3])
             main(os.listdir(arg[start:end]))
         else:
             main(os.listdir(arg))
