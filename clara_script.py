@@ -264,40 +264,54 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
             os.makedirs(f'/data/batch_tests/{problem}/')
         results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 
+def thread_run(problem_name)
 
-def main(lst):
-    for problem_name in lst:
-        if problem_name not in ['ProblemList.txt', 'SolutionLists']:
+def main(lst, thread_num=6):
+    if True:
+        print(lst)
+        threads = list()
+        splits = [[] for i in range(thread_num)]
+        per_array = len(lst)//thread_num
+        j = 0
+        for i, problem_name in enumerate(lst):
+            splits[j].append(problem_name)
+            if i % per_array == 0:
+                j+=1
+        print(splits)
+        # indexes = [0, size//4, size//2, 3*size//4, size]
+    else:
+        for problem_name in lst:
+            if problem_name not in ['ProblemList.txt', 'SolutionLists']:
 
-            # problem_name = '1A'
-            testcase = f'/data/ScrapeData/{problem_name}/testcases/'
-            print(problem_name)
+                # problem_name = '1A'
+                testcase = f'/data/ScrapeData/{problem_name}/testcases/'
+                print(problem_name)
 
-            correct_path = path + problem_name + '/OK/python.3/'
-            incorrect_path = path + problem_name + '/REJECTED/python.3/'
-            correct = get_problem_nums(correct_path)
-            probs = get_problem_nums(incorrect_path)
-            size = len(probs)
-            start = time.time()
+                correct_path = path + problem_name + '/OK/python.3/'
+                incorrect_path = path + problem_name + '/REJECTED/python.3/'
+                correct = get_problem_nums(correct_path)
+                probs = get_problem_nums(incorrect_path)
+                size = len(probs)
+                start = time.time()
 
-            # threads = list()
-            # indexes = [0, size//4, size//2, 3*size//4, size]
-            
-            # for i in range(4):
-            #     x = threading.Thread(target=batch_run_json, args=(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
-            #     threads.append(x)
-            #     x.start()
-            batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
+                # threads = list()
+                # indexes = [0, size//4, size//2, 3*size//4, size]
+                
+                # for i in range(12):
+                #     x = threading.Thread(target=batch_run_json, args=(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
+                #     threads.append(x)
+                #     x.start()
+                batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
-            # for i, thread in enumerate(threads):
-            #     logging.info("Main    : before joining thread %d.", i)
-            #     thread.join()
-            #     logging.info("Main    : thread %d done", i)
+                # for i, thread in enumerate(threads):
+                #     logging.info("Main    : before joining thread %d.", i)
+                #     thread.join()
+                #     logging.info("Main    : thread %d done", i)
 
-            end = time.time()
-            hours, rem = divmod(end-start, 3600)
-            minutes, seconds = divmod(rem, 60)
-            print("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
+                end = time.time()
+                hours, rem = divmod(end-start, 3600)
+                minutes, seconds = divmod(rem, 60)
+                print("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
 
 
 if __name__=='__main__':

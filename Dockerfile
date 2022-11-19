@@ -8,12 +8,14 @@ ARG CACHEBUST=2
 RUN git clone https://towhidabsar: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@github.com/towhidabsar/clara.git
 RUN py_site_package=$(python3 -m site --user-site)
 RUN cp -r /clara/lpsolve_python3.4/* $py_site_package/
-RUN pip3 install Cython networkx xlwt
+RUN pip3 install Cython networkx xlwt pandas tqdm
 # RUN export LD_LIBRARY_PATH=/usr/lib/lp_solve/
 ENV LD_LIBRARY_PATH "/usr/lib/lp_solve/"
 ENV PATH "$PATH:/clara/bin/" 
 WORKDIR "/clara"
+RUN git pull
 RUN make
+
 # RUN clara=/clara/bin/clara
 # RUN ./bin/clara repair eg/t1.py eg/t2.py --args "[[4], [5]]" --verbose 1 
 
@@ -23,3 +25,5 @@ RUN make
 # docker run --name=clara_container -v E:\code\Clara_Data\Sample\1A:/data -it clara
 
 # docker run --name=clara_container -v E:\code\Clara_Data\Output:/data -it clara
+
+# docker build --name=
