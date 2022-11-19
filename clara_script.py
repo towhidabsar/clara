@@ -266,12 +266,14 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
 
 def main(lst, thread_num=6):
     if True:
-        print(lst)
+        print(len(lst))
         threads = list()
         splits = [[] for i in range(thread_num)]
         per_array = len(lst)//thread_num
+        print(len(per_array))
         j = 0
         for i, problem_name in enumerate(lst):
+            print(j)
             splits[j].append(problem_name)
             if i % per_array == 0:
                 j+=1
