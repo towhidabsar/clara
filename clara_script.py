@@ -102,7 +102,6 @@ def get_problem_nums(path):
     return correct
 
 def batch_run_json(problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
-    logging.info("Thread %s: starting", problem)
     for ifile in problems:
         # incorrect file
         # ifile = problems[x]
@@ -111,7 +110,7 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
             idx = results.new(cfile)
             cdired = correct_path + cfile + '_solution.py'
             idired = incorrect_path + ifile + '_solution.py'
-            print(cfile, ' ', ifile)
+            print(problem,' ', cfile, ' ', ifile)
             # go through each graph matching options
             for g in graph_matching_options:
 
@@ -264,23 +263,9 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
             os.makedirs(f'/data/batch_tests/{problem}/')
         results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 
-def main(lst, thread_num=6):
-    if True:
-        print(len(lst))
-        threads = list()
-        splits = [[] for i in range(thread_num)]
-        # Ceiling division
-        per_array = -(len(lst)// -thread_num)
-        print(per_array)
-        j = 0
-        for i, problem_name in enumerate(lst):
-            splits[j].append(problem_name)
-            if i % per_array == 0 and i > 0:
-                j+=1
-        print(splits)
-        # indexes = [0, size//4, size//2, 3*size//4, size]
-    else:
-        for problem_name in lst:
+def thread_run(lst, thread):
+    logging.info("Thread %s: starting", thread)
+    for problem_name in lst:
             if problem_name not in ['ProblemList.txt', 'SolutionLists']:
 
                 # problem_name = '1A'
@@ -292,26 +277,42 @@ def main(lst, thread_num=6):
                 correct = get_problem_nums(correct_path)
                 probs = get_problem_nums(incorrect_path)
                 size = len(probs)
-                start = time.time()
 
-                # threads = list()
-                # indexes = [0, size//4, size//2, 3*size//4, size]
-                
-                # for i in range(12):
-                #     x = threading.Thread(target=batch_run_json, args=(0, size, i, problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase))
-                #     threads.append(x)
-                #     x.start()
+
                 batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
-                # for i, thread in enumerate(threads):
-                #     logging.info("Main    : before joining thread %d.", i)
-                #     thread.join()
-                #     logging.info("Main    : thread %d done", i)
 
-                end = time.time()
-                hours, rem = divmod(end-start, 3600)
-                minutes, seconds = divmod(rem, 60)
-                print("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
+
+
+
+def main(lst, thread_num=6):
+        print(len(lst))
+        threads = list()
+        splits = [[] for i in range(thread_num)]
+        # Ceiling division
+        per_array = -(len(lst)// -thread_num)
+        print(per_array)
+        j = 0
+        for i, problem_name in enumerate(lst):
+            splits[j].append(problem_name)
+            if i % per_array == 0 and i > 0:
+                j+=1
+
+        start = time.time()
+        for i in range(thread_num):
+            x = threading.Thread(target=thread_run, args=(splits[i], i))
+            threads.append(x)
+            x.start()
+        
+        for i, thread in enumerate(threads):
+            logging.info("Main    : before joining thread %d.", i)
+            thread.join()
+            logging.info("Main    : thread %d done", i)
+        
+        end = time.time()
+        hours, rem = divmod(end-start, 3600)
+        minutes, seconds = divmod(rem, 60)
+        print("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
 
 
 if __name__=='__main__':
