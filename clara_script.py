@@ -269,7 +269,8 @@ def main(lst, thread_num=6):
         print(len(lst))
         threads = list()
         splits = [[] for i in range(thread_num)]
-        per_array = len(lst)//thread_num
+        # Ceiling division
+        per_array = -(len(lst)// -thread_num)
         print(per_array)
         j = 0
         for i, problem_name in enumerate(lst):
