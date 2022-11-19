@@ -264,8 +264,6 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
             os.makedirs(f'/data/batch_tests/{problem}/')
         results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 
-def thread_run(problem_name)
-
 def main(lst, thread_num=6):
     if True:
         print(lst)
