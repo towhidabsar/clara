@@ -20,9 +20,6 @@ RUN make
 # RUN ./bin/clara repair eg/t1.py eg/t2.py --args "[[4], [5]]" --verbose 1 
 
 # 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
-# docker run --name=nginx -d -v ~/nginxlogs:/var/log/nginx -p 5000:80 nginx
-# docker run --name=clara_container -d -v ~/eg:/test clara repair /test/t1.py /test/t2.py --args "[[4], [5]]" --verbose 1 >> /test/out.txt 
-# docker run --name=clara_container -v E:\code\Clara_Data\Sample\1A:/data -it clara
 
 # docker run --name=clara_container -v E:\code\Clara_Data\Output:/data -it clara
 
