@@ -118,11 +118,11 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                 if g == 0:
                     clara_call = subprocess.run(['clara repair ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1'],
                                                 capture_output=True,
-                                                shell=True, text=True)
+                                                shell=True)
                 else:
                     clara_call = subprocess.run(['clara graph ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1 --matchOp ' + str(g)],
                                                 capture_output=True,
-                                                shell=True, text=True)
+                                                shell=True)
                 print(clara_call.stdout)
                 output = clara_call.stdout.decode('utf-8')
                 results.add(idx,"First Output", output)
