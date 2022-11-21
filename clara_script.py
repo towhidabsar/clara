@@ -40,8 +40,8 @@ def remove_unicode(fname):
     source = open(fname, 'r', encoding='utf-8')
     dir_name = os.path.dirname(fname)
     pname = os.path.basename(fname).split("_")[0]
-    print(pname)
-    print(dir_name)
+    # print(pname)
+    # print(dir_name)
     with open(os.path.join(dir_name,f'{pname}_solution.py'), 'w', encoding='utf-8') as mod:
         r = source.read().replace('\u00a0','')
         # r = r.decode('utf-8')
@@ -118,11 +118,11 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                 if g == 0:
                     clara_call = subprocess.run(['clara repair ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1'],
                                                 capture_output=True,
-                                                text=True)
+                                                shell=True)
                 else:
                     clara_call = subprocess.run(['clara graph ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1 --matchOp ' + str(g)],
                                                 capture_output=True,
-                                                text=True)
+                                                shell=True)
 
                 output = clara_call.stdout.decode('utf-8')
                 results.add(idx,"First Output", output)
@@ -267,7 +267,7 @@ def thread_run(lst, thread):
         if problem_name not in ['ProblemList.txt', 'SolutionLists']:
             # problem_name = '1A'
             testcase = f'/data/ScrapeData/{problem_name}/testcases/'
-            print(problem_name)
+            # print(problem_name)
 
             correct_path = path + problem_name + '/OK/python.3/'
             incorrect_path = path + problem_name + '/REJECTED/python.3/'
@@ -280,12 +280,12 @@ def thread_run(lst, thread):
 
 
 def main(lst, thread_num=6):
-    print(len(lst))
+    # print(len(lst))
     threads = list()
     splits = [[] for i in range(thread_num)]
     # Ceiling division
     per_array = -(len(lst)// -thread_num)
-    print(per_array)
+    # print(per_array)
     j = 0
     for i, problem_name in enumerate(lst):
         splits[j].append(problem_name)
