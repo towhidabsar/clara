@@ -16,6 +16,7 @@ rep_error = 'There are issues with the suggested repairs. The new program may no
 rep_not_needed = 'No repair!'
 rep_partial = 'Partial Repaired'
 timeout = 'TIMEOUT'
+err_occured = "Error Occured"
 
 graph_matching_options = [0, 1, 3]
 loc_add = 'Locs Added:'
@@ -120,8 +121,11 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                                                 shell=True)
                 output = clara_call.stdout.decode('utf-8')
                 results.add(idx,"First Output", output)
-                err = clara_call.stderr.decode('utf-8')
-                results.add(idx,"Error Output", err)
+                err = output
+                if err_occured in output:
+                    results.add(idx,"Error Output", err)
+                else:
+                    results.add(idx, "Error Output", "")
                 exitcode = clara_call.returncode
                 formatted_output = output.split('\n')
                 if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
