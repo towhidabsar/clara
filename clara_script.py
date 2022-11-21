@@ -123,7 +123,7 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                     clara_call = subprocess.run(['clara graph ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1 --matchOp ' + str(g)],
                                                 capture_output=True,
                                                 shell=True, text=True)
-
+                print(clara_call.stdout)
                 output = clara_call.stdout.decode('utf-8')
                 results.add(idx,"First Output", output)
                 err = clara_call.stderr.decode('utf-8')
