@@ -7,6 +7,7 @@ import codecs
 import time
 import logging
 import sys
+import tqdm
 
 # GLOBAL
 rep_correct = 'All Repaired'
