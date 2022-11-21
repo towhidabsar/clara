@@ -102,7 +102,7 @@ def get_problem_nums(path):
     return correct
 
 def batch_run_json(problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
-    for ifile in problems:
+    for ifile in tqdm(problems):
         # incorrect file
         # ifile = problems[x]
         results = ClaraResults()
@@ -110,19 +110,17 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
             idx = results.new(cfile)
             cdired = correct_path + cfile + '_solution.py'
             idired = incorrect_path + ifile + '_solution.py'
-            print(problem,' ', cfile, ' ', ifile)
+            # print(problem,' ', cfile, ' ', ifile)
             # go through each graph matching options
             for g in graph_matching_options:
 
                 if g == 0:
                     clara_call = subprocess.run(['clara repair ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1'],
-                                                stdout=subprocess.PIPE,
-                                                stderr=subprocess.PIPE,
+                                                capture_output=True,
                                                 shell=True)
                 else:
                     clara_call = subprocess.run(['clara graph ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1 --matchOp ' + str(g)],
-                                                stdout=subprocess.PIPE,
-                                                stderr=subprocess.PIPE,
+                                                capture_output=True,
                                                 shell=True)
 
                 output = clara_call.stdout.decode('utf-8')
@@ -132,7 +130,6 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                 exitcode = clara_call.returncode
                 formatted_output = output.split('\n')
                 if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
-                    print('Score too less')
                     continue
                 results.add(idx,'Correct File', cfile)
                 results.add(idx,'Incorrect File', ifile)
@@ -266,53 +263,49 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
 def thread_run(lst, thread):
     logging.info("Thread %s: starting", thread)
     for problem_name in lst:
-            if problem_name not in ['ProblemList.txt', 'SolutionLists']:
+        if problem_name not in ['ProblemList.txt', 'SolutionLists']:
+            # problem_name = '1A'
+            testcase = f'/data/ScrapeData/{problem_name}/testcases/'
+            print(problem_name)
 
-                # problem_name = '1A'
-                testcase = f'/data/ScrapeData/{problem_name}/testcases/'
-                print(problem_name)
-
-                correct_path = path + problem_name + '/OK/python.3/'
-                incorrect_path = path + problem_name + '/REJECTED/python.3/'
-                correct = get_problem_nums(correct_path)
-                probs = get_problem_nums(incorrect_path)
-                size = len(probs)
-
-
-                batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
+            correct_path = path + problem_name + '/OK/python.3/'
+            incorrect_path = path + problem_name + '/REJECTED/python.3/'
+            correct = get_problem_nums(correct_path)
+            probs = get_problem_nums(incorrect_path)
+            size = len(probs)
 
 
-
+            batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
 
 def main(lst, thread_num=6):
-        print(len(lst))
-        threads = list()
-        splits = [[] for i in range(thread_num)]
-        # Ceiling division
-        per_array = -(len(lst)// -thread_num)
-        print(per_array)
-        j = 0
-        for i, problem_name in enumerate(lst):
-            splits[j].append(problem_name)
-            if i % per_array == 0 and i > 0:
-                j+=1
+    print(len(lst))
+    threads = list()
+    splits = [[] for i in range(thread_num)]
+    # Ceiling division
+    per_array = -(len(lst)// -thread_num)
+    print(per_array)
+    j = 0
+    for i, problem_name in enumerate(lst):
+        splits[j].append(problem_name)
+        if i % per_array == 0 and i > 0:
+            j+=1
 
-        start = time.time()
-        for i in range(thread_num):
-            x = threading.Thread(target=thread_run, args=(splits[i], i))
-            threads.append(x)
-            x.start()
-        
-        for i, thread in enumerate(threads):
-            logging.info("Main    : before joining thread %d.", i)
-            thread.join()
-            logging.info("Main    : thread %d done", i)
-        
-        end = time.time()
-        hours, rem = divmod(end-start, 3600)
-        minutes, seconds = divmod(rem, 60)
-        print("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
+    start = time.time()
+    for i in range(thread_num):
+        x = threading.Thread(target=thread_run, args=(splits[i], i))
+        threads.append(x)
+        x.start()
+    
+    for i, thread in enumerate(threads):
+        logging.info("Main    : before joining thread %d.", i)
+        thread.join()
+        logging.info("Main    : thread %d done", i)
+    
+    end = time.time()
+    hours, rem = divmod(end-start, 3600)
+    minutes, seconds = divmod(rem, 60)
+    print("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
 
 
 if __name__=='__main__':
