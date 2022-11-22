@@ -236,14 +236,14 @@ def get_problem_nums(path):
 #         os.makedirs(f'/data/batch_tests/{problem}/')
 #     results.save(f'/data/batch_tests/{problem}/{incorrect_file_no}_{str(g)}.json')
 def batch_run_json(problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
-    for ifile in tqdm(problems):
+    for ifile in tqdm(problems, desc="incorrect", position=0):
         # incorrect file
         # ifile = problems[x]
         outfolder = f'/data/batch_tests_output/{problem}/'
         if (not os.path.exists(outfolder)):
             os.makedirs(outfolder)
         results = ClaraResults()
-        for cfile in tqdm(correct):
+        for cfile in tqdm(correct, desc="correct", position=1, leave=False):
             idx = results.new(cfile)
             cdired = correct_path + cfile + '_solution.py'
             idired = incorrect_path + ifile + '_solution.py'
