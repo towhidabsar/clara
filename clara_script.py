@@ -322,7 +322,6 @@ def main(lst, thread_num=6):
         thread.join()
         logging.info("Main    : thread %d done", i)
     
-    for 
     end = time.time()
     hours, rem = divmod(end-start, 3600)
     minutes, seconds = divmod(rem, 60)
