@@ -243,7 +243,7 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
         if (not os.path.exists(outfolder)):
             os.makedirs(outfolder)
         results = ClaraResults()
-        for cfile in correct:
+        for cfile in tqdm(correct):
             idx = results.new(cfile)
             cdired = correct_path + cfile + '_solution.py'
             idired = incorrect_path + ifile + '_solution.py'
