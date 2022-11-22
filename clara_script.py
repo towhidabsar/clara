@@ -105,6 +105,8 @@ def parse_output(problem, correct, problems, correct_path, incorrect_path, graph
         results = ClaraResults()
         for cfile in tqdm(correct, desc="correct", position=1, leave=False):
             idx = results.new(cfile)
+            cdired = correct_path + cfile + '_solution.py'
+            idired = incorrect_path + ifile + '_solution.py'
             for g in graph_matching_options:
                 output = open(f'{outfolder}{ifile}_{cfile}_{str(g)}.txt', 'r').read()
                 err = open(f'{outfolder}{ifile}_{cfile}_{str(g)}_err.txt', 'r').read()
