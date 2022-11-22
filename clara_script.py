@@ -300,7 +300,7 @@ def thread_run(lst, thread):
 
 
             batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
-            parse_output(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
+            # parse_output(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
 def main(lst, thread_num=6):
     threads = list()
