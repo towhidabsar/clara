@@ -261,21 +261,24 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
             idired = incorrect_path + ifile + '_solution.py'
             # go through each graph matching options
             for g in graph_matching_options:
-                outfile = open(f'{outfolder}{ifile}_{cfile}_{str(g)}.txt', "w")
-                outfile_err = open(f'{outfolder}{ifile}_{cfile}_{str(g)}_err.txt', 'w')
-                if g == 0:
-                    clara_call = subprocess.run(['clara repair ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1'],
-                                                stdout=outfile, stderr=outfile_err,
-                                                shell=True)
+                if os.path.exists(f'{outfolder}{ifile}_{cfile}_{str(g)}.txt') or os.path.exists(f'{outfolder}{ifile}_{cfile}_{str(g)}_err.txt'):
+                    continue
                 else:
-                    clara_call = subprocess.run(['clara graph ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1 --matchOp ' + str(g)],
-                                                stdout=outfile, stderr=outfile,
-                                                shell=True)
-                outfile.close()
-                outfile_err.close()
-                outfile = open(f'{outfolder}{ifile}_{cfile}_{str(g)}.txt', "a")
-                outfile.write(f'\nExitcode: {clara_call.returncode}')
-                outfile.close()
+                    outfile = open(f'{outfolder}{ifile}_{cfile}_{str(g)}.txt', "w")
+                    outfile_err = open(f'{outfolder}{ifile}_{cfile}_{str(g)}_err.txt', 'w')
+                    if g == 0:
+                        clara_call = subprocess.run(['clara repair ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1'],
+                                                    stdout=outfile, stderr=outfile_err,
+                                                    shell=True)
+                    else:
+                        clara_call = subprocess.run(['clara graph ' + cdired + ' ' + idired + ' --argsfile ' + testcase + ' --checkAllRep 1 --verbose 1 --matchOp ' + str(g)],
+                                                    stdout=outfile, stderr=outfile,
+                                                    shell=True)
+                    outfile.close()
+                    outfile_err.close()
+                    outfile = open(f'{outfolder}{ifile}_{cfile}_{str(g)}.txt', "a")
+                    outfile.write(f'\nExitcode: {clara_call.returncode}')
+                    outfile.close()
     
 
 
@@ -295,7 +298,7 @@ def thread_run(lst, thread):
 
 
             batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
-
+            parse_output(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
 def main(lst, thread_num=6):
     threads = list()
@@ -319,6 +322,7 @@ def main(lst, thread_num=6):
         thread.join()
         logging.info("Main    : thread %d done", i)
     
+    for 
     end = time.time()
     hours, rem = divmod(end-start, 3600)
     minutes, seconds = divmod(rem, 60)
