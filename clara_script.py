@@ -116,7 +116,9 @@ def parse_output(problem, correct, problems, correct_path, incorrect_path, graph
                 formatted_output = output.split('\n')
                 temp = list(
                     filter(lambda x: exit_code_text in x, formatted_output))
+                print(temp)
                 temp = temp[0].split(exit_code_text)[-1].strip()
+                print(temp)
                 exitcode = temp
                 if ((g == 1 or g == 3) and 'SCORE TOO LESS' in output):
                     continue
