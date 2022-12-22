@@ -18,3 +18,7 @@ tests/
 *.xls
 extract_corr_data.py
 NSFwebscraper/*
+dataset/DEFAULT
+dataset/dataset_dict.json
+dataset/parsed_results.zip
+.cache/*
