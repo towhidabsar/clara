@@ -1,2 +1,4 @@
 Cython
 networkx
+datasets
+gdown

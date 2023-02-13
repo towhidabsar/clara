@@ -8,6 +8,7 @@ import logging
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+from os.path import join as pjoin
 
 # GLOBAL
 # spack load /u64kqpe /tymduoi && pip install -U dataset
@@ -91,6 +92,120 @@ class ClaraResults():
             json.dump(self.data, f)
     
 
+def run_clara(directory, start, end):
+    with open(pjoin(directory, 'combinations.json'), 'r') as f:
+        combinations = json.loads(f.read())
+    print(len(combinations))
+    print(start)
+    print(end)
+    combinations = combinations[start:end]
+    for c in tqdm(combinations):
+        problem_name = c['problem_name']
+        cfile = f'{c["correct_file"]}_solution.py'
+        cnum = c["correct_num"]
+        ifile = f'{c["incorrect_file"]}_solution.py'
+        inum = c["incorrect_num"]
+        g = c["g"]
+        testcase_folder = pjoin(directory, 'ScrapeData', problem_name, 'testcases')
+        outfolder = pjoin(directory, 'clara_raw_output', problem_name)
+        if (not os.path.exists(outfolder)):
+            os.makedirs(outfolder)
+        outfile = open(pjoin(outfolder, f'{inum}_{cnum}_{str(g)}.txt'), 'w')
+        errfile = open(pjoin(outfolder, f'{inum}_{cnum}_{str(g)}_err.txt'), 'w')
+        if g == 0:
+            clara_call = run_clara_repair(
+                correct_file_path=cfile,
+                incorrect_file_path=ifile,
+                testcase=testcase_folder,
+                out_file=outfile,
+                error_file=errfile
+            )
+        else:
+            clara_call = run_clara_graph(
+                correct_file_path=cfile,
+                incorrect_file_path=ifile,
+                testcase=testcase_folder,
+                out_file=outfile,
+                error_file=errfile,
+                g=g
+            )
+        outfile.close()
+        errfile.close()
+        if clara_call is not None:
+            outfile = open(pjoin(outfolder, f'{inum}_{cnum}_{str(g)}.txt'), 'a')
+            outfile.write(f'\nExitcode: {clara_call.returncode}')
+            outfile.close() 
+
+def run_clara_repair(correct_file_path, incorrect_file_path, testcase, out_file, error_file):
+    '''
+    Run clara repair
+    '''
+    command = f'clara repair {correct_file_path} {incorrect_file_path} --argsfile {testcase} --checkAllRep 1 --verbose 1'
+    try:
+        clara_call = subprocess.run([command], stdout=out_file, stderr=error_file, shell=True, timeout=300)
+    except:
+        clara_call = None
+        pass
+    return clara_call
+
+def run_clara_graph(correct_file_path, incorrect_file_path, testcase, out_file, error_file, g):
+    '''
+    Run clara graph
+    '''
+    command = f'clara graph {correct_file_path} {incorrect_file_path} --argsfile {testcase} --checkAllRep 1 --verbose 1 --matchOp {str(g)}'
+    try:
+        clara_call = subprocess.run([command], stdout=out_file, stderr=error_file, shell=True, timeout=300)
+    except:
+        clara_call = None
+        pass
+    return clara_call
+
+def get_combinations(directory, fn):
+    '''
+    Get all combinations of correct and incorrect as the following array of dictionary:
+    {
+        "problem_name": "",
+        "correct_file": "",
+        correct_num,
+        "incorrect_file": "",
+        incorrect_num,
+        "g": ""
+    }
+    '''
+    list_of_problems = os.listdir(pjoin(directory, 'ScrapeData'))
+    graph_matching_options = [0, 1, 3]
+    combinations = []
+    for problem_name in list_of_problems:
+        if problem_name not in ['ProblemList.txt', 'SolutionLists']:
+            testcase_folder = pjoin(directory, 'ScrapeData', problem_name, 'testcases')
+            correct_path = pjoin(directory, 'ScrapeData', problem_name, 'OK', 'python.3')
+            incorrect_path = pjoin(directory, 'ScrapeData', problem_name, 'REJECTED', 'python.3')
+            if os.path.exists(correct_path) and os.path.exists(incorrect_path):
+                list_of_correct = get_problem_nums(correct_path)
+                list_of_incorrect = get_problem_nums(incorrect_path)
+                for incorrect_num in list_of_incorrect:
+                    for correct_num in list_of_correct:
+                        ifile = pjoin(incorrect_path, incorrect_num)
+                        cfile = pjoin(correct_path, correct_num)
+                        for g in graph_matching_options:
+                            combinations.append(
+                                {
+                                    "problem_name": problem_name,
+                                    "correct_file": cfile,
+                                    "correct_num": correct_num,
+                                    "incorrect_file": ifile,
+                                    "incorrect_num": incorrect_num,
+                                    "g": g
+                                }
+                            )
+    with open(pjoin(directory, 'combinations.json'), 'w') as out:
+        out.write(json.dumps(combinations, indent=4))
+
+
+                # print(f'For Problem {problem_name}:')
+                # print(f'    Total correct problems: {len(list_of_correct)}')
+                # print(f'    Total incorrect problems: {len(list_of_incorrect)}')
+                # print(f'    Running function: {fn}')
 
 def get_problem_nums(path):
     correct = []
@@ -98,9 +213,56 @@ def get_problem_nums(path):
         for c in os.listdir(path):
             if ('solution.txt' in c):
                 correct.append(c.split('_')[0])
-                remove_unicode(f'{path}{c}')
+                remove_unicode(pjoin(path, c))
         return correct
 
+def parse_clara_output(directory, start=None, end=None):
+    '''
+    Parse the raw clara output from the files
+    '''
+    # All text based captures
+    rep_correct = 'All Repaired'
+    rep_incorrect = 'Old Repairs were incomplete, apply these repairs too:'
+    rep_error = 'There are issues with the suggested repairs. The new program may not run.'
+    rep_not_needed = 'No repair!'
+    rep_partial = 'Partial Repaired'
+    graph_matching_options = [0, 1, 3]
+    timeout = 'TIMEOUT'
+    loc_add = 'Locs Added:'
+    loc_del = 'Locs Deleted:'
+    loc_same = 'Locs Same'
+    test_available = 'Test Case Available'
+    test_not_available = 'Test Case Not Available'
+    corr_locs = 'Locs in Correct Program Model'
+    exit_code_text = 'Exitcode:'
+    corr_exp = 'Exprs in Correct Program Model'
+    incorr_locs = 'Locs in Incorrect Program Model'
+    incorr_exps = 'Exprs in Incorrect Program Model'
+    old_incorr_locs = 'Locs in Old Incorrect Program Model'
+    old_incorr_exps = 'Exprs in Old Incorrect Program Model'
+    num_Reps = 'Number of Repairs '
+
+    
+    with open(pjoin(directory, 'combinations.json'), 'r') as f:
+        combinations = json.loads(f.read())
+    if start is not None and end is not None:
+        combinations = combinations[start:end]
+    for c in tqdm(combinations):
+        problem_name = c['problem_name']
+        cfile = f'{c["correct_file"]}_solution.py'
+        cnum = c["correct_num"]
+        ifile = f'{c["incorrect_file"]}_solution.py'
+        inum = c["incorrect_num"]
+        g = c["g"]
+        outfolder = pjoin(directory, 'clara_raw_output', problem_name)
+        output_file = pjoin(outfolder, f'{ifile}_{cfile}_{str(g)}.txt')
+        error_file = pjoin(outfolder, f'{ifile}_{cfile}_{str(g)}_err.txt')
+        if not (os.path.exists(output_file) and os.path.exists(error_file)):
+            continue
+        
+
+        
+        
 def parse_output(problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase, rerun=False):
     outfolder = f'{data_dir}/batch_tests_output/{problem}/'
     for ifile in tqdm(problems, desc="incorrect", position=2, leave=False):
@@ -262,7 +424,14 @@ def parse_output(problem, correct, problems, correct_path, incorrect_path, graph
             print(e)
 
 
-def batch_run_json(problem, correct, problems, correct_path, incorrect_path, graph_matching_options, testcase):
+def batch_run_json( problem, 
+                    correct, 
+                    problems, 
+                    correct_path, 
+                    incorrect_path, 
+                    graph_matching_options, 
+                    testcase):
+    print(problems)
     for ifile in tqdm(problems, desc="incorrect", position=0):
         # incorrect file
         # ifile = problems[x]
@@ -270,7 +439,7 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
         if (not os.path.exists(outfolder)):
             os.makedirs(outfolder)
 
-        for cfile in tqdm(correct, desc="correct", position=1, leave=False):
+        for cfile in correct:
             cdired = correct_path + cfile + '_solution.py'
             idired = incorrect_path + ifile + '_solution.py'
             # go through each graph matching options
@@ -292,12 +461,9 @@ def batch_run_json(problem, correct, problems, correct_path, incorrect_path, gra
                     outfile_err.close()
                     outfile = open(f'{outfolder}{ifile}_{cfile}_{str(g)}.txt', "a")
                     outfile.write(f'\nExitcode: {clara_call.returncode}')
-                    outfile.close()
-    
+                    outfile.close() 
 
-
-
-def thread_run(lst, thread):
+def thread_run(lst, fn='parse_output'):
     # logging.info("Thread %s: starting", thread)
     for problem_name in tqdm(lst, position=1, desc='problems', leave=False):
         if problem_name not in ['ProblemList.txt', 'SolutionLists']:
@@ -311,54 +477,22 @@ def thread_run(lst, thread):
                 probs = get_problem_nums(incorrect_path)
                 size = len(probs)
 
-
-                # batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
-                parse_output(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
-
-def main(lst, thread_num=8):
-    threads = list()
-    splits = [[] for i in range(thread_num)]
-    # Ceiling division
-    per_array = -(len(lst)// -thread_num)
-    j = 0
-    for i, problem_name in enumerate(lst):
-        splits[j].append(problem_name)
-        if i % per_array == 0 and i > 0:
-            j+=1
-
-    start = time.time()
-    with tqdm(total=len(splits), desc='threads', position=0) as pbar:
-        with ThreadPoolExecutor(max_workers=thread_num) as ex:
-            futures = [ex.submit(thread_run, splits[i], i) for i in range(thread_num)]
-            for future in as_completed(futures):
-                result = future.result()
-                pbar.update(1)
-    # for i in range(thread_num):
-    #     x = threading.Thread(target=thread_run, args=(splits[i], i))
-    #     threads.append(x)
-    #     x.start()
-    
-    # for i, thread in enumerate(threads):
-    #     logging.info("Main    : before joining thread %d.", i)
-    #     thread.join()
-    #     logging.info("Main    : thread %d done", i)
-    
-    end = time.time()
-    hours, rem = divmod(end-start, 3600)
-    minutes, seconds = divmod(rem, 60)
-    print("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
+                print(f'Total correct problems: {len(correct)}')
+                print(f'Total incorrect problems: {size}')
+                print(f'Running function: {fn}')
+                if fn=='batch_run_json':
+                    batch_run_json(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
+                elif fn=='parse_output':
+                    parse_output(problem_name, correct, probs, correct_path, incorrect_path, graph_matching_options, testcase)
 
 
+# /home/mac9908/clara/problems/Output
 if __name__=='__main__':
-    arg = sys.argv[1]
-    if os.path.exists(arg):
-        path = f'{arg}/ScrapeData/'
-        data_dir = arg
-        if (len(sys.argv) >= 3):
-            start = int(sys.argv[2])
-            end = int(sys.argv[3])
-            main(os.listdir(arg[start:end]))
-        else:
-            main(os.listdir(path))
-    else:
-        main(arg.split(','))
+    directory = sys.argv[1]
+    fn = sys.argv[2]
+    if fn == 'get_combinations':
+        get_combinations(directory, fn)
+    elif fn == 'clara':
+        start = int(sys.argv[3])
+        end = int(sys.argv[4])
+        run_clara(directory=directory, start=start, end=end)

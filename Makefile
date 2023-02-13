@@ -1,6 +1,6 @@
 install:
 	@python3 setup.py sdist
-	@pip3 install dist/clara*.tar.gz
+	@pip3 install dist/clara*.tar.gz --user
 
 uninstall:
 	@pip3 uninstall clara

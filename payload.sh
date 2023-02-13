@@ -11,7 +11,7 @@
 ##SBATCH --mail-type=FAIL
  
 # Request 5 minutes run time MAX, if the job runs over it will be KILLED
-#SBATCH --time 0-6:00:0 #Time limit day-hrs:min:sec
+#SBATCH --time 0-24:00:0 #Time limit day-hrs:min:sec
 ##SBATCH --gres=gpu --constraint="vram40|vram32"
 
 # Put the job in the partition associated with the account and request one core
@@ -24,11 +24,10 @@
 ## SBATCH --output=run-%J.out
 ## SBATCH --error=run-%J.err
  
-echo "I am processing job number $start for the Youtube Channel $network"
+echo "I am processing Clara job for $start $end"
 echo "And now I'm going to run the python script"
 echo $(awk '$3=="kB"{$2=$2/1024^2;$3="GB";} 1' /proc/meminfo | column -t | grep MemTotal)
-python clara_script.py /home/mac9908/clara/dataset
+python clara_script.py /home/mac9908/clara/problems/Output 'clara' $start $end
 # $start $network
-
 echo "All done with my work.  Exiting."
-# sbatch  --job-name youtube --output explode-out.txt payload.sh
+# sbatch  --job-name youtube --output out.txt payload.sh
