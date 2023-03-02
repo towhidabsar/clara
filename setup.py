@@ -6,9 +6,10 @@ from setuptools.extension import Extension
 
 extensions = Extension('clara.pylpsolve', ['clara/pylpsolve.pyx'],
                   libraries=['lpsolve55'],
-                  library_dirs=['/usr/lib/lp_solve','lp_solve_dev/', 'lp_solve_5.5/lpsolve55/bin/ux64'], 
+                  library_dirs=['/home/mac9908/clara/lp_solve_dev', '/home/mac9908/clara/lp_solve_5.5/lpsolve55/bin/ux64'], 
                   include_dirs=[
-                        'lp_solve_dev/'
+                        '/home/mac9908/clara/lp_solve_dev',
+                        '/home/mac9908/clara/lp_solve_5.5/lpsolve55/bin/ux64'
                   ])
 
 setup(name='clara',

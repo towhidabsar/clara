@@ -684,6 +684,11 @@ class PyParser(Parser):
         self.visit_loop(node, None, cond, None, node.body, False, 'for',
                         prebody=prebody)
 
+    def visit_Starred(self, node):
+        '''
+        Parse Starred 
+        '''     
+        return Op('Star', self.visit_expr(node.value), line=node.lineno)
     def visit_Break(self, node):
         if self.nobcs:
             return

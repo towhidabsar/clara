@@ -239,6 +239,13 @@ class Interpreter(object):
             return list(l[1:])
 
         raise RuntimeErr("ListTail on '%s'" % (l,))
+        
+    def execute_Star(self, a, mem):
+        '''
+        Custom function to deal with starred expressions
+        '''
+        v = self.execute(a.args[0], mem)
+        return ' '.join(str(x) for x in v)
 
     def execute_StrAppend(self, a, mem):
 

@@ -33,6 +33,8 @@ export LD_LIBRARY_PATH=/usr/lib/lp_solve/
     
         $python setup.py install --user
 
+6) Run make, in case of error check clara/setup.py and ensure all the libraries are added in include_dirs.
+
 Should be good if not check these two links out:
 https://github.com/chandu-atina/lp_solve_python_3x
 https://stackoverflow.com/questions/48765299/how-to-install-lpsolve-for-python-3-6
