@@ -232,7 +232,7 @@ class ClaraDataBuilder(datasets.GeneratorBasedBuilder):
           ifile = f'{c["incorrect_file"]}_solution.py'
           inum = c["incorrect_num"]
           g = c["g"]
-          outfolder = pjoin(directory, 'batch_tests_output', problem_name)
+          outfolder = pjoin(directory, 'clara_raw_output', problem_name)
           output_file = pjoin(outfolder, f'{inum}_{cnum}_{str(g)}.txt')
           error_file = pjoin(outfolder, f'{inum}_{cnum}_{str(g)}_err.txt')
 
@@ -250,8 +250,8 @@ class ClaraDataBuilder(datasets.GeneratorBasedBuilder):
     def _split_generators(self, dl_manager):
         return [
             datasets.SplitGenerator(
-                name=datasets.Split("DEFAULT"),
-                gen_kwargs={"split": "default"},
+                name=datasets.Split("final"),
+                gen_kwargs={"split": "final"},
             )
         ]
       

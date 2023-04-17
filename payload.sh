@@ -28,6 +28,7 @@ echo "I am processing Clara job for $start $end"
 echo "And now I'm going to run the python script"
 echo $(awk '$3=="kB"{$2=$2/1024^2;$3="GB";} 1' /proc/meminfo | column -t | grep MemTotal)
 python clara_script.py /home/mac9908/clara/problems/Output 'clara' $start $end
+# python clara_script.py /home/mac9908/clara/problems/Output 'get_combinations' $start $end
 # $start $network
 echo "All done with my work.  Exiting."
 # sbatch  --job-name youtube --output out.txt payload.sh

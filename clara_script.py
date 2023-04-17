@@ -198,6 +198,7 @@ def get_combinations(directory, fn):
                                     "g": g
                                 }
                             )
+    print(f'Created combinations with length {len(combinations)}')
     with open(pjoin(directory, 'combinations.json'), 'w') as out:
         out.write(json.dumps(combinations, indent=4))
 
