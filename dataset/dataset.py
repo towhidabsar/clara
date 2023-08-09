@@ -1,5 +1,3 @@
-# https://drive.google.com/file/d/1D6UCjkcV3BoWJNNq8BPgz5w4Ciai-Q_x/view?usp=share_link
-# https://drive.google.com/uc?id=1D6UCjkcV3BoWJNNq8BPgz5w4Ciai-Q_x
 import datasets
 from os.path import join as pjoin
 from ast import literal_eval
@@ -132,11 +130,11 @@ if __name__=='__main__':
   home_dir = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
   print(f'The home directory is {home_dir}')
   dataset_dir = sys.argv[2] if len(sys.argv) > 2 else 'dataset'
-  # num_proc = sys.argv[3] if len(sys.argv) > 3 else None
+  url = sys.argv[3] if len(sys.argv)>3 else ''
   print(f'Creating CLARA dataset in the following folder: {dataset_dir}')
   dt = datasets.load_dataset(pjoin(home_dir, dataset_dir), cache_dir=pjoin(home_dir, '.cache'), 
         num_proc=2, 
-        url='https://drive.google.com/uc?id=1D6UCjkcV3BoWJNNq8BPgz5w4Ciai-Q_x',
+        url=url,
         data_dir=pjoin(home_dir, dataset_dir)
       )
   print("Dataset created:\n", dt)
