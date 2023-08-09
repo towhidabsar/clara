@@ -3,6 +3,10 @@
 Adding features to the tool CLARA by https://github.com/iradicek/clara. 
 Please refer to the PDF Clara__User_Manual for detailed instructions for running CLARA.
 
+In this version of CLARA (a datadriven automated repair approach that is open source), we present several modifications to deal with real-world
+introductory programs. 
+We extend CLARA’s abstract syntax tree processor to handle common introductory programming constructs. Additionally, we propose a flexible alignment algorithm over control flow graphs where we enrich nodes with semantic annotations extracted from programs using operations and calls. Using this alignment, we modify an incorrect program’s control flow graph to match the correct programs to apply CLARA’s original repair process.
+
 ## Docker
 The easiest way to use and try clara is to use the provided `Dockerfile` to have a container with everything set up.
 
