@@ -1,9 +1,41 @@
-# clara
+# CLARA
+## About
+Adding features to the tool CLARA by https://github.com/iradicek/clara. 
+Please refer to the PDF Clara__User_Manual for detailed instructions for running CLARA.
 
-Adding features to the tool CLARA by https://github.com/iradicek/clara
+## Docker
+The easiest way to use and try clara is to use the provided `Dockerfile` to have a container with everything set up.
 
-Please refer to the PDF Clara__User_Manual for detailed instructions.
+## Instructions - Build from Source
+These are the instructions for Ubuntu 20.04:
+```
+RUN apt update -y
 
+RUN apt upgrade -y
+
+RUN apt install -y lp-solve liblpsolve55-dev python3 python3-pip git
+
+Clone the repository
+
+RUN py_site_package=$(python3 -m site --user-site)
+
+RUN copy contents of clara/libs/lpsolve_python3.4/site-packages/* to where ever the site package is 
+$(python3 -m site --user-site)
+
+RUN pip3 install Cython networkx xlwt pandas tqdm
+
+<!-- if you have sudo access do this -->
+RUN export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/lp_solve/"
+<!-- if no sudo access do this -->
+RUN export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:<path-to-clara>/libs/lp_solve_5.5/lpsolve55/bin/ux64:<path-to-clara>/libs/lp_solve_dev"
+
+RUN export PATH="$PATH:<path-to-clara>/bin"
+
+RUN make in the clara directory
+```
+
+## Old Instructions
+### This may not work in a lot of cases but a good reference to have in case the above runs into trouble
 Run the following:
 apt-get install lp-solve
 apt-get install liblpsolve55-dev
