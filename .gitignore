@@ -28,3 +28,5 @@ problems/.cache/
 problems/dataset/
 problems/analysis/
 problems/figures/
+problems/fig/
+problems/.ipynb_checkpoints/
