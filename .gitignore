@@ -22,11 +22,4 @@ dataset/DEFAULT
 dataset/dataset_dict.json
 dataset/parsed_results.zip
 .cache/*
-problems/Output
-problems/codeforce_problems.zip
-problems/.cache/
-problems/dataset/
-problems/analysis/
-problems/figures/
-problems/fig/
-problems/.ipynb_checkpoints/
+problems
