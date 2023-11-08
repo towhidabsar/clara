@@ -7,10 +7,30 @@ In this version of CLARA (a datadriven automated repair approach that is open so
 introductory programs. 
 We extend CLARA’s abstract syntax tree processor to handle common introductory programming constructs. Additionally, we propose a flexible alignment algorithm over control flow graphs where we enrich nodes with semantic annotations extracted from programs using operations and calls. Using this alignment, we modify an incorrect program’s control flow graph to match the correct programs to apply CLARA’s original repair process.
 
-## Docker
+## Experimental Evaluation of Improvements Introduced to Clara
+
+### Access To Data
+The full dataset for all the raw experiments can be downloaded using one of the following methods:
+1. Progammatically:
+```
+<!-- Utilizes Huggingface dataset library -->
+pip install -U datasets
+
+python dataset/dataset.py
+```
+2. Google Drive:
+[Dataset Folder](https://drive.google.com/drive/folders/1Q1sG1yoAppbwSQ5p1EtwtPMJq0M21rI9?usp=drive_link)
+- Download either the parsed csv/json files under the csv/json folder which does not contain the raw output for the runs
+- Trimmed version of the results are available [here](https://github.com/towhidabsar/clara/tree/master/dataset). 
+- Download the entire directory to keep a `Huggingface Dataset` folder with raw text data of all the runs
+
+### Evaluation Results
+[Click Here](https://github.com/towhidabsar/clara/blob/master/notebook/Experimental%20Analysis.ipynb)
+## Installation Instructions
+### Docker
 The easiest way to use and try clara is to use the provided `Dockerfile` to have a container with everything set up.
 
-## Instructions - Build from Source
+### Instructions - Build from Source
 These are the instructions for Ubuntu 20.04:
 ```
 RUN apt update -y
@@ -38,8 +58,10 @@ RUN export PATH="$PATH:<path-to-clara>/bin"
 RUN make in the clara directory
 ```
 
-## Old Instructions
-### This may not work in a lot of cases but a good reference to have in case the above runs into trouble
+
+
+### Old Instructions
+#### This may not work in a lot of cases but a good reference to have in case the above runs into trouble
 Run the following:
 apt-get install lp-solve
 apt-get install liblpsolve55-dev
